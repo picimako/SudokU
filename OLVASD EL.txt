@@ -1,0 +1,3 @@
+Az programindító .exe fájl a Sudoku/bin/Debug mappában található Sudoku.exe fájl.
+Az angol és magyar nyelvi fájl a Sudoku/bin/Debug/Languages mappában találhatóak.
+A beállítások tárolására szolgáló config.xml szintén a Sudoku/bin/Debug mappában található.
