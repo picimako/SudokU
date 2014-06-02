@@ -25,6 +25,7 @@ namespace Sudoku.Verifier
         #endregion
 
         #region Methods
+
         #region Public
 
         public static void InitVerifier(Label checkLabelParam, TextBox[,] activeTableParam)
@@ -35,14 +36,12 @@ namespace Sudoku.Verifier
 
         public static void VerifyResult()
         {
-            //Ha beolvasott Killer feladatom van
             if (se.IsExerciseKiller && !se.IsExerciseGenerated)
             {
                 if (se.Killer.Ctrl.IsKillerSolutionCorrect())
-                {
                     PrintSolutionIsGood();
-                }
-                PrintSolutionIsWrong();
+                else
+                    PrintSolutionIsWrong();
                 return;
             }            
 
@@ -52,14 +51,11 @@ namespace Sudoku.Verifier
                 for (int p = 0; p < 81; p++)
                 {
                     ParseValueOfCurrentCell(p);
-                    //Ha a tábla adott cellája nem üres, és a beírt érték nem egyezik a megoldásbeli értékkel,
                     if (!IsFieldEmpty(p) && !IsFieldValueMatchValueInSolution(currentCellValue, p))
                     {
-                        //akkor a cellában lévő írás dőlt típusú lesz.
                         SetTextboxFont(p, FontStyle.Italic);
                         isSolutionCorrect = false;
                     }
-                    //egyéb esetben
                     else
                         SetTextboxFont(p, FontStyle.Regular);
                 }
@@ -72,7 +68,6 @@ namespace Sudoku.Verifier
                 for (int p = 0; p < 81; p++)
                 {
                     ParseValueOfCurrentCell(p);
-                    //ha a tábla adott cellája nem üres, és a beírt érték nem egyezik a megoldásbeli értékkel,
                     if (!IsFieldEmpty(p) && !IsFieldValueMatchValueInSolution(currentCellValue, p))
                         numberOfIncorrectCells++;
                 }
@@ -83,7 +78,6 @@ namespace Sudoku.Verifier
                 for (int p = 0; p < 81; p++)
                 {
                     ParseValueOfCurrentCell(p);
-                    //Ha a beírt érték nem egyezik meg a megoldásbeli értékkel,
                     if (!IsFieldValueMatchValueInSolution(currentCellValue, p))
                     {
                         PrintSolutionIsWrong();
@@ -108,9 +102,9 @@ namespace Sudoku.Verifier
             return activeTable[p / 9, p % 9].Text == "";
         }
 
-        private static bool IsFieldValueMatchValueInSolution(int tabla_i_j, int p)
+        private static bool IsFieldValueMatchValueInSolution(int currentCellValue, int p)
         {
-            return tabla_i_j == se.Solution[p / 9, p % 9];
+            return currentCellValue == se.Solution[p / 9, p % 9];
         }
 
         private static void PrintSolutionIsGood()
@@ -129,6 +123,7 @@ namespace Sudoku.Verifier
         }
 
         #endregion
+
         #endregion
     }
 }

@@ -33,12 +33,14 @@ namespace Sudoku.Generate
 
         #region Methods
 
+        #region Public
+
         /// <summary> Generates a fully solved excercise of proper sudoku type. </summary>
         public bool GenerateFullTableFromEmptyTable()
         {
             //In case of Sudoku-X it contains the value of the cell in the middle of the table
             int cellAtMiddleOfTable = -1;
-            //The current number of try to fill in a number with different combinations
+            //The current number of tries to fill in a number with different combinations
             int currentTryToFillInNumber = 0;
             int[][,] tempTable;
 
@@ -57,9 +59,7 @@ namespace Sudoku.Generate
                     break;
                 case SudokuType.SudokuX:
                     if (!GenerateDiagonals(sudokuNumbers, out cellAtMiddleOfTable))
-                    {
                         return false;
-                    }
                     break;
                 case SudokuType.CenterDot:
                     GenerateCenterDots(sudokuNumbers);
@@ -115,7 +115,7 @@ namespace Sudoku.Generate
                                 break;
                             }
 
-                            //Ha nem találtam cellákat, akkor növelem a blokkban keresendő cellák minimum számát
+                        //Ha nem találtam cellákat, akkor növelem a blokkban keresendő cellák minimum számát
                         } while (++hanyCella <= (10 - numberToFillIn)); //10-numberToFillIn üres cella lehet maximálisan egy blokkban
                     }
 
@@ -146,6 +146,10 @@ namespace Sudoku.Generate
             return true;
         }
 
+        #endregion
+
+        #region Private
+
         private int GetNextInstanceOfNumber(int cellAtMiddleOfTable, int numberToFillIn)
         {
             /* Ha a feladat Sudoku-X típusú és a beírandó szám nem egyezik a tábla középső cellájába írt értékkel, akkor az r számból a 3.
@@ -153,9 +157,12 @@ namespace Sudoku.Generate
             return (se.ExerciseType == SudokuType.SudokuX && cellAtMiddleOfTable != numberToFillIn) ? 3 : 2;
         }
 
+        /// <summary>
+        /// Decides if the provided cells are placed as rectangular, based on the method parameters.
+        /// Example for 4 rectangular cells with x,y cell indeces: [1, 0], [1, 4], [5, 0], [5, 4]
+        /// </summary>
         private bool AreCellsPlacedAsRectangle(ref List<Pair> rectangularCells, int numberToFillIn)
         {
-            //4 üres cella pl.: lista[0] = (1, 0), lista[1] = (1, 4), lista[2] = (5, 0), lista[3] = (5, 4)
             return (rectangularCells = se.Ctrl.FindEmptyCellsInNumberTable(numberToFillIn)).Count == 4 &&
                         (rectangularCells[0].i == rectangularCells[1].i
                         && rectangularCells[2].i == rectangularCells[3].i
@@ -383,6 +390,8 @@ namespace Sudoku.Generate
                 util.RectangularCells.Remove(egyezoTabla);
             }
         }
+
+        #endregion
 
         #endregion
     }

@@ -181,13 +181,13 @@ namespace Sudoku.Controller
 
         /// <summary>Megvizsgálja, hogy haz tartalmazza-e tomb adott [i, j] helyen levő értékét. Ha nem, akkor hozzáadja.</summary>
         /// <param name="haz">A vizsgálandó ház</param>
-        /// <param name="cellaErtek">A vizsgálandó érték</param>
+        /// <param name="cellValue">A vizsgálandó érték</param>
         /// <returns>Ha a ház nem tartalmazza az adott értéket, akkor false, egyébként true.</returns>
-        private bool hazTartalmazErtek(List<int> haz, int cellaErtek)
+        private bool hazTartalmazErtek(List<int> haz, int cellValue)
         {
-            if (!haz.Contains(cellaErtek))
+            if (!haz.Contains(cellValue))
             {
-                haz.Add(cellaErtek);
+                haz.Add(cellValue);
                 return false;
             }
 

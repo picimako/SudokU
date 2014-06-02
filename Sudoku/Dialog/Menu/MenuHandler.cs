@@ -75,7 +75,7 @@ namespace Sudoku.Dialogusok
             generateSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku", "", eventHandlers[0]));
             //Sudoku-X
             generateSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku-X", "", eventHandlers[1]));
-            //Középpont Sudoku
+            //Center Dot Sudoku
             generateSubMenu.DropDownItems.Add(CreateMenuItem("centerdot", "centerdot", eventHandlers[2]));
         }
 
@@ -87,7 +87,7 @@ namespace Sudoku.Dialogusok
             openSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku", "", eventHandlers[3]));
             //Sudoku-X
             openSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku-X", "", eventHandlers[4]));
-            //Középpont Sudoku
+            //Center Dot Sudoku
             openSubMenu.DropDownItems.Add(CreateMenuItem("centerdot", "centerdot", eventHandlers[5]));
         }
 
@@ -106,16 +106,10 @@ namespace Sudoku.Dialogusok
 
         #region EventHandlers
         
-        //Beállítások ablak megnyitásához
         private void SettingsMenuItem_Click(object sender, EventArgs e)
         {
-            //Elmentem az aktuális nyelvet
             string languageBeforeSettingsDialogOpened = conf.GetConfig("alapNyelv");
-
-            //Létrehozok egy beállítások form-ot, majd megjelenítem, azaz megnyitom
             new SettingsForm().ShowDialog();
-
-            //Ha a beállítások között megváltoztattam a nyelvet, akkor a feliratokat frissíteni kell
             if (conf.GetConfig("alapNyelv") != languageBeforeSettingsDialogOpened)
                 SetLabels();
         }
@@ -158,15 +152,15 @@ namespace Sudoku.Dialogusok
 
         public void EnableOpenAndGenerateMenuItems()
         {
-            SetOpenAndGenerateMenuItemsToValue(true);
+            SetOpenAndGenerateMenuItems(true);
         }
 
         public void DisableOpenAndGenerateMenuItems()
         {
-            SetOpenAndGenerateMenuItemsToValue(false);
+            SetOpenAndGenerateMenuItems(false);
         }
 
-        private void SetOpenAndGenerateMenuItemsToValue(bool value)
+        private void SetOpenAndGenerateMenuItems(bool value)
         {
             foreach (ToolStripMenuItem item in generateSubMenu.DropDownItems)
             {

@@ -16,7 +16,7 @@ namespace Sudoku
 
         #region Properties
 
-        //Tömbindexelésre
+        //For table indexing
         public int i { get { return _i; } set { _i = value; } }
         public int j { get { return _j; } set { _j = value; } }
 

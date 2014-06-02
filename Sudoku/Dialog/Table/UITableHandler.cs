@@ -14,7 +14,7 @@ namespace Sudoku.Dialogusok
     {
         #region Members
 
-        //A feladat értékeit az ezen tömbben levő TextBox-ok fogják tárolni
+        //Each TextBox is a cell on the UI to contain the values of the exercise
         private TextBox[,] guiTable;
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
@@ -24,8 +24,8 @@ namespace Sudoku.Dialogusok
         private Color[] colors;
         private Label numberOfEmptyCellsLabel;
         private TableLayoutPanel exerciseTable;
-        /*previousCellValue: ahhoz, hogy a feladathoz szükséges tömböket változtatni tudjam egy szám kitörlésekor, tudnom kell,
-         * hogy mi volt a cella előző értéke. Ezt az értéket fogom ebben a változóban tárolni.*/
+        /*The previous value of the cell. To be able to change the number tables, I need to know the value of the cell before
+         removing its value.*/
         private int previousCellValue;
 
         #endregion
@@ -57,24 +57,18 @@ namespace Sudoku.Dialogusok
 
         #region Public
 
-        //Feladat újrakezdéséhez
         public void ReloadTableForRestart(int[][,] exerciseBackup)
         {
-            //Végigmegyek az összes cellán
             for (int p = 0; p < 81; p++)
             {
-                //Az aktuális celláról leveszem az eseménykezelőt, hogy ha változtatom az értékét, akkor ne fusson le semmi egyéb változtatás
+                //Since changing the value of the cell, the eventhandler gets temporarily removed
                 guiTable[p / 9, p % 9].TextChanged -= new System.EventHandler(this.TextBox_TextChanged);
-
-                //Átírom az aktuális cella értékét a feladat kezdetekori értékre
+                //Changing the value of the cell to the value at the beginning of the exercise
                 guiTable[p / 9, p % 9].Text = (exerciseBackup[0][p / 9, p % 9] > 0) ? exerciseBackup[0][p / 9, p % 9].ToString() : "";
-
-                //Ismét hozzáadom az eseménykezelőt
                 guiTable[p / 9, p % 9].TextChanged += new System.EventHandler(this.TextBox_TextChanged);
             }
         }
 
-        /// <summary> A felhasználói felületen lévő táblázatot tölti fel </summary>
         public void FillTableOnGUI()
         {
             Dictionary<Pair, int> cageCornersAndSums = new Dictionary<Pair, int>();
@@ -82,63 +76,52 @@ namespace Sudoku.Dialogusok
                 cageCornersAndSums = se.Killer.Ctrl.GetSumOfNumbersAndIndicatorCages();
             guiTable = new TextBox[9, 9];
 
-            //Végigmegyek az összes cellán, és mindegyikben elhelyezek egy megfelelő tulajdonságokkal rendelkező TextBox-ot
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
                     if (se.IsExerciseKiller)
                     {
-                        //Végigmegyek a lekért értékeken
                         foreach (KeyValuePair<Pair, int> cage in cageCornersAndSums)
                         {
                             if (se.Killer.Ctrl.IsCellAtTopLeftOfCage(cage, i, j))
                             {
-                                //A táblázat aktuális cellája a Killer Sudoku megjelenítéséhez alkalmazkodó TextBox lesz a kiírandó szöveggel
                                 guiTable[i, j] = IsCellSpecial(i, j)
                                     ? new KillerTextBox(cage.Value.ToString(), true)
                                     : new KillerTextBox(cage.Value.ToString(), false);
 
-                                //Törlöm a felhasznált értéket
+                                //Removing the used cage key, so in the next round the foreach won't iterate through the already
+                                //processed cages
                                 cageCornersAndSums.Remove(cage.Key);
-
-                                //Nem vizsgálom tovább a szótárat
                                 break;
                             }
                         }
                     }
 
-                    //Ha az aktuális cellába még nem lett elhelyezve TextBox,
+                    //If there is no TextBox placed
                     if (guiTable[i, j] == null)
                     {
-                        /* A tabla TextBox tömb [i, j] indexű eleme egy új KillerTextBox lesz, ha a cella valamelyik blokk középső cellája,
-                         * egyébként pedig csak egy sima TextBox.*/
-                        guiTable[i, j] = se.IsExerciseKiller && IsCellSpecial(i, j)
-                            ? new KillerTextBox("", true) : new TextBox();
-
-                        //A szöveg igazítása a TextBox-on belül vízszintesen középre
+                        guiTable[i, j] = se.IsExerciseKiller && IsCellSpecial(i, j) ? new KillerTextBox("", true) : new TextBox();
                         guiTable[i, j].TextAlign = HorizontalAlignment.Center;
                     }
-
-                    //Betűtípus megadása mérettel együtt
                     guiTable[i, j].Font = new Font(guiTable[i, j].Font.FontFamily, 19.5f);
 
-                    //A TextBox-nak ne legyen szegélye
+                    //No border
                     guiTable[i, j].BorderStyle = BorderStyle.None;
 
-                    //Ne legyen margó
+                    //No margin
                     guiTable[i, j].Margin = new Padding(0);
 
-                    //A magassága legyen a tábla magassága osztva a cellák számával
+                    //Setting the height of the cell
                     guiTable[i, j].Top = exerciseTable.Height / exerciseTable.RowCount;
 
-                    //Akkor van függőlegesen középen, ha csak balra és jobbra van rögzítve
+                    //Anchoring the cell horizontally to the center
                     guiTable[i, j].Anchor = AnchorStyles.Left | AnchorStyles.Right;
 
-                    //Maximum 1 karakter írható a TextBox-ba
+                    //Maximum 1 character allowed as value
                     guiTable[i, j].MaxLength = 1;
 
-                    //Beállítok a Tag tulajdonságnak (ami object típusú) egy új Indexek példányt, amiben a TextBox-nak az i és j indexét tárolom
+                    //Setting the cell indeces in the Tag property for later usage
                     guiTable[i, j].Tag = new Pair(i, j);
 
                     if (!se.IsExerciseKiller)
@@ -146,7 +129,7 @@ namespace Sudoku.Dialogusok
                         if (se.Exercise[0][i, j] > 0)
                         {
                             guiTable[i, j].Text = se.Exercise[0][i, j].ToString();
-                            //Nem lehet szerkeszteni (felesleges lenne, mert az előre megadott számokat nem érdemes kitörölni)
+                            //It is not allowed to edit the cells that contain the predefined values
                             guiTable[i, j].Enabled = false;
                         }
                         SetCellBackgroundColor(guiTable[i, j]);
@@ -154,22 +137,16 @@ namespace Sudoku.Dialogusok
                     else
                         SetKillerCellBackgroundColor(guiTable[i, j]);
 
-                    //Eseménykezelő, amely a textBox_TextChanged eljárást hívja meg, ha valamelyik cella tartalma megváltozott
                     guiTable[i, j].TextChanged += new System.EventHandler(TextBox_TextChanged);
-
-                    //Eseménykezelő arra az esetre, ha valamelyik cella fókuszt kap
                     guiTable[i, j].GotFocus += delegate(object sender, EventArgs e)
                     {
-                        //Létrehozok 2 változót a fókuszt kapott TextBox indexeinek tárolására
+                        //Storing the indeces of the TextBox in focus
                         int _i = GetSenderTag(sender).i, _j = GetSenderTag(sender).j;
-
-                        //A cellaElozoErtek változó a fókuszt kapott TextBox értékét kapja értékül (int-re átalakítva)
                         Int32.TryParse(guiTable[_i, _j].Text, out previousCellValue);
                     };
 
                     guiTable[i, j].KeyDown += new System.Windows.Forms.KeyEventHandler(TextBox_KeyDown);
 
-                    //Hozzáadom a TextBox-ot a táblához (table)
                     exerciseTable.Controls.Add(guiTable[i, j], j, i);
                 }
             }
@@ -177,7 +154,6 @@ namespace Sudoku.Dialogusok
 
         #region Private
 
-        //Akkor fut le, ha egy billentyűt (bármelyiket) lenyomom a billentyűzeten
         private void TextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             /* Megkapjuk az i és j indexét a megváltozott tartalmú TextBox-nak.
@@ -189,7 +165,6 @@ namespace Sudoku.Dialogusok
             //Megvizsgálom, hogy milyen billentyű lett lenyomva
             switch (e.KeyCode)
             {
-                //Ha a balra nyíl,
                 case Keys.Left:
                     //megkeressük a legközelebbi olyan TextBox-ot balra, ami szerkeszthető, és arra helyezzük a fókuszt
                     while (j > 0)
@@ -198,8 +173,6 @@ namespace Sudoku.Dialogusok
                             break;
                     }
                     break;
-
-                //Ha a jobbra nyíl,
                 case Keys.Right:
                     //megkeressük a legközelebbi olyan TextBox-ot jobbra, ami szerkeszthető, és arra helyezzük a fókuszt
                     while (j < 8)
@@ -208,8 +181,6 @@ namespace Sudoku.Dialogusok
                             break;
                     }
                     break;
-
-                //Ha a fel nyíl,
                 case Keys.Up:
                     //megkeressük a legközelebbi olyan TextBox-ot felfele, ami szerkeszthető, és arra helyezzük a fókuszt
                     while (i > 0)
@@ -218,8 +189,6 @@ namespace Sudoku.Dialogusok
                             break;
                     }
                     break;
-
-                //Ha a le nyíl,
                 case Keys.Down:
                     //megkeressük a legközelebbi olyan TextBox-ot lefele, ami szerkeszthető, és arra helyezzük a fókuszt
                     while (i < 8)
@@ -371,6 +340,7 @@ namespace Sudoku.Dialogusok
         }
 
         #endregion
+
         #endregion
     }
 }

@@ -69,7 +69,7 @@ namespace Sudoku
             }
             catch (FileNotFoundException)
             {
-                //TODO: megoldani valahogy, hogy lokalizált hibaüzenetet írjak ki
+                //TODO: localize error messages
                 MessageBox.Show("Configuration file cannot be found.", "Missing file", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

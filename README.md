@@ -20,4 +20,5 @@ Plans contain the following items:
 - it currently has many non-English variable/method etc. names and comments, that should be changed to English
 - refactor and optimize code
 - remove unnecessary comments
+- move forms and localization to XAML based implementation
 - add unit tests

@@ -7,24 +7,21 @@ namespace Sudoku
 {
     abstract class CommonUtil
     {
-        /// <summary>Az első paraméterben levő tömb értékeit a második paraméterben megadott tömb értékeivel írja felül</summary>
-        /// <param name="target">Ennek a tömbnek lesznek új értékei</param>
-        /// <param name="source">Ezen tömb értékeit adjuk értékül az első paraméterben megadott tömb értékeinek</param>
+        /// <summary>Copies the values in the source table to the target table.</summary>
         public static void CopyJaggedThreeDimensionArray(int[][,] target, int[][,] source)
         {
-            //Végigmegyek a tömbökön
+            //Iterating through the number tables
             for (int t = 0; t < 10; t++)
             {
                 CopyTwoDimensionArray(target[t], source[t]);
             }
         }
 
-        /// <summary>Az első paraméterben levő tömb értékeit a második paraméterben megadott tömb értékeivel írja felül</summary>
+        /// <summary>Copies the values in the source table to the target table.</summary>
         public static void CopyTwoDimensionArray(int[,] target, int[,] source)
         {
             //target = source.Clone(); ???????
-            //Végigmegyek a tömbön
-            for (int p = 0; p < 81; p++) //Átmásolom az értékeket
+            for (int p = 0; p < 81; p++)
                 target[p / 9, p % 9] = source[p / 9, p % 9];
         }
 
@@ -37,8 +34,7 @@ namespace Sudoku
             return !list.Contains(0);
         }
 
-        /// <summary> Inicializálja a paraméterben megadott tömböt </summary>
-        /// <param name="array"> Az inicializálandó tömb </param>
+        /// <summary> Initializes the passed array parameter.</summary>
         public static void InitializeArray(out int[][,] array)
         {
             array = new int[10][,];

@@ -16,7 +16,7 @@ namespace Sudoku.Dialogusok
         //Ide mentem le a feladathoz tartozó táblákat a feladat esetleges újrakezdése miatt
         private int[][,] exerciseBackup;
 
-        // uresCellakSzama: a feladat újrakezdéséhez ebbe mentem az üres cellák számát a feladat kezdetekor
+        //a feladat újrakezdéséhez ebbe mentem az üres cellák számát a feladat kezdetekor
         private int uresCellakSzama;
 
         //Ezen osztály segítségével hozok létre illetve olvatatok be feladatot
@@ -27,8 +27,6 @@ namespace Sudoku.Dialogusok
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
-
-        //Tömb színek tárolására
         private Color[] colors;
 
         public SudokuApp()
