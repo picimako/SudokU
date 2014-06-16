@@ -104,13 +104,13 @@ namespace Sudoku.Generate
                                 index = random.Next(0, cellsInTheMostlyFilledBlock.Count);
 
                                 //És oda írom be a számot
-                                util.SetValueOfFilledCell(numberToFillIn, cellsInTheMostlyFilledBlock[index].i, cellsInTheMostlyFilledBlock[index].j, true);
+                                util.SetValueOfFilledCell(numberToFillIn, cellsInTheMostlyFilledBlock[index].row, cellsInTheMostlyFilledBlock[index].col, true);
 
                                 /* Ha a cella, ahova épp beírtam egy számot olyan, hogy szerepel egy előző tábla 4 üresen maradt cellája között,
                                  * akkor annak a táblának a kitöltését be kell fejezni.
                                  * Ha viszont nincs mivel megvizsgálni, akkor felesleges meghívni magát az eljárást is*/
                                 if (util.RectangularCells.Count > 0)
-                                    egyezesKereses(cellsInTheMostlyFilledBlock[index].i, cellsInTheMostlyFilledBlock[index].j);
+                                    egyezesKereses(cellsInTheMostlyFilledBlock[index].row, cellsInTheMostlyFilledBlock[index].col);
 
                                 break;
                             }
@@ -164,10 +164,10 @@ namespace Sudoku.Generate
         private bool AreCellsPlacedAsRectangle(ref List<Pair> rectangularCells, int numberToFillIn)
         {
             return (rectangularCells = se.Ctrl.FindEmptyCellsInNumberTable(numberToFillIn)).Count == 4 &&
-                        (rectangularCells[0].i == rectangularCells[1].i
-                        && rectangularCells[2].i == rectangularCells[3].i
-                        && rectangularCells[0].j == rectangularCells[2].j
-                        && rectangularCells[1].j == rectangularCells[3].j);
+                        (rectangularCells[0].row == rectangularCells[1].row
+                        && rectangularCells[2].row == rectangularCells[3].row
+                        && rectangularCells[0].col == rectangularCells[2].col
+                        && rectangularCells[1].col == rectangularCells[3].col);
         }
 
         private void GenerateFirstBlock(List<int> sudokuNumbers)
@@ -275,13 +275,13 @@ namespace Sudoku.Generate
                         for (int j = 0; j < _4cella.Value.Count; j++)
                         {
                             //Ha találtam olyan cellát, amely mindkét vizsgált táblában közös
-                            if (util.RectangularCells[r][i].i == _4cella.Value[j].i && util.RectangularCells[r][i].j == _4cella.Value[j].j)
+                            if (util.RectangularCells[r][i].row == _4cella.Value[j].row && util.RectangularCells[r][i].col == _4cella.Value[j].col)
                             {
                                 //Beírom az aktuálisan vizsgált tábla egyik elemét
-                                util.SetValueOfFilledCell(_4cella.Key, _4cella.Value[j].i, _4cella.Value[j].j, true);
+                                util.SetValueOfFilledCell(_4cella.Key, _4cella.Value[j].row, _4cella.Value[j].col, true);
 
                                 //Beírom az aktuálisan vizsgált tábla egyik elemét
-                                util.SetValueOfFilledCell(_4cella.Key, _4cella.Value[3 - j].i, _4cella.Value[3 - j].j, false);
+                                util.SetValueOfFilledCell(_4cella.Key, _4cella.Value[3 - j].row, _4cella.Value[3 - j].col, false);
 
                                 //Törlöm a vizsgált 4 cellát listaindexek-ből
                                 util.RectangularCells.Remove(_4cella.Key);
@@ -320,7 +320,7 @@ namespace Sudoku.Generate
             {
                 /* tombok[r] k indexű során megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű sorban melyik indexű elem az üres
                  * egyébként pedig -1-et*/
-                if ((_j = se.Ctrl.FindOnlyEmptyCellInRow(r, k)) > 0)
+                if ((_j = se.Ctrl.FindOnlyEmptyCellInRow(r, row: k)) > 0)
                 {
                     //beírom a megfelelő tömbökbe az r számot, és minden számtömbben beállítom a foglalt cellákat
                     util.SetValueOfFilledCell(r, k, _j, kellSzamTombKitolt);
@@ -331,7 +331,7 @@ namespace Sudoku.Generate
                 }
                 /* tombok[r] k indexű oszlopán megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű oszlopban melyik indexű elem
                  * az üres, egyébként pedig -1-et*/
-                else if ((_i = se.Ctrl.FindOnlyEmptyCellInColumn(r, k)) > 0)
+                else if ((_i = se.Ctrl.FindOnlyEmptyCellInColumn(r, col: k)) > 0)
                 {
                     util.SetValueOfFilledCell(r, _i, k, kellSzamTombKitolt);
                     egyezesKereses(_i, k);
@@ -339,10 +339,10 @@ namespace Sudoku.Generate
                 }
                 /* tombok[r] k index-szel jelzett blokkján megy végig, és index-be belerakja a megtalált üres cella indexeit
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
-                else if (se.Ctrl.FindOnlyEmptyCellInBlock(r, k, out index))
+                else if (se.Ctrl.FindOnlyEmptyCellInBlock(r, out index, blockIndex: k))
                 {
-                    util.SetValueOfFilledCell(r, index.i, index.j, kellSzamTombKitolt);
-                    egyezesKereses(index.i, index.j);
+                    util.SetValueOfFilledCell(r, index.row, index.col, kellSzamTombKitolt);
+                    egyezesKereses(index.row, index.col);
                     return true;
                 }
             }
@@ -366,7 +366,7 @@ namespace Sudoku.Generate
                 for (int l = 0; l < _4cella.Value.Count; l++)
                 {
                     //Ha a 4 cella közül valamelyik indexeivel egyezést találok,  és befejezem a keresést
-                    if (_4cella.Value[l].i == i && _4cella.Value[l].j == j)
+                    if (_4cella.Value[l].row == i && _4cella.Value[l].col == j)
                     {
                         /* Akkor elmentem a tábla indexét (ahol egyezést találtam)
                          * _4cella.Key: melyik táblában van a megtalált cella*/

@@ -126,14 +126,19 @@ namespace Sudoku.Controller
         #region Methods
         #region Public
 
-        public bool IsCellEmpty(int t, int i, int j)
+        public bool IsCellEmpty(int num, int row, int col)
         {
-            return exercise[t][i, j] == 0;
+            return exercise[num][row, col] == 0;
         }
 
-        public void MakeCellOccupied(int t, int i, int j)
+        public bool IsCellEmpty(int num, int position)
         {
-            exercise[t][i, j] = -1;
+            return exercise[num][position / 9, position % 9] == 0;
+        }
+
+        public void MakeCellOccupied(int num, int row, int col)
+        {
+            exercise[num][row, col] = -1;
         }
 
         public int StartRowOfBlockByRow(int row)
@@ -188,17 +193,26 @@ namespace Sudoku.Controller
         }
 
         /// <summary>
-        /// 
+        /// Finds the first empty cell
         /// </summary>
         /// <param name="p">The currently examined cell.</param>
         public void RecalculateFirstEmptyCell(int p)
         {
             if (p == firstEmptyCell && numberOfEmptyCells != 0)
             {
-                //Megkeresi a legelső üres cellát
-                while (firstEmptyCell < 81 && !IsCellEmpty(0, firstEmptyCell / 9, firstEmptyCell % 9))
+                while (firstEmptyCell < 81 && !IsCellEmpty(0, firstEmptyCell))
                     firstEmptyCell++;
             }
+        }
+
+        public bool IsExerciseFull()
+        {
+            return numberOfEmptyCells == 0;
+        }
+
+        public bool IsExerciseEmpty()
+        {
+            return numberOfEmptyCells == 81;
         }
 
         #endregion

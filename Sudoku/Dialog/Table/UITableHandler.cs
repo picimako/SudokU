@@ -76,22 +76,22 @@ namespace Sudoku.Dialogusok
                 cageCornersAndSums = se.Killer.Ctrl.GetSumOfNumbersAndIndicatorCages();
             guiTable = new TextBox[9, 9];
 
-            for (int i = 0; i < 9; i++)
+            for (int row = 0; row < 9; row++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int col = 0; col < 9; col++)
                 {
                     if (se.IsExerciseKiller)
                     {
                         foreach (KeyValuePair<Pair, int> cage in cageCornersAndSums)
                         {
-                            if (se.Killer.Ctrl.IsCellAtTopLeftOfCage(cage, i, j))
+                            if (se.Killer.Ctrl.IsCellAtTopLeftOfCage(cage, row, col))
                             {
-                                guiTable[i, j] = IsCellSpecial(i, j)
+                                guiTable[row, col] = IsCellSpecial(row, col)
                                     ? new KillerTextBox(cage.Value.ToString(), true)
                                     : new KillerTextBox(cage.Value.ToString(), false);
 
-                                //Removing the used cage key, so in the next round the foreach won't iterate through the already
-                                //processed cages
+                                //Removing the used cage key, so in the next round 
+                                //the foreach won't iterate through the already processed cages
                                 cageCornersAndSums.Remove(cage.Key);
                                 break;
                             }
@@ -99,239 +99,277 @@ namespace Sudoku.Dialogusok
                     }
 
                     //If there is no TextBox placed
-                    if (guiTable[i, j] == null)
+                    if (guiTable[row, col] == null)
                     {
-                        guiTable[i, j] = se.IsExerciseKiller && IsCellSpecial(i, j) ? new KillerTextBox("", true) : new TextBox();
-                        guiTable[i, j].TextAlign = HorizontalAlignment.Center;
+                        guiTable[row, col] = se.IsExerciseKiller && IsCellSpecial(row, col) ? new KillerTextBox("", true) : new TextBox();
+                        guiTable[row, col].TextAlign = HorizontalAlignment.Center;
                     }
-                    guiTable[i, j].Font = new Font(guiTable[i, j].Font.FontFamily, 19.5f);
+                    guiTable[row, col].Font = new Font(guiTable[row, col].Font.FontFamily, 19.5f);
 
                     //No border
-                    guiTable[i, j].BorderStyle = BorderStyle.None;
+                    guiTable[row, col].BorderStyle = BorderStyle.None;
 
                     //No margin
-                    guiTable[i, j].Margin = new Padding(0);
+                    guiTable[row, col].Margin = new Padding(0);
 
                     //Setting the height of the cell
-                    guiTable[i, j].Top = exerciseTable.Height / exerciseTable.RowCount;
+                    guiTable[row, col].Top = exerciseTable.Height / exerciseTable.RowCount;
 
                     //Anchoring the cell horizontally to the center
-                    guiTable[i, j].Anchor = AnchorStyles.Left | AnchorStyles.Right;
+                    guiTable[row, col].Anchor = AnchorStyles.Left | AnchorStyles.Right;
 
                     //Maximum 1 character allowed as value
-                    guiTable[i, j].MaxLength = 1;
+                    guiTable[row, col].MaxLength = 1;
 
                     //Setting the cell indeces in the Tag property for later usage
-                    guiTable[i, j].Tag = new Pair(i, j);
+                    guiTable[row, col].Tag = new Pair(row, col);
 
                     if (!se.IsExerciseKiller)
                     {
-                        if (se.Exercise[0][i, j] > 0)
+                        if (se.Exercise[0][row, col] > 0)
                         {
-                            guiTable[i, j].Text = se.Exercise[0][i, j].ToString();
+                            guiTable[row, col].Text = se.Exercise[0][row, col].ToString();
                             //It is not allowed to edit the cells that contain the predefined values
-                            guiTable[i, j].Enabled = false;
+                            guiTable[row, col].Enabled = false;
                         }
-                        SetCellBackgroundColor(guiTable[i, j]);
+                        SetOriginalCellBackgroundColor(guiTable[row, col]);
                     }
                     else
-                        SetKillerCellBackgroundColor(guiTable[i, j]);
+                        SetOriginalKillerCellBackgroundColor(guiTable[row, col]);
 
-                    guiTable[i, j].TextChanged += new System.EventHandler(TextBox_TextChanged);
-                    guiTable[i, j].GotFocus += delegate(object sender, EventArgs e)
+                    guiTable[row, col].TextChanged += new System.EventHandler(TextBox_TextChanged);
+                    guiTable[row, col].GotFocus += delegate(object sender, EventArgs e)
                     {
                         //Storing the indeces of the TextBox in focus
-                        int _i = GetSenderTag(sender).i, _j = GetSenderTag(sender).j;
+                        int _i = GetSenderTag(sender).row;
+                        int _j = GetSenderTag(sender).col;
                         Int32.TryParse(guiTable[_i, _j].Text, out previousCellValue);
                     };
 
-                    guiTable[i, j].KeyDown += new System.Windows.Forms.KeyEventHandler(TextBox_KeyDown);
+                    guiTable[row, col].KeyDown += new System.Windows.Forms.KeyEventHandler(TextBox_KeyDown);
 
-                    exerciseTable.Controls.Add(guiTable[i, j], j, i);
+                    exerciseTable.Controls.Add(guiTable[row, col], col, row);
                 }
             }
         }
+
+        #endregion
 
         #region Private
 
         private void TextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            /* Megkapjuk az i és j indexét a megváltozott tartalmú TextBox-nak.
-             * Mivel sender object típusú ezért cast-olni kell TextBox-szá: (TextBox)sender
-             * Ezután pedig a TextBox Tag tulajdonságát (ami szintén object típusú), át kell konvertálni Indexek típusúra, és csak ekkor tudom
-             * lekérdezni az i és j indexeket. */
-            int i = GetSenderTag(sender).i, j = GetSenderTag(sender).j;
+            //The indeces of the cell that has changed
+            int row = GetSenderTag(sender).row;
+            int col = GetSenderTag(sender).col;
 
-            //Megvizsgálom, hogy milyen billentyű lett lenyomva
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    //megkeressük a legközelebbi olyan TextBox-ot balra, ami szerkeszthető, és arra helyezzük a fókuszt
-                    while (j > 0)
-                    {
-                        if (guiTable[i, --j].Enabled)
-                            break;
-                    }
+                    col = FindNearestEditableCellLeft(row, col);
                     break;
                 case Keys.Right:
-                    //megkeressük a legközelebbi olyan TextBox-ot jobbra, ami szerkeszthető, és arra helyezzük a fókuszt
-                    while (j < 8)
-                    {
-                        if (guiTable[i, ++j].Enabled)
-                            break;
-                    }
+                    col = FindNearestEditableCellRight(row, col);
                     break;
                 case Keys.Up:
-                    //megkeressük a legközelebbi olyan TextBox-ot felfele, ami szerkeszthető, és arra helyezzük a fókuszt
-                    while (i > 0)
-                    {
-                        if (guiTable[--i, j].Enabled)
-                            break;
-                    }
+                    row = FindNearestEditableCellUp(row, col);
                     break;
                 case Keys.Down:
-                    //megkeressük a legközelebbi olyan TextBox-ot lefele, ami szerkeszthető, és arra helyezzük a fókuszt
-                    while (i < 8)
-                    {
-                        if (guiTable[++i, j].Enabled)
-                            break;
-                    }
+                    row = FindNearestEditableCellDown(row, col);
                     break;
             }
 
-            //Ráállítom a fókuszt arra a cellára, ahova léptem
-            guiTable[i, j].Focus();
+            //Setting the focus to the desired cell
+            guiTable[row, col].Focus();
         }
 
-        //Egy TextBox tartalmának megváltozásakor végrehajtódó eljárás
+        private int FindNearestEditableCellLeft(int row, int col)
+        {
+            while (col > 0)
+            {
+                if (guiTable[row, --col].Enabled)
+                    break;
+            }
+            return col;
+        }
+
+        private int FindNearestEditableCellRight(int row, int col)
+        {
+            while (col < 8)
+            {
+                if (guiTable[row, ++col].Enabled)
+                    break;
+            }
+            return col;
+        }
+
+        private int FindNearestEditableCellUp(int row, int col)
+        {
+            while (row > 0)
+            {
+                if (guiTable[--row, col].Enabled)
+                    break;
+            }
+            return row;
+        }
+
+        private int FindNearestEditableCellDown(int row, int col)
+        {
+            while (row < 8)
+            {
+                if (guiTable[++row, col].Enabled)
+                    break;
+            }
+            return row;
+        }
+
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
-            //Létrehozok 2 változót a megváltozott tartalmú TextBox indexeinek tárolására
-            int _i = GetSenderTag(sender).i, _j = GetSenderTag(sender).j;
+            //Indeces of the changed TextBox cell
+            int row = GetSenderTag(sender).row;
+            int col = GetSenderTag(sender).col;
+            TextBox changedCell = guiTable[row, col];
 
-            //Ha a cella üres, tehát kitöröltünk egy számot
-            if ("".Equals(guiTable[_i, _j].Text))
+            //If the cell is empty, the value got removed from it
+            if (IsGuiCellEmpty(changedCell))
             {
-                //cellaElozoErtek értéke jelenleg a cella tartalmának kitörlés előtti értéke
-                se.Exercise[0][_i, _j] = 0;
+                se.Exercise[0][row, col] = 0;
 
-                //A számkivételnek megfelelően változtatom a táblák értékeit
-                se.Ctrl.RegenerateNumberTablesForRemovedValue(previousCellValue, _i, _j);
+                se.Ctrl.RegenerateNumberTablesForRemovedValue(previousCellValue, row, col);
 
-                //Növelem az üres cellák számát, mivel kitöröltem egy számot
                 se.NumberOfEmptyCells++;
 
-                //Akármilyen állapotú is volt az Ellenőrzés gomb, most inaktív lesz
                 verifyExerciseButton.Enabled = false;
 
-                //A cella eredeti háttérszíne lesz a háttérszín
+                //Setting the original background color
                 if (se.IsExerciseKiller)
-                    SetKillerCellBackgroundColor(guiTable[_i, _j]);
+                    SetOriginalKillerCellBackgroundColor(changedCell);
                 else
-                    SetCellBackgroundColor(guiTable[_i, _j]);
+                    SetOriginalCellBackgroundColor(changedCell);
 
-                //Ha ellenőrizni kell a ketrecben levő számok összegét, és
-                //ha a számok összege nagyobb, mint a tényleges összeg, akkor félkövér betűkkel jelzem azt
-                if (se.IsExerciseKiller && Boolean.Parse(conf.GetConfig("cageSum"))
-                    && se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThenRealSum(se.Killer.Exercise[_i, _j].i))
+                if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
                 {
-                    foreach (Pair cell in se.Killer.Cages[se.Killer.Exercise[_i, _j].i].Cells)
-                        guiTable[cell.i, cell.j].Font = new Font(guiTable[_i, _j].Font.FontFamily, 19.5f, FontStyle.Regular);
+                    int cageIndex = se.Killer.Exercise[row, col].CageIndex;
+                    if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
+                    {
+                        foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
+                            CommonUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Regular);
+                    }
                 }
 
-                //A cella előző értéke 0 lesz
                 previousCellValue = 0;
             }
-            //Ha a cellának van értéke, tehát beírtam egy számot
+            //If the cell has a value, then a value got added into it
             else
             {
-                //value a megváltozott TextBox jelenlegi értéke lesz
-                int value;
+                int valueOfChangedCell;
 
-                //Ha a beírt karaktert nem sikerül számmá konvertálni (betű vagy bármilyen más - nem szám - karakter) vagy a beírt szám 0,
-                if (!Int32.TryParse(guiTable[_i, _j].Text, out value) || guiTable[_i, _j].Text == "0")
+                if (IsInvalidValueSet(changedCell, out valueOfChangedCell))
                 {
-                    guiTable[_i, _j].Clear(); //akkor törlöm a beírt karaktert. Ezzel érem el, hogy számon kívül semmi más nem írható a cellába.
+                    ClearCellWithInvalidValue(changedCell);
                     return;
                 }
 
-                //Ha a beírt karakter szám, akkor beírom a táblákba
-                se.Exercise[0][_i, _j] = se.Exercise[value][_i, _j] = value;
+                se.Exercise[0][row, col] = se.Exercise[valueOfChangedCell][row, col] = valueOfChangedCell;
+                se.Ctrl.MakeHousesOccupied(valueOfChangedCell, row, col);
 
-                //A számbeírásnak megfelelően változtatom a táblák értékeit
-                se.Ctrl.MakeHousesOccupied(value, _i, _j);
                 if (se.IsExerciseKiller)
-                    se.Killer.Ctrl.ketrecKitolt(se.Killer.Exercise[_i, _j].i);
+                    se.Killer.Ctrl.ketrecKitolt(se.Killer.Exercise[row, col].CageIndex);
 
-                //Csökkentem az üres cellák számát, ha a cella üres volt
+                //If the cell was empty, then decrementing the number of empty cells
                 if (previousCellValue == 0)
                     se.NumberOfEmptyCells--;
 
-                //Ha már nincs több üres cella, akkor le lehet ellenőrizni a feladatot, ezért az ellenőrzés gomb aktívvá válik
-                if (se.NumberOfEmptyCells == 0)
+                //If there is no more empty cell, then the exercise can be verified
+                if (se.IsExerciseFull())
                     verifyExerciseButton.Enabled = true;
 
-                //Ha a piros segítség engedélyezve van, piros lesz a TextBox háttérszíne, ha a beírt szám szerepel valamelyik, a cellához tartozó házban
-                if (Boolean.Parse(conf.GetConfig("helpRed")))
-                    //Ha nem Killer feladat
+                if (ToCheckSameNumberAlreadyInHouse())
                     if (!se.IsExerciseKiller)
                     {
-                        //Ha van ütközés, piros lesz a háttérszín
-                        if (se.Ctrl.HousesContainValue(_i, _j, value))
-                            guiTable[_i, _j].BackColor = Color.Red;
-                        //egyébként pedig a feladat fajtájától és a cellától függően fehér vagy világoskék
+                        if (se.Ctrl.HousesContainValue(row, col, valueOfChangedCell))
+                            SetIncorrectCellBackground(changedCell);
                         else
-                            SetCellBackgroundColor(guiTable[_i, _j]);
+                            SetOriginalCellBackgroundColor(changedCell);
                     }
-                    //Ha Killer feladat
                     else
                     {
-                        //Ha van ütközés, piros lesz a háttérszín
-                        if (se.Ctrl.HousesContainValue(_i, _j, value) || se.Killer.Ctrl.HouseContainsValue(_i, _j, value, se.Exercise[0]))
-                            guiTable[_i, _j].BackColor = Color.Red;
-                        //A ketrec az eredeti háttérszínét kapja
+                        if (se.Ctrl.HousesContainValue(row, col, valueOfChangedCell) || se.Killer.Ctrl.HouseContainsValue(row, col, valueOfChangedCell, se.Exercise[0]))
+                            SetIncorrectCellBackground(changedCell);
                         else
-                            SetKillerCellBackgroundColor(guiTable[_i, _j]);
+                            SetOriginalKillerCellBackgroundColor(changedCell);
                     }
 
-                //Ha ellenőrizni kell a ketrecben levő számok összegét
-                if (se.IsExerciseKiller && Boolean.Parse(conf.GetConfig("cageSum"))
-                    && se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThenRealSum(se.Killer.Exercise[_i, _j].i))
+                if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
                 {
-                    foreach (Pair cell in se.Killer.Cages[se.Killer.Exercise[_i, _j].i].Cells)
-                        guiTable[cell.i, cell.j].Font = new Font(guiTable[_i, _j].Font.FontFamily, 19.5f, FontStyle.Bold);
+                    int cageIndex = se.Killer.Exercise[row, col].CageIndex;
+                    if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
+                    {
+                        foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
+                            CommonUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Bold);
+                    }
                 }
 
-                /*previousCellValue az éppen a cellába beírt érték lesz. Ez azért kell, mert ha ezen a cellán maradok és kitörlöm a beírt értéket, akkor
-                 * nem lesz meg az az érték, ami szükséges lenne a táblák számkivétel szerinti átrendezéséhez. */
-                Int32.TryParse(guiTable[GetSenderTag(sender).i, GetSenderTag(sender).j].Text, out previousCellValue);
+                //Setting the previousCellValue to the current value of the cell.
+                //This is needed for the case when the value is changed via selecting the text and not removing it before adding the new value.
+                Int32.TryParse(changedCell.Text, out previousCellValue);
             }
 
-            //Üres cellák számának frissítése
             numberOfEmptyCellsLabel.Text = loc.GetLoc("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
-        #endregion
-
-        private bool IsCellSpecial(int i, int j)
+        private bool IsGuiCellEmpty(TextBox cell)
         {
-            return (se.ExerciseType == SudokuType.SudokuX && SudokuXController.CellIsInAnyDiagonal(i, j))
-                || (se.ExerciseType == SudokuType.CenterDot && CenterDotController.CellIsAtMiddleOfBlock(i, j));
+            return "".Equals(cell.Text);
         }
 
-        private void SetCellBackgroundColor(TextBox cell)
+        private bool IsCellSpecial(int row, int col)
         {
-            cell.BackColor = IsCellSpecial((cell.Tag as Pair).i, (cell.Tag as Pair).j) ? Color.LightBlue : Color.White;
+            return (se.ExerciseType == SudokuType.SudokuX && SudokuXController.CellIsInAnyDiagonal(row, col))
+                || (se.ExerciseType == SudokuType.CenterDot && CenterDotController.CellIsAtMiddleOfAnyBlock(row, col));
         }
 
-        private void SetKillerCellBackgroundColor(TextBox cell)
+        private void SetOriginalCellBackgroundColor(TextBox cell)
         {
-            int i = (cell.Tag as Pair).i;
-            int j = (cell.Tag as Pair).j;
+            cell.BackColor = IsCellSpecial((cell.Tag as Pair).row, (cell.Tag as Pair).col) ? Color.LightBlue : Color.White;
+        }
+
+        private void SetOriginalKillerCellBackgroundColor(TextBox cell)
+        {
+            int row = (cell.Tag as Pair).row;
+            int col = (cell.Tag as Pair).col;
             cell.BackColor =
-                se.Killer.Exercise[i, j].i <= 10
-                ? colors[se.Killer.Exercise[i, j].i]
-                : colors[se.Killer.Exercise[i, j].i - 10];
+                se.Killer.Exercise[row, col].CageIndex <= 10
+                ? colors[se.Killer.Exercise[row, col].CageIndex]
+                : colors[se.Killer.Exercise[row, col].CageIndex - 10];
+        }
+
+        private bool ToCheckSumOfNumbersBiggerInCage()
+        {
+            return Boolean.Parse(conf.GetConfig("cageSum"));
+        }
+
+        private bool ToCheckSameNumberAlreadyInHouse()
+        {
+            return Boolean.Parse(conf.GetConfig("helpRed"));
+        }
+
+        private void SetIncorrectCellBackground(TextBox cell)
+        {
+            cell.BackColor = Color.Red;
+        }
+
+        private bool IsInvalidValueSet(TextBox cell, out int value)
+        {
+            //Zero, text and special characters are not allowed to type into the cells
+            return !Int32.TryParse(cell.Text, out value) || cell.Text.Equals("0");
+        }
+
+        private void ClearCellWithInvalidValue(TextBox cell)
+        {
+            cell.TextChanged -= new System.EventHandler(this.TextBox_TextChanged);         
+            cell.Clear();
+            cell.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
         }
 
         private Pair GetSenderTag(object sender)

@@ -11,8 +11,6 @@ namespace Sudoku.Controller
     {
         #region Constructor
 
-        /// <summary> Konstruktor, amely meghívja az ősosztály konstruktorát, és beállítja a feladat fajtáját </summary>
-        /// <param name="killer">Megmondja, hogy a feladat Killer Sudoku lesz-e vagy sem</param>
         public SudokuXController() : base()
         {
             se.ExerciseType = SudokuType.SudokuX;
@@ -23,103 +21,89 @@ namespace Sudoku.Controller
         #region Methods
         #region Public
 
-        //Meghívja az egyes házakhoz tartozó azon eljárásokat, melyek a megadott cellához viszonyítva beállítják a foglalt cellákat.
-        public override void MakeHousesOccupied(int t, int i, int j)
+        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
+        /// <param name="num">The number table.</param>
+        public override void MakeHousesOccupied(int num, int row, int col)
         {
-            //Meghívom az ősosztály ugyanezen eljárását (sor, oszlop, blokk)
-            base.MakeHousesOccupied(t, i, j);
+            base.MakeHousesOccupied(num, row, col);
 
-            if (CellIsInMainDiagonal(i, j))
-                MakeMainDiagonalOccupied(t);
+            if (CellIsInMainDiagonal(row, col))
+                MakeMainDiagonalOccupied(num);
 
-            if (CellIsInSideDiagonal(i, j))
-                MakeSideDiagonalOccupied(t);
+            if (CellIsInSideDiagonal(row, col))
+                MakeSideDiagonalOccupied(num);
         }
 
-        /* Meghívja az egyes házakhoz tartozó érték-tartalmazást vizsgáló függvényeket 
-         * és azok visszaadott értékei szerint ad vissza értéket.*/
-        public override bool HousesContainValue(int i, int j, int value)
+        /// <summary>Inspects whether value is present in any houses of the current cell of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        public override bool HousesContainValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            //Ha egyik ház se tartalmazza value-t
-            if (!base.HousesContainValue(i, j, value) && !DiagonalContainsValue(i, j, value))
+            if (!base.HousesContainValue(rowOfCurrentCell, colOfCurrentCell, value)
+                && !DiagonalContainsValue(rowOfCurrentCell, colOfCurrentCell, value))
                 return false;
 
-            //Ha valamelyik ház tartalmazza
             return true;
         }
 
-        public static bool CellIsInMainDiagonal(int i, int j)
+        public static bool CellIsInMainDiagonal(int row, int col)
         {
-            return i == j;
+            return row == col;
         }
 
-        public static bool CellIsInSideDiagonal(int i, int j)
+        public static bool CellIsInSideDiagonal(int row, int col)
         {
-            return i + j == 8;
+            return row + col == 8;
         }
 
-        public static bool CellIsInAnyDiagonal(int i, int j)
+        public static bool CellIsInAnyDiagonal(int row, int col)
         {
-            return CellIsInMainDiagonal(i, j) || CellIsInSideDiagonal(i, j);
+            return CellIsInMainDiagonal(row, col) || CellIsInSideDiagonal(row, col);
         }
 
         #endregion
 
         #region Private 
 
-        /// <summary>A megadott átlóban állítja be a foglalt cellákat</summary>
-        /// <param name="t">A kitöltendő tábla</param>
-        private void MakeMainDiagonalOccupied(int t)
+        //Main diagonal: \
+        private void MakeMainDiagonalOccupied(int num)
         {
-            //Végigmegyek az átlón
             for (int r = 0; r < 9; r++)
             {
-                //Ha egy cella üres, akkor foglalt lesz
-                MakeCellOccupied(t, r, r);
+                MakeCellOccupied(num, r, r);
             }
         }
 
-        private void MakeSideDiagonalOccupied(int t)
+        //Side diagonal: /
+        private void MakeSideDiagonalOccupied(int num)
         {
-            //Végigmegyek a mellékátlón
             for (int r = 8; r >= 0; r--)
             {
-                //Ha egy cella üres, akkor foglalt lesz
-                MakeCellOccupied(t, r, 8 - r);
+                MakeCellOccupied(num, r, 8 - r);
             }
         }
 
-        /// <summary>Megvizsgálja, hogy az átló (amelyben a megadott cella van) tartalmazza-e ertek értéket.</summary>
-        /// <param name="i">A vizsgálandó cella sorindexe.</param>
-        /// <param name="j">A vizsgálandó cella oszlopindexe.</param>
-        /// <param name="value">A keresendő érték.</param>
-        /// <returns>Ha a megadott [i,j] cella átlója tartalmazza az ertek értéket, akkor true, egyébként false.</returns>
-        private bool DiagonalContainsValue(int i, int j, int value)
+        /// <summary>Inspects whether value is present in the diagonal(s) of the current cell of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        private bool DiagonalContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            //Ha a főátlóban van a cella
-            if (CellIsInMainDiagonal(i, j))
+            if (CellIsInMainDiagonal(rowOfCurrentCell, colOfCurrentCell))
             {
-                //Végigmegyek a főátlón
-                for (int r = 0; r < 9; r++)
+                for (int row = 0; row < 9; row++)
                 {
-                    //Ha nem önmagával vizsgálom a cellát és megtalálom ertek-et, akkor true-val térek vissza
-                    if (r != i && se.Exercise[0][r, r] == value)
+                    if (row != rowOfCurrentCell && se.Exercise[0][row, row] == value)
                         return true;
                 }
             }
-            //Egyébként ha a mellékátlóban van a cella
-            else if (CellIsInSideDiagonal(i, j))
+            else if (CellIsInSideDiagonal(rowOfCurrentCell, colOfCurrentCell))
             {
-                //Végigmegyek a mellékátlón
-                for (int r = 8; r >= 0; r--)
+                for (int row = 8; row >= 0; row--)
                 {
-                    //Ha nem önmagával vizsgálom a cellát és megtalálom ertek-et, akkor true-val térek vissza
-                    if (r != i && (8 - r) != j && se.Exercise[0][r, 8 - r] == value)
+                    int col = 8 - row;
+                    if (row != rowOfCurrentCell && col != colOfCurrentCell && se.Exercise[0][row, col] == value)
                         return true;
                 }
             }
 
-            //Nem volt ütközés, ezért false-szal térek vissza
             return false;
         }
 

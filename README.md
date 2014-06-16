@@ -18,7 +18,10 @@ Future plans and todos
 
 Plans contain the following items:
 - it currently has many non-English variable/method etc. names and comments, that should be changed to English
-- refactor and optimize code
 - remove unnecessary comments
+- refactor and optimize code
+- add logger to make debugging easier
+- move configuration and language resource files out from Debug folder (they're currently refered to according to the path of the .exe file)
 - move forms and localization to XAML based implementation
-- add unit tests
+- add unit test project
+- include functional documentation about the generator and solver algorithms to the project Wiki page

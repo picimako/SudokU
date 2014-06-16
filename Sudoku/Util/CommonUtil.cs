@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Sudoku
 {
@@ -10,10 +12,9 @@ namespace Sudoku
         /// <summary>Copies the values in the source table to the target table.</summary>
         public static void CopyJaggedThreeDimensionArray(int[][,] target, int[][,] source)
         {
-            //Iterating through the number tables
-            for (int t = 0; t < 10; t++)
+            for (int num = 0; num < 10; num++)
             {
-                CopyTwoDimensionArray(target[t], source[t]);
+                CopyTwoDimensionArray(target[num], source[num]);
             }
         }
 
@@ -38,10 +39,20 @@ namespace Sudoku
         public static void InitializeArray(out int[][,] array)
         {
             array = new int[10][,];
-            for (int t = 0; t < 10; t++)
+            for (int num = 0; num < 10; num++)
             {
-                array[t] = new int[9, 9];
+                array[num] = new int[9, 9];
             }
+        }
+
+        public static void SetTextboxFont(TextBox cell, FontStyle fontStyle)
+        {
+            SetTextboxFont(cell, cell, fontStyle);
+        }
+
+        public static void SetTextboxFont(TextBox targetCell, TextBox sourceCell, FontStyle fontStyle)
+        {
+            targetCell.Font = new Font(sourceCell.Font.FontFamily, 19.5f, fontStyle);
         }
     }
 }

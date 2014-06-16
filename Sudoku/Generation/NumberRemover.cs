@@ -101,9 +101,9 @@ namespace Sudoku.Generate
             foreach (KeyValuePair<Pair, int> cell in util.RemovedCellsAndValuesBeforeRemoval)
             {
                 //Törlöm az aktuális cella értékét
-                se.Exercise[0][cell.Key.i, cell.Key.j] = 0;
+                se.Exercise[0][cell.Key.row, cell.Key.col] = 0;
                 //A törlendő cellák törlése
-                se.Ctrl.RegenerateNumberTablesForRemovedValue(cell.Value, cell.Key.i, cell.Key.j);
+                se.Ctrl.RegenerateNumberTablesForRemovedValue(cell.Value, cell.Key.row, cell.Key.col);
             }
 
             se.NumberOfEmptyCells = util.RemovedCellsAndValuesBeforeRemoval.Count;
@@ -200,9 +200,9 @@ namespace Sudoku.Generate
             foreach (KeyValuePair<Pair, int> cella in util.RemovedCellsAndValuesBeforeRemoval)
             {
                 //Az utoljára törölt két cellát ismét kitörlöm
-                se.Exercise[0][cella.Key.i, cella.Key.j] = 0;
+                se.Exercise[0][cella.Key.row, cella.Key.col] = 0;
                 //A törölhető cellák törlése a számtömbökben
-                se.Ctrl.RegenerateNumberTablesForRemovedValue(cella.Value, cella.Key.i, cella.Key.j);
+                se.Ctrl.RegenerateNumberTablesForRemovedValue(cella.Value, cella.Key.row, cella.Key.col);
             }
 
             //Mivel töröltem 2 cellát, így az üres cellák száma nő 2-vel

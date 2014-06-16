@@ -41,16 +41,16 @@ namespace Sudoku.Controller
 
                 //Kiszámolom a ketrecben levő értékek összegét
                 foreach (Pair cell in cage.Value.Cells)
-                    sum += se.Solution[cell.i, cell.j]; //összeadom a ketrecben levő számokat
+                    sum += se.Solution[cell.row, cell.col]; //összeadom a ketrecben levő számokat
 
                 //Elmentem az adott ketrecszámot és a hozzá tartozó összeget
                 se.Killer.Cages[cage.Key].SumOfNumbers = sum;
             }
         }
 
-        public bool IsCellAtTopLeftOfCage(KeyValuePair<Pair, int> cage, int i, int j)
+        public bool IsCellAtTopLeftOfCage(KeyValuePair<Pair, int> cage, int row, int col)
         {
-            return cage.Key.i == i && cage.Key.j == j;
+            return cage.Key.row == row && cage.Key.col == col;
         }
 
         /// <summary>Beolvassa a megadott fájlból a killer típusú feladatot</summary>
@@ -164,7 +164,7 @@ namespace Sudoku.Controller
                     haz.Clear();
 
                     //Ha haz még nem tartalmazza az aktuális értéket, akkor hozzáadom
-                    if (hazTartalmazErtek(haz, se.Exercise[0][cell.i, cell.j]))
+                    if (hazTartalmazErtek(haz, se.Exercise[0][cell.row, cell.col]))
                         //Ha már tartalmazza, akkor nem jó a megoldás
                         return false;
                 }
@@ -236,7 +236,7 @@ namespace Sudoku.Controller
             foreach (Pair cell in cells)
             {
                 //ha a számok aktuális összege már nagyobb, mint a tényleges összeg, akkor false-szal térek vissza
-                if ((osszeg += se.Exercise[0][cell.i, cell.j]) > se.Killer.Cages[cageIndex].SumOfNumbers)
+                if ((osszeg += se.Exercise[0][cell.row, cell.col]) > se.Killer.Cages[cageIndex].SumOfNumbers)
                     return false;
             }
 
@@ -247,7 +247,7 @@ namespace Sudoku.Controller
         /// <param name="cageIndex">A vizsgálandó ketrec száma</param>
         /// <param name="tomb">A feladat aktuális állapotát tartalmazó tömb</param>
         /// <returns>Ha a számok aktuális összege nagyobb, mint a tényleges összeg, akkor false-szal térek vissza, egyébként true-val</returns>
-        public bool IsCurrentSumOfNumbersBiggerThenRealSum(int cageIndex)
+        public bool IsCurrentSumOfNumbersBiggerThanRealSum(int cageIndex)
         {
             return ketrecOsszegJo(cageIndex, se.Killer.Cages[cageIndex].Cells);
         }
@@ -263,7 +263,7 @@ namespace Sudoku.Controller
             foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
             {
                 //Ha megtalálom, visszatérek true-val
-                if (tomb[cell.i, cell.j] == value)
+                if (tomb[cell.row, cell.col] == value)
                     return true;
             }
 
@@ -279,7 +279,7 @@ namespace Sudoku.Controller
             int p = 0;
 
             //Amíg nem lépek ki a tábláról és a vizsgált cella nem üres, átlépek a következő cellára
-            while (p < 81 && se.Killer.Exercise[p / 9, p % 9].i != 0)
+            while (p < 81 && se.Killer.Exercise[p / 9, p % 9].CageIndex != 0)
                 p++;
 
             //Ha nem léptem ki a tábláról, akkor van üres cella, visszatérek az indexeivel
@@ -305,8 +305,8 @@ namespace Sudoku.Controller
             foreach (Pair _cella in cellaLista)
             {
                 //Ha a szomszéd cella ketrece kevesebb, mint 9 cellából áll, akkor ez a ketrec szóba jöhet
-                if (se.Killer.Cages[se.Killer.Exercise[_cella.i, _cella.j].i].Cells.Count < 9)
-                    listaInt.Add(se.Killer.Exercise[_cella.i, _cella.j].i);
+                if (se.Killer.Cages[se.Killer.Exercise[_cella.row, _cella.col].CageIndex].Cells.Count < 9)
+                    listaInt.Add(se.Killer.Exercise[_cella.row, _cella.col].CageIndex);
             }
 
             //Visszatérek a lehetséges ketrecszámokkal
@@ -319,14 +319,14 @@ namespace Sudoku.Controller
         public void PutCellInCage(Pair cell, int cageIndex)
         {
             //Az [i,j] cellát elhelyezem a kszam számú ketrecben
-            se.Killer.Exercise[cell.i, cell.j].i = cageIndex;
+            se.Killer.Exercise[cell.row, cell.col].CageIndex = cageIndex;
 
             //Ha létre kell hozni egy új ketrecet, akkor megteszem
             if (!se.Killer.Cages.ContainsKey(cageIndex))
                 se.Killer.Cages.Add(cageIndex, new Cage());
 
             //Hozzáadom a ketrechez a cellát
-            se.Killer.Cages[cageIndex].Cells.Add(new Pair(cell.i, cell.j));
+            se.Killer.Cages[cageIndex].Cells.Add(new Pair(cell.row, cell.col));
         }
 
         /// <summary>Megvizsgálja az [i,j] indexű cella 4 szomszéd celláját, 
@@ -360,12 +360,12 @@ namespace Sudoku.Controller
             if (egyenlo
                 /* Ha az [i, j] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
                  * A szomszéd szerepel-e már valamelyik ketrecben, és a szomszéd cella értéke benne van-e az [i,j] indexű cella ketrecében*/
-                ? se.Killer.Exercise[ii, jj].i == 0 && !ketrecTartalmazErtek(se.Solution[ii, jj], kSzam, se.Solution)
+                ? se.Killer.Exercise[ii, jj].CageIndex == 0 && !ketrecTartalmazErtek(se.Solution[ii, jj], kSzam, se.Solution)
 
                 /* Ha az [i,j] indexű cellát szeretném valamelyik szomszéd cella ketrecében elhelyezni.
                 * Ez akkor jöhet elő, ha az [i,j] indexű cella üresen marad, és a körülötte levő cellák már mind benne vannak egy ketrecben.
                 * Ha a szomszéd már benne van egy ketrecben, és a szomszéd cella ketrece nem tartalmazza az [i,j] indexű cella értékét*/
-                : se.Killer.Exercise[ii, jj].i != 0 && !ketrecTartalmazErtek(se.Solution[i, j], se.Killer.Exercise[ii, jj].i, se.Solution))
+                : se.Killer.Exercise[ii, jj].CageIndex != 0 && !ketrecTartalmazErtek(se.Solution[i, j], se.Killer.Exercise[ii, jj].CageIndex, se.Solution))
                 lista.Add(new Pair(ii, jj));
         }
 
@@ -415,57 +415,57 @@ namespace Sudoku.Controller
             List<Pair> lista = new List<Pair>();
 
             //Ha a cella az első sorban van
-            if (cella.i == 0)
+            if (cella.row == 0)
             {
                 //Le
-                iranyMegad(4, cella.i, cella.j, kSzam, egyenlo, lista);
+                iranyMegad(4, cella.row, cella.col, kSzam, egyenlo, lista);
 
-                sarokEsBenneSorVizsgalat(cella.i, cella.j, kSzam, egyenlo, lista);
+                sarokEsBenneSorVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             //Ha a cella az utolsó sorban van
-            if (cella.i == 8)
+            if (cella.row == 8)
             {
                 //Fel
-                iranyMegad(3, cella.i, cella.j, kSzam, egyenlo, lista);
+                iranyMegad(3, cella.row, cella.col, kSzam, egyenlo, lista);
 
-                sarokEsBenneSorVizsgalat(cella.i, cella.j, kSzam, egyenlo, lista);
+                sarokEsBenneSorVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             //Ha a cella a bal szélső oszlopban van
-            if (cella.j == 0)
+            if (cella.col == 0)
             {
                 //Jobbra
-                iranyMegad(2, cella.i, cella.j, kSzam, egyenlo, lista);
+                iranyMegad(2, cella.row, cella.col, kSzam, egyenlo, lista);
 
                 //Fel, le
-                felLeVizsgalat(cella.i, cella.j, kSzam, egyenlo, lista);
+                felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             //Ha a cella a jobb szélső oszlopban van
-            if (cella.j == 8)
+            if (cella.col == 8)
             {
                 //Balra
-                iranyMegad(1, cella.i, cella.j, kSzam, egyenlo, lista);
+                iranyMegad(1, cella.row, cella.col, kSzam, egyenlo, lista);
 
                 //Fel, le
-                felLeVizsgalat(cella.i, cella.j, kSzam, egyenlo, lista);
+                felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             /* Ha a cella indexei egyik előző esetnek sem felelnek meg, akkor mind a 4 szomszédot megvizsgálhatom*/
             //Balra, jobbra
-            balraJobbraViszgalat(cella.i, cella.j, kSzam, egyenlo, lista);
+            balraJobbraViszgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
             //Fel, le
-            felLeVizsgalat(cella.i, cella.j, kSzam, egyenlo, lista);
+            felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
             return lista;
         }
@@ -497,10 +497,10 @@ namespace Sudoku.Controller
                 {
                     /* Ha találok olyan cellát, ami még feljebb van az eddigi legfelül lévőnél,
                      * akkor ez az új cella lesz a legfelül levő*/
-                    if (cell.i < balFelsoCella.i)
+                    if (cell.row < balFelsoCella.row)
                     {
-                        balFelsoCella.i = cell.i;
-                        balFelsoCella.j = cell.j;
+                        balFelsoCella.row = cell.row;
+                        balFelsoCella.col = cell.col;
                     }
                 }
 
@@ -508,14 +508,14 @@ namespace Sudoku.Controller
                 foreach (Pair cell in cage.Value.Cells)
                 {
                     //Ha a cella a legfelül levők között van
-                    if (cell.i == balFelsoCella.i)
+                    if (cell.row == balFelsoCella.row)
                     {
                         /* Ha találok olyan cellát, ami még balrább van az eddigi legbalrább lévőnél,
                          * akkor ez az új cella lesz a legbalrább levő*/
-                        if (cell.j < balFelsoCella.j)
+                        if (cell.col < balFelsoCella.col)
                         {
-                            balFelsoCella.j = cell.j;
-                            balFelsoCella.i = cell.i;
+                            balFelsoCella.col = cell.col;
+                            balFelsoCella.row = cell.row;
                         }
                     }
                 }
@@ -537,7 +537,7 @@ namespace Sudoku.Controller
         /// <returns>Ha egyik ház sem tartalmazza ertek-et, akkor false, egyébként true</returns>
         public bool HouseContainsValue(int i, int j, int ertek, int[,] tomb)
         {
-            return !ketrecTartalmazErtek(ertek, se.Killer.Exercise[i, j].i, tomb);
+            return !ketrecTartalmazErtek(ertek, se.Killer.Exercise[i, j].CageIndex, tomb);
         }
 
         /// <summary>A megadott - [i,j] - cella ketrecében állítja foglaltra azokat a cellákat, melyek még nem voltak azok</summary>
@@ -548,8 +548,8 @@ namespace Sudoku.Controller
             foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
             {
                 //Foglalt cellák beállítása
-                if (se.Solution[cell.i, cell.j] == 0)
-                    se.Solution[cell.i, cell.j] = -1;
+                if (se.Solution[cell.row, cell.col] == 0)
+                    se.Solution[cell.row, cell.col] = -1;
             }
         }
     }

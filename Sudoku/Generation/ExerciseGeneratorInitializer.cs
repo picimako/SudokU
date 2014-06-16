@@ -19,10 +19,10 @@ namespace Sudoku.Generate
         public bool GenerateExercise(int difficulty, int killerDifficulty)
         {
             SudokuExercise se = SudokuExercise.get;
-            se.Ctrl = new SudokuControllerFactory().CreateController(se.ExerciseType);
+
             if (!se.IsExerciseGenerated)
             {
-                //se.Ctrl = new Generate.Factory().CreateSudokuController(se.ExerciseType, killer);
+                se.Ctrl = new SudokuControllerFactory().CreateController(se.ExerciseType);
                 if (!se.IsExerciseKiller)
                 {
                     if (!se.Ctrl.ReadSudoku(se.ExerciseFilePath))
@@ -32,6 +32,8 @@ namespace Sudoku.Generate
                 }
                 else
                 {
+                    se.InitExercise();
+                    se.InitKillerExercise();
                     if (!se.Killer.Ctrl.ReadKillerSudoku(se.ExerciseFilePath))
                         return false;
 

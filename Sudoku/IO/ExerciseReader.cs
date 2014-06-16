@@ -65,7 +65,6 @@ namespace Sudoku
         public static bool ReadKillerSudoku(string filePath)
         {
             SudokuExercise se = SudokuExercise.get;
-            se.InitKillerExercise();
             using (StreamReader reader = new StreamReader(filePath))
             {
                 try

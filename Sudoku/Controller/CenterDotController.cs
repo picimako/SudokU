@@ -10,8 +10,6 @@ namespace Sudoku.Controller
     {
         #region Constructor
 
-        /// <summary> Konstruktor, amely meghívja az ősosztály konstruktorát, és beállítja a feladat fajtáját </summary>
-        /// <param name="killer">Megmondja, hogy a feladat Killer Sudoku lesz-e vagy sem</param>
         public CenterDotController() : base()
         {
             se.ExerciseType = SudokuType.CenterDot;
@@ -22,77 +20,63 @@ namespace Sudoku.Controller
         #region Methods
         #region Public
 
-        //Meghívja az egyes házakhoz tartozó azon eljárásokat, melyek a megadott cellához viszonyítva beállítják a foglalt cellákat.
-        public override void MakeHousesOccupied(int t, int i, int j)
+        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
+        /// <param name="num">The number table.</param>
+        public override void MakeHousesOccupied(int num, int row, int col)
         {
-            //Meghívom az ősosztály ugyanezen eljárását (sor, oszlop, blokk)
-            base.MakeHousesOccupied(t, i, j);
+            base.MakeHousesOccupied(num, row, col);
 
-            //Ha az újonnan kitöltött cella valamelyik blokk középső cellája, akkor kitöltöm a blokkok középső celláiból álló házat
-            if (CellIsAtMiddleOfBlock(i, j))
-                MakeCenterCellsOccupied(t);
+            if (CellIsAtMiddleOfAnyBlock(row, col))
+                MakeCenterCellsOccupied(num);
         }
 
-        /* Meghívja az egyes házakhoz tartozó érték-tartalmazást vizsgáló függvényeket 
-         * és azok visszaadott értékei szerint ad vissza értéket.*/
-        public override bool HousesContainValue(int i, int j, int ertek)
+        /// <summary>Inspects whether value is present in any houses of the current cell of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        public override bool HousesContainValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            //Ha egyik ház se tartalmazza ertek-et
-            if (!base.HousesContainValue(i, j, ertek) && !CenterContainsValue(i, j, ertek))
+            if (!base.HousesContainValue(rowOfCurrentCell, colOfCurrentCell, value)
+                && !CenterContainsValue(rowOfCurrentCell, colOfCurrentCell, value))
                 return false;
 
-            //Ha valamelyik ház tartalmazza a beírt számot
             return true;
         }
 
-        public static bool CellIsAtMiddleOfBlock(int i, int j)
+        public static bool CellIsAtMiddleOfAnyBlock(int row, int col)
         {
-            return i % 3 == 1 && j % 3 == 1;
+            return row % 3 == 1 && col % 3 == 1;
         }
 
         #endregion
 
         #region Private
 
-        /// <summary>A blokkok középső celláiból álló házat tölti fel</summary>
-        /// <param name="t">A kitöltendő tábla</param>
-        private void MakeCenterCellsOccupied(int t)
+        private void MakeCenterCellsOccupied(int num)
         {
-            //Végigmegyek a blokkok középső celláin
-            for (int r = 1; r <= 7; r += 3)
+            for (int row = 1; row <= 7; row += 3)
             {
-                for (int p = 1; p <= 7; p += 3)
+                for (int col = 1; col <= 7; col += 3)
                 {
-                    //Ha egy cella üres, akkor foglalt lesz
-                    MakeCellOccupied(t, r, p);
+                    MakeCellOccupied(num, row, col);
                 }
             }
         }
 
-        /// <summary>Megvizsgálja, hogy a megadott cella értékét tartalmazza-e már a blokkok középső celláiból álló ház.
-        /// Ezt a vizsgálatot csak akkor csinálja meg, hogy ha a megadott cella a középső cellák valamelyike</summary>
-        /// <param name="i">A vizsgálandó cella sorindexe</param>
-        /// <param name="j">A vizsgálandó cella oszlopindexe</param>
-        /// <param name="value">A keresendő érték</param>
-        /// <returns>Ha megtalálta ertek-et, akkor true, egyébként false. False akkor is, ha a megadott cella nem egy blokk középső cellája.</returns>
-        private bool CenterContainsValue(int i, int j, int value)
+        /// <summary>Inspects whether value is present in any center-cell of blocks of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        private bool CenterContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            //Ha a megadott cella nem valamelyik blokk középső cellája, akkor nem vizsgálódok
-            if (!CellIsAtMiddleOfBlock(i, j))
+            if (!CellIsAtMiddleOfAnyBlock(rowOfCurrentCell, colOfCurrentCell))
                 return false;
 
-            //Egyébként végigmegyek a blokkok középső celláin
-            for (int r = 1; r <= 7; r += 3)
+            for (int row = 1; row <= 7; row += 3)
             {
-                for (int p = 1; p <= 7; p += 3)
+                for (int col = 1; col <= 7; col += 3)
                 {
-                    //Ha nem önmagával vizsgálom meg, és a vizsgált cella üres, akkor foglalt lesz
-                    if (r != i && p != j && se.Exercise[0][r, p] == value)
+                    if (row != rowOfCurrentCell && col != colOfCurrentCell && se.Exercise[0][row, col] == value)
                         return true;
                 }
             }
 
-            //Nem volt ütközés, ezért false-szal térek vissza
             return false;
         }
 

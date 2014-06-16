@@ -53,11 +53,11 @@ namespace Sudoku.Verifier
                     ParseValueOfCurrentCell(p);
                     if (!IsFieldEmpty(p) && !IsFieldValueMatchValueInSolution(currentCellValue, p))
                     {
-                        SetTextboxFont(p, FontStyle.Italic);
+                        CommonUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Italic);
                         isSolutionCorrect = false;
                     }
                     else
-                        SetTextboxFont(p, FontStyle.Regular);
+                        CommonUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Regular);
                 }
                 if (isSolutionCorrect)
                     PrintSolutionIsGood();
@@ -91,11 +91,6 @@ namespace Sudoku.Verifier
         #endregion
 
         #region Private
-
-        private static void SetTextboxFont(int p, FontStyle fontStyle)
-        {
-            activeTable[p / 9, p % 9].Font = new Font(activeTable[p / 9, p % 9].Font.FontFamily, 19.5f, fontStyle);
-        }
 
         private static bool IsFieldEmpty(int p)
         {

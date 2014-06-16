@@ -9,18 +9,19 @@ namespace Sudoku
     {
         #region Members
 
-        private int _i;
-        private int _j;
+        private int i;
+        private int j;
 
         #endregion
 
         #region Properties
 
         //For table indexing
-        public int i { get { return _i; } set { _i = value; } }
-        public int j { get { return _j; } set { _j = value; } }
+        public int row { get { return i; } set { i = value; } }
+        public int col { get { return j; } set { j = value; } }
 
-        public int CageIndex { get { return _i; } set { _i = value; } }
+        public int CageIndex { get { return i; } set { i = value; } }
+        //public int Value { get { return j; } set { j = value; } }
 
         #endregion
 
@@ -30,8 +31,8 @@ namespace Sudoku
 
         public Pair(int i, int j)
         {
-            this._i = i;
-            this._j = j;
+            this.i = i;
+            this.j = j;
         }
 
         #endregion

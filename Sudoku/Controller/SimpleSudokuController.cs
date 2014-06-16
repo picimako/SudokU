@@ -20,252 +20,216 @@ namespace Sudoku.Controller
 
         #endregion
 
-        /// <summary> A megadott fájlból beolvassa az értékeket. </summary>
-        /// <param name="filePath"> A beolvasandó fájl útvonala </param>
-        /// <returns>false-szal tér vissza, ha nincs megoldandó feladat vagy a beolvasás sikertelen volt, egyébként true-val</returns>
+        /// <summary>Reads the exercise from the given file path.</summary>
+        /// <param name="filePath">Path of the file.</param>
+        /// <returns>False: there is no solvable exercise, or the reading was unsuccessful.
+        /// True: no error occured.</returns>
         public bool ReadSudoku(string filePath)
         {
             se.InitExercise();
             return ExerciseReader.ReadSudoku(filePath);
         }
 
-        /// <summary>Feltölti a számokhoz tartozó tömböket a feladat értékei alapján</summary>
-        /// <returns>false, ha van megoldandó feladat, true, ha nincs</returns>
+        /// <summary>Fills the number tables according to the values in the exercise.</summary>
+        /// <returns>True if there is a solvable exercise, otherwise false.</returns>
         protected bool GenerateValuesInNumberTables()
         {
-            //Ha a kitöltendő cellák száma nem 0 és nem 81, akkor van megoldandó feladat
-            if (0 < se.NumberOfEmptyCells && se.NumberOfEmptyCells < 81)
+            if (!se.IsExerciseFull() && !se.IsExerciseEmpty())
             {
-                //Végigmegyek a táblán
+                //Iterating through the table
                 for (int i = 0; i < 9; i++)
                 {
                     for (int j = 0; j < 9; j++)
                     {
-                        //Ha olyan cellán állok, ami nem üres
                         if (!se.IsCellEmpty(0, i, j))
                         {
-                            /* Az aktuális cella indexeinek megfelelő cellát feltöltöm a számhoz tartozó tömbben
-                             * pl.: tombok[0][2, 3] = 1 -> tombok[1][2, 3] = 1*/
-                            se.Exercise[se.Exercise[0][i, j]][i, j] = se.Exercise[0][i, j];
+                            int currentCellValue = se.Exercise[0][i, j];
+                            se.Exercise[currentCellValue][i, j] = currentCellValue;
 
-                            //Végigmegyek a számtömbökön
-                            for (int t = 1; t <= 9; t++)
+                            for (int numberTable = 1; numberTable <= 9; numberTable++)
                             {
-                                /* Ha nem az aktuális szám tömbjébe akarok írni, akkor a t szám tömbjébe,
-                                 * az előbb kitöltött cella indexeivel megegyező cellába írok -1-et. Ez jelzi, hogy a cella foglalt. */
-                                if (t != se.Exercise[0][i, j])
-                                    se.MakeCellOccupied(t, i, j);
+                                if (numberTable != currentCellValue)
+                                    se.MakeCellOccupied(numberTable, i, j);
                             }
 
-                            //Beállítom a beírt szám táblájában a foglalt helyeket (házak alapján)
-                            MakeHousesOccupied(se.Exercise[0][i, j], i, j);
+                            MakeHousesOccupied(currentCellValue, i, j);
                         }
                     }
                 }
 
-                //Van megoldható feladat, vissztérek true-val
+                //There is a solvable exercise
                 return true;
             }
-            //Nincs megoldható feladat, ezért false-szal térek vissza
+            //There is no solvable exercise
             else
                 return false;
         }
 
-        /// <summary>Amikor a generálás során kivettem egy számot egy cellából, akkor a kivett értéknek megfelelő szám tömbjét törlöm,
-        /// a feladatban szereplő értékek alapján újragenerálom, majd a törlés miatt a nem t értékű számok tömbjeiben üresre (0-ra) állítom
-        /// a megfelelő cellákat.</summary>
+        /// <summary> During the generation, when a number is removed from a cell, then:
+        /// 1. the number table of the removed value gets cleared
+        /// 2. the number table gets regenerated based on the values in the exercise
+        /// 3. the changed cell gets empty in the number tables that are not the value of the removed number. An empty cell means 0 value.
         public void RegenerateNumberTablesForRemovedValue(int removedValue, int deletedCellRow, int deletedCellColumn)
         {
-            //A kivett értéknek megfelelő szám tömbjének értékeit törlöm
+            //1.
             se.Exercise[removedValue] = new int[9, 9];
 
-            //Végigmegyek a feladaton
+            //2.
             for (int p = 0; p < 81; p++)
             {
-                //Ha az aktuálisan vizsgált cella értéke a törölt cella törlés előtti értéke
                 if (se.Exercise[0][p / 9, p % 9] == removedValue)
                 {
-                    //Akkor a removedValue szám tömbjében az aktuális cella removedValue értékű lesz
                     se.Exercise[removedValue][p / 9, p % 9] = removedValue;
-                    //és az éppen kitöltött cellához viszonyítva beállítom a tömbben a foglalt helyeket
                     MakeHousesOccupied(removedValue, p / 9, p % 9);
                 }
-                //Ha azonban nem removedValue értékű
                 else
                 {
-                    //és nem üres cella
                     if (!se.IsCellEmpty(0, p / 9, p % 9))
-                        se.MakeCellOccupied(removedValue, p / 9, p % 9); //akkor a cella foglalt lesz
+                        se.MakeCellOccupied(removedValue, p / 9, p % 9);
                 }
             }
 
-            /*Az összes számtömbből (kivéve abból a tömbből, melynek a száma a kivett értékkel egyezik meg) kitörlöm az [i, j] cella értékét akkor,
-            * ha az num számtömb [i, j] cellájának egyik házában se szerepel az num szám*/
+            //3.
             for (int num = 1; num < 10; num++)
             {
-                //Ha nem a törölt értéknek megfelelő számtömbről van szó, és ha egyik ház sem tartalmazza num-ot
                 if (num != removedValue && !HousesContainValue(deletedCellRow, deletedCellColumn, num))
                 {
-                    se.Exercise[num][deletedCellRow, deletedCellColumn] = 0; //akkor a törlöm a megfelelő értéket
+                    se.Exercise[num][deletedCellRow, deletedCellColumn] = 0;
                 }
             }
         }
 
-        /// <summary>Megvizsgálja, hogy az value érték szerepel-e a feladat tömbjének col oszlopában. Ezt használom közvetetten a szamTablaKitolt()
-        /// eljárásban is.</summary>
-        /// <returns>Ha a megadott [_i,col] cella oszlopa tartalmazza az value értéket, akkor true, egyébként false.</returns>
-        protected bool ColumnContainsValue(int _i, int col, int value)
+        /// <summary>Inspects whether value is present in the colOfCurrentCell column of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        protected bool ColumnContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            //Végigmegyek az oszlopon
-            for (int i = 0; i < 9; i++)
+            for (int row = 0; row < 9; row++)
             {
-                //Ha nem önmagával vizsgálom a cellát és megtalálom ertek-et az [i,j] cella oszlopában
-                if (i != _i && se.Exercise[0][i, col] == value)
-                    return true; //akkor visszatérek true-val
+                if (row != rowOfCurrentCell && se.Exercise[0][row, colOfCurrentCell] == value)
+                    return true;
             }
 
-            //Ha nem találtam meg a keresett értéket, akkor false-szal térek vissza
             return false;
         }
 
-        /// <summary>Megvizsgálja, hogy az value érték szerepel-e a feladat tömbjének i sorában. Ezt használom közvetetten a szamTablaKitolt()
-        /// eljárásban is.</summary>
-        /// <returns>Ha a megadott [row,_j] cella sora tartalmazza az value értéket, akkor true, egyébként false.</returns>
-        protected bool RowContainsValue(int row, int _j, int value)
+        /// <summary>Inspects whether value is present in the rowOfCurrentCell row of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        protected bool RowContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            //Végigmegyek a soron
-            for (int j = 0; j < 9; j++)
+            for (int col = 0; col < 9; col++)
             {
-                //Ha nem önmagával vizsgálom a cellát és megtalálom ertek-et az [i,j] cella sorában
-                if (j != _j && se.Exercise[0][row, j] == value)
-                    return true; //akkor visszatérek true-val
+                if (col != colOfCurrentCell && se.Exercise[0][rowOfCurrentCell, col] == value)
+                    return true;
             }
 
-            //Ha nem találtam meg a keresett értéket, akkor false-szal térek vissza
             return false;
         }
 
-        /// <summary>Megvizsgálja, hogy az value érték szerepel-e a feladat tömbjének [i,j] cellát tartalmazó blokkjában. Ezt használom közvetetten a szamTablaKitolt()
-        /// eljárásban is.</summary>
-        /// <returns>Ha a megadott [i,j] celláához tartozó blokk tartalmazza az value értéket, akkor true, egyébként false.</returns>
-        protected bool BlockContainsValue(int i, int j, int value)
+        /// <summary>Inspects whether value is present in the block of the current cell of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        protected bool BlockContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            for (int r = se.StartRowOfBlockByRow(i); r <= se.EndRowOfBlockByRow(i); r++)
+            for (int row = se.StartRowOfBlockByRow(rowOfCurrentCell); row <= se.EndRowOfBlockByRow(rowOfCurrentCell); row++)
             {
-                for (int p = se.StartColOfBlockByCol(j); p <= se.EndColOfBlockByCol(j); p++)
+                for (int col = se.StartColOfBlockByCol(colOfCurrentCell); col <= se.EndColOfBlockByCol(colOfCurrentCell); col++)
                 {
-                    //Ha nem önmagával vizsgálom a cellát és megtalálom ertek-et a [i,j] cella blokkjában
-                    if (r != i && p != j && se.Exercise[0][r, p] == value)
+                    if (row != rowOfCurrentCell && col != colOfCurrentCell && se.Exercise[0][row, col] == value)
                         return true;
                 }
             }
 
-            //Ha nem találtam meg a keresett értéket, akkor false-szal térek vissza
             return false;
         }
 
-        /// <summary>Meghívja az egyes házakhoz tartozó érték-tartalmazást vizsgáló függvényeket 
-        /// és azok visszaadott értékei szerint ad vissza értéket.</summary>
-        /// <param name="i">A vizsgálandó cella sorindexe.</param>
-        /// <param name="j">A vizsgálandó cella oszlopindexe.</param>
-        /// <param name="value">A keresendő érték.</param>
-        /// <returns>Ha egyik ház sem tartalmazza ertek-et, akkor false, egyébként true</returns>
-        public virtual bool HousesContainValue(int i, int j, int value)
+        /// <summary>Inspects whether value is present in any houses of the current cell of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        public virtual bool HousesContainValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            if (!RowContainsValue(i, j, value) && !ColumnContainsValue(i, j, value) && !BlockContainsValue(i, j, value))
-                return false; //Egyik ház se tartalmazza
+            if (!RowContainsValue(rowOfCurrentCell, colOfCurrentCell, value)
+                && !ColumnContainsValue(rowOfCurrentCell, colOfCurrentCell, value)
+                && !BlockContainsValue(rowOfCurrentCell, colOfCurrentCell, value))
+                    return false;
 
-            //Valamelyik ház tartalmazza
             return true;
         }
 		
-        /// <summary>A megadott - [i,j] - cella blokkjában állítja foglaltra azokat a cellákat, melyek még nem voltak azok</summary>
-		protected virtual void MakeBlockOccupied(int t, int i, int j)
+        /// <summary>Marks all the not empty cells as occupied in the block of the current cell.</summary>
+        // __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __
+        //|00|__|__|	//|__|01|__|	//|__|__|02|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|
+        //|__|__|__|	//|__|__|__|	//|__|__|__|	//|10|__|__|	//|__|11|__|	//|__|__|12|	//|__|__|__|	//|__|__|__|	//|__|__|__|
+        //|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|20|__|__|	//|__|21|__|	//|__|__|22|
+		protected virtual void MakeBlockOccupied(int num, int row, int col)
         {
-            //Végigmegyek a blokkon
-            for (int r = i; r <= i + 2; r++)
+            for (int r = row; r <= row + 2; r++)
             {
-                for (int p = j; p <= j + 2; p++)
+                for (int p = col; p <= col + 2; p++)
                 {
-                    //Ha a t szám tömbjének [r ,p] indexen lévő eleme szabad, akkor foglaltra állítom
-                    MakeCellOccupied(t, r, p);
+                    MakeCellOccupied(num, r, p);
                 }
             }
-		
-            //1. eset		//2. eset		//3. eset		//4. eset		//5. eset		//6. eset		//7. eset		//8. eset		//9. eset
-            // __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __
-            //|00|__|__|	//|__|01|__|	//|__|__|02|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|
-            //|__|__|__|	//|__|__|__|	//|__|__|__|	//|10|__|__|	//|__|11|__|	//|__|__|12|	//|__|__|__|	//|__|__|__|	//|__|__|__|
-            //|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|20|__|__|	//|__|21|__|	//|__|__|22|
         }
 
-        /// <summary>A megadott - [i,j] - cella sorában és oszlopában állítja foglaltra azokat a cellákat, melyek még nem voltak azok</summary>
-		protected void MakeRowAndColumnOccupied(int t, int row, int col)
+        /// <summary>Marks all the not empty cells as occupied in the row of the current cell.</summary>
+		protected void MakeRowOccupied(int num, int row)
         {
-            //Végigmegyek a soron és az oszlopon
-            for (int k = 0; k < 9; k++)
+            for (int col = 0; col < 9; col++)
             {
-                //Foglalt cellák beállítása a sorban,
-                MakeCellOccupied(t, row, k);
-                //oszlopban
-                MakeCellOccupied(t, k, col);
+                MakeCellOccupied(num, row, col);
             }
         }
 
-        /// <summary>Kitölti a cellát -1-es értékkel (foglaltra állítja), ha a cella üres/szabad.</summary>
-        /// <param name="t">A szám tömbje.</param>
-        /// <param name="i">Sorindex.</param>
-        /// <param name="j">Oszlopindex.</param>
-        protected void MakeCellOccupied(int t, int i, int j)
+        /// <summary>Marks all the not empty cells as occupied in the column of the current cell.</summary>
+        protected void MakeColumnOccupied(int num, int col)
         {
-            if (se.IsCellEmpty(t, i, j))
-                se.MakeCellOccupied(t, i, j);
+            for (int row = 0; row < 9; row++)
+            {
+                MakeCellOccupied(num, row, col);
+            }
         }
 
-        /// <summary>Meghívja az egyes házakhoz tartozó azon eljárásokat, melyek a megadott cellához viszonyítva beállítják a foglalt cellákat.</summary>
-        /// <param name="t">A tömb száma, amelyben állítani kell a foglalt cellákat.</param>
-        /// <param name="i">A cella sorindexe.</param>
-        /// <param name="j">A cella oszlopindexe.</param>
-        public virtual void MakeHousesOccupied(int t, int i, int j)
+        /// <summary>Marks the cell as occupied if the cell is empty.</summary>
+        protected void MakeCellOccupied(int num, int row, int col)
         {
-            //A megadott cella sorában és oszlopában,
-            MakeRowAndColumnOccupied(t, i, j);
-            //illetve blokkjában állítja be a foglalt cellákat
-            MakeBlockOccupied(t, se.StartRowOfBlockByRow(i), se.StartColOfBlockByCol(j));
+            if (se.IsCellEmpty(num, row, col))
+                se.MakeCellOccupied(num, row, col);
         }
 
-        /// <summary>Megoldja a feladatot (amennyire tudja) visszalépéses algoritmus használata nélkül</summary>
-        /// <returns>A sikerült teljesen megoldani (nem maradt üres cella), akkor true, egyébként false</returns>
+        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
+        /// <param name="num">The number table.</param>
+        public virtual void MakeHousesOccupied(int num, int row, int col)
+        {
+            MakeRowOccupied(num, row);
+            MakeColumnOccupied(num, col);
+            MakeBlockOccupied(num, se.StartRowOfBlockByRow(row), se.StartColOfBlockByCol(col));
+        }
+
+        /// <summary>Solves the exercise without using backtrack algorithm (as much as the difficulty of the exercise makes it possible).</summary>
+        /// <returns>True if the exercise is solved completely (there is no empty cell), otherwise false</returns>
         protected bool SolveExerciseWithoutBackTrack()
         {
-            /* initialNumberOfEmptyCells: lementem az üres cellák számát, hogy le tudjam futtatni a kitöltést, ugyanis uresCellakSzama értéke
-             * változni fog a kitöltés során
-             * ures: az egyedüli üres cellába írható értéket tárolja majd*/
             int numberOfEmptyCellsToFill = se.NumberOfEmptyCells;
+            //the value for the only empty cell throughout number tables
+            //-1 means the cell is not empty in any number tables, or it is empty in more than 1 number tables
             int valueOfOnlyEmptyCellThroughoutNumberTables = -1;
             se.FirstEmptyCell = 0;
+            bool cellFillingHappened;
 
-            //Változó annak tárolására, hogy volt-e értékbeírás
-            bool wasCellFilling;
-            for (int k = 1; k <= numberOfEmptyCellsToFill; k++)
+            for (int cell = 1; cell <= numberOfEmptyCellsToFill; cell++)
             {
-                wasCellFilling = false;
+                cellFillingHappened = false;
 
-                //Mindig az első üres cellától kezdve vizsgálom a táblát
                 for (int p = se.FirstEmptyCell; p < 81; p++)
                 {
-                    /* Ha a feladatban az aktuális cella nem üres, akkor lépek tovább a következő cellára,
-                     * mert csak az üres cellákat kell vizsgálni.*/
-                    if (!se.IsCellEmpty(0, p / 9, p % 9))
+                    //If the cell in not empty, then moving on to the next cell, as only empty cells are inspected.
+                    if (!se.IsCellEmpty(0, p))
                         continue;
 
                     valueOfOnlyEmptyCellThroughoutNumberTables = -1;
 
-                    //Összegyűjtöm azokat a számtömböket, amelyekben az aktuális cella üres
+                    //Getting the number tables where the current cell is empty
                     for (int num = 1; num < 10; num++)
                     {
-                        //Ha üres, akkor elmentem
-                        if (se.IsCellEmpty(num, p / 9, p % 9))
+                        if (se.IsCellEmpty(num, p))
                         {
                             if (valueOfOnlyEmptyCellThroughoutNumberTables == -1)
                                 valueOfOnlyEmptyCellThroughoutNumberTables = num;
@@ -277,127 +241,108 @@ namespace Sudoku.Controller
                         }
                     }
 
-                    /* Ha csak egy olyan táblát találtam, ahol az éppen vizsgált cella üres, akkor ebbe a cellába (a feladatba is)
-                     * a megtalált tömb számát kell beírni.*/
+                    //If the current cell is empty in only one table (including the exercise)
+                    //then the value of the found number table should be filled in
                     if (valueOfOnlyEmptyCellThroughoutNumberTables != -1)
                     {
-                        /* Ha írok az egyik táblába, akkor beírom a számot a feladat tömbjébe is
-                         * uresek.First() tárolja a beírandó számot*/
-                        se.Exercise[0][p / 9, p % 9] = se.Exercise[valueOfOnlyEmptyCellThroughoutNumberTables][p / 9, p % 9] = valueOfOnlyEmptyCellThroughoutNumberTables;
+                        se.Exercise[0][p / 9, p % 9] = valueOfOnlyEmptyCellThroughoutNumberTables;
+                        se.Exercise[valueOfOnlyEmptyCellThroughoutNumberTables][p / 9, p % 9] = valueOfOnlyEmptyCellThroughoutNumberTables;
                         MakeHousesOccupied(valueOfOnlyEmptyCellThroughoutNumberTables, p / 9, p % 9);
-                        wasCellFilling = true;
+                        cellFillingHappened = true;
                         PostProcessCellFilling(p);
                     }
-                    //Ha nem csak egy lehetséges beírható értéket találtam
                     else
                     {
-                        /*i-ben és j-ben fogom tárolni a kitöltött cella sor-, 
-                        * illetve oszlopindexét*/
-                        int i, j;
+                        int row, col;
 
-                        //Végigmegyek a számtömbökön
                         for (int num = 1; num <= 9; num++)
                         {
-                            //Kitölthető cellát keresek. Ha találtam,
-                            if (FindOnlyEmptyCellInHouses(num, out i, out j))
+                            if (FindAndFillOnlyEmptyCellInHouses(num, out row, out col))
                             {
-                                wasCellFilling = true;
-                                PostProcessCellFilling((i * 9) + j);
+                                cellFillingHappened = true;
+                                PostProcessCellFilling((row * 9) + col);
                                 break;
                             }
                         }
                     }
                 }
 
-                //Ha nem lehetett számot beírni, akkor a vizsgálat befejezése
-                if (!wasCellFilling)
+                if (!cellFillingHappened)
                     break;
             }
 
-            //Ha a feladat megoldható backtrack használata nélkül, tehát nem marad üres cella, akkor true, különben false a visszatérési érték
-            return se.NumberOfEmptyCells == 0;
+            //If there is no empty cell, then the exercise could be solved without using backtrack algorithm
+            return se.IsExerciseFull();
         }
 
         private void PostProcessCellFilling(int position)
         {
             se.NumberOfEmptyCells--;
 
-            /* Ha kitöltöttem a cellát, akkor lefut egy rövid vizsgálat, ami megvizsgálja, hogy
-             * az éppen kitöltött cella az első üres cella volt-e a feladatban.
-             * Ha igen, akkor megkeresi az ezen cella után következő üres cellát, mert a keresést
-             * elég csak attól a cellától elkezdeni.*/
+            //The next round of finding an empty cell can be started only from the first EMPTY cell in the table
+            //and not from the first cell in the table (0,0).
             se.RecalculateFirstEmptyCell(position);
         }
 
         /// <summary> Ha van olyan ház, amelyben egyetlen egy üres cella van (oda biztos beírható az adott szám), akkor azt kitölti. </summary>
-        /// <param name="num"> A tömb indexe, ahol keresni kell. (a beírandó szám) </param>
-        /// <param name="i"> A kitöltött cella sorindexe vagy -1</param>
-        /// <param name="j"> A kitöltött cella oszlopindexe vagy -1</param>
-        /// <returns> Ha talált egyedüli üres cellát egy házban, akkor true-val, egyébként false-szal. </returns>
-        private bool FindOnlyEmptyCellInHouses(int num, out int i, out int j)
+        /// <returns>True if an empty cell was found and could be filled in the house of the given cell, otherwise false.</returns>
+        private bool FindAndFillOnlyEmptyCellInHouses(int num, out int row, out int col)
         {
-            //Blokkban való kereséshez
             Pair emptyCell = new Pair();
 
-            //Végigmegyek az összes házon
+            //Iterating through the houses
             for (int k = 0; k < 9; k++)
             {
                 /* tombok[r] k indexű során megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű sorban melyik indexű elem az üres
                  * egyébként pedig -1-et*/
-                if ((j = FindOnlyEmptyCellInRow(num, k)) > 0)
+                if ((col = FindOnlyEmptyCellInRow(num, row: k)) > 0)
                 {
                     //beírom a megfelelő tömbökbe az r számot, és minden számtömbben beállítom a foglalt cellákat
-                    PutNumToExerciseAndMakeCellsOccupied(num, k, j);
+                    PutNumToExerciseAndMakeCellsOccupied(num, k, col);
                     /* megnézem, hogy a az az indexű cella, ahova most beírtam r-t, szerepel-e egy olyan tömbben, amiben még van 4 üres cella
                      * ha van ilyen, akkor elvégzi a megfelelő lépéseket*/
 
-                    i = k;
+                    row = k;
                     return true;
                 }
                 /* tombok[r] k indexű oszlopán megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű oszlopban melyik indexű elem
                  * az üres, egyébként pedig -1-et*/
-                else if ((i = FindOnlyEmptyCellInColumn(num, k)) > 0)
+                else if ((row = FindOnlyEmptyCellInColumn(num, col: k)) > 0)
                 {
-                    PutNumToExerciseAndMakeCellsOccupied(num, i, k);
+                    PutNumToExerciseAndMakeCellsOccupied(num, row, k);
 
-                    j = k;
+                    col = k;
                     return true;
                 }
                 /* tombok[num] k index-szel jelzett blokkján megy végig, és index-be belerakja a megtalált üres cella indexeit
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
-                else if (FindOnlyEmptyCellInBlock(num, k, out emptyCell))
+                else if (FindOnlyEmptyCellInBlock(num, out emptyCell, blockIndex: k))
                 {
-                    PutNumToExerciseAndMakeCellsOccupied(num, emptyCell.i, emptyCell.j);
+                    PutNumToExerciseAndMakeCellsOccupied(num, emptyCell.row, emptyCell.col);
 
-                    i = emptyCell.i;
-                    j = emptyCell.j;
+                    row = emptyCell.row;
+                    col = emptyCell.col;
                     return true;
                 }
             }
 
-            i = j = -1;
+            row = col = -1;
 
             return false;
         }
 
-        /// <summary> Beírja num-ot a megfelelő táblákba, és beállítja a foglalt cellákat </summary>
-        /// <param name="num"> A beírandó szám </param>
-        /// <param name="i"> A kitöltött cella sorindexe </param>
-        /// <param name="j"> A kitöltött cella oszlopindexe </param>
-        private void PutNumToExerciseAndMakeCellsOccupied(int num, int i, int j)
+        /// <summary>Fills in the passed cell and makes all the necessary houses occupied.</summary>
+        private void PutNumToExerciseAndMakeCellsOccupied(int num, int row, int col)
         {
-            //A feladat, majd num saját számtömbjébe beírom num-ot
-            se.Exercise[0][i, j] = se.Exercise[num][i, j] = num;
+            se.Exercise[0][row, col] = se.Exercise[num][row, col] = num;
 
-            //Végigmegyek a számtömbökön
-            for (int t = 1; t <= 9; t++)
+            for (int numberTable = 1; numberTable <= 9; numberTable++)
             {
-                //Ha nem tombok[r]-be akarok írni, akkor tombok[k]-ba írok -1-et az előbb kitöltött cella indexeivel megegyező cellába
-                if (t != num)
-                    se.MakeCellOccupied(t, i, j);
+                if (numberTable != num)
+                    se.MakeCellOccupied(numberTable, row, col);
             }
 
-            MakeHousesOccupied(num, i, j);
+            MakeHousesOccupied(num, row, col);
         }
 
         /// <summary>Megoldja a feladatot visszalépéses algoritmus használata nélkül.
@@ -411,7 +356,6 @@ namespace Sudoku.Controller
             //az üres cellák száma a generáláskori üres cellák száma lesz
             se.NumberOfEmptyCells = numberOfEmptyCells;
 
-            //majd a megold() függvény true-val tér vissza, ha a feladat megoldható, különben false-szal 
             return SolveExerciseWithoutBackTrack();
         }
 
@@ -478,7 +422,7 @@ namespace Sudoku.Controller
                         break;
                 }
 
-                //van értéke van||teli lesz
+                //van értéke van|teli lesz
                 van |= teli;
 
                 //Ha van olyan sor, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
@@ -529,7 +473,7 @@ namespace Sudoku.Controller
                         break;
                 }
 
-                //van értéke van||teli lesz
+                //van értéke van|teli lesz
                 van |= teli;
 
                 //Ha van olyan blokk, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
@@ -551,79 +495,68 @@ namespace Sudoku.Controller
             return false;
         }
 
-        /// <summary>tombok[t] i indexű során megy végig és megvizsgálja, hogy van-e egyedüli üres cella ebben a házban</summary>
-        /// <param name="t">A beírt szám</param>
-        /// <param name="i">A vizsgálandó sor</param>
-        /// <returns>Ha talál egyedüli üres cellát, akkor visszaadja, hogy az i indexű sorban melyik indexű elem az üres,
-        /// egyébként pedig -1-et</returns>
-        public int FindOnlyEmptyCellInRowOrColumn(int t, int i, bool sor)
+        /// <summary>Iterates through the 'i' row or column in the 'num' numbertable and searches for an only empty cell
+        /// in the row or column</summary>
+        /// <param name="i">The row or column to check.</param>
+        /// <returns>
+        /// The found row or column index if there is only one cell found.
+        /// -1 if there is more or less then 1 cell is found.
+        /// </returns>
+        public int FindOnlyEmptyCellInRowOrColumn(int num, int i, bool rowToCheck)
         {
-            //Lista az üresnek talált cellák oszlopindexének
             List<int> list = new List<int>(1);
-            //Végigmegyek a soron/oszlopon
+
             for (int k = 0; k < 9; k++)
             {
-                //Ha az aktuális cella üres, akkor elmentem az oszlop/sorindexet
-                if (sor ? se.IsCellEmpty(t, i, k) : se.IsCellEmpty(t, k, i))
+                if (rowToCheck ? se.IsCellEmpty(num, i, k) : se.IsCellEmpty(num, k, i))
                     list.Add(k);
 
-                //Ha már 2 cella is el van mentve, akkor nem kell tovább vizsgálni
-                if (list.Count == 2)
+                //Since we are searching for only one cell, if there are two, the search doesn't need to continue
+                if (list.Count > 1)
                     return -1;
             }
 
-            /*Ha egyetlen üres cellát találtam, akkor visszatérek a cella oszlop/sorindexével
-             * Ha nem találtam egy cellát se, akkor -1-gyel térek vissza*/
             return list.Count == 1 ? list.First() : -1;
         }
 
-        public int FindOnlyEmptyCellInRow(int t, int i)
+        public int FindOnlyEmptyCellInRow(int num, int row)
         {
-            return FindOnlyEmptyCellInRowOrColumn(t, i, true);
+            return FindOnlyEmptyCellInRowOrColumn(num, row, true);
         }
 
-        public int FindOnlyEmptyCellInColumn(int t, int j)
+        public int FindOnlyEmptyCellInColumn(int num, int col)
         {
-            return FindOnlyEmptyCellInRowOrColumn(t, j, false);
+            return FindOnlyEmptyCellInRowOrColumn(num, col, false);
         }
 
-        /// <summary>tombok[num] blockIndex-szel jelzett blokkján megy végig, és ind-be belerakja a megtalált üres cella indexeit</summary>
-        /// <param name="num">A beírt szám</param>
-        /// <param name="blockIndex">A vizsgálandó blokk száma</param>
-        /// <param name="indeces">Ebbe adom vissza a megtalált üres cella indexeit</param>
-        /// <returns>Ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal</returns>
-        public bool FindOnlyEmptyCellInBlock(int num, int blockIndex, out Pair indeces)
+        /// <summary>Searches for the only empty cell in the given block of the passed number table.
+        /// The indeces of the empty cell is stored in 'cell'.</summary>
+        /// <param name="blockIndex">The index of the block to check.</param>
+        /// <param name="cell">The only empty cell in the block.</param>
+        /// <returns>True if there is only one empty cell in the block, otherwise false.</returns>
+        public bool FindOnlyEmptyCellInBlock(int num, out Pair cell, int blockIndex)
         {
-            //A kimenő paraméterben lesznek az üresen talált cella indexei
-            indeces = new Pair();
+            cell = new Pair();
 
-            /* i: a bszam sorszámú blokk bal felső cellájának sorindexe
-             * j: a bszam sorszámú blokk bal felső cellájának oszlopindexeindexe
-             * elemszam: hány üres cellát találtam eddig a blokkban*/
-            int i = blockIndex - (blockIndex % 3);
-            int j = (blockIndex % 3) * 3;
+            int startRow = se.StartRowOfBlockByBlockIndex(blockIndex);
+            int startCol = se.StartColOfBlockByBlockIndex(blockIndex);
             int numberOfEmptyCellsInBlock = 0;
 
-            //Végigmegyek a blokkon
-            for (int r = i; r <= i + 2; r++)
+            for (int row = startRow; row <= startRow + 2; row++)
             {
-                for (int p = j; p <= j + 2; p++)
+                for (int col = startCol; col <= startCol + 2; col++)
                 {
-                    if (se.IsCellEmpty(num, r, p))
+                    if (se.IsCellEmpty(num, row, col))
                     {
-                        //Növelem az numberOfEmptyCellsInBlock-ot, és megnézem, hogy ha már 2 üres cellát találtam, akkor visszatérek false-szal
-                        if (++numberOfEmptyCellsInBlock == 2)
+                        if (++numberOfEmptyCellsInBlock > 1)
                             return false;
 
-                        //Egyébként elmentem az üres cella indexeit
-                        indeces.i = r;
-                        indeces.j = p;
+                        cell.row = row;
+                        cell.col = col;
                     }
                 }
             }
 
-            /* Ha egyetlen egy üres cellát találtam, akkor true-val térek vissza
-             * Ha nem találtam egyetlen egy üres cellát se, akkor pedig false-szal*/
             return numberOfEmptyCellsInBlock == 1;
         }
 
@@ -633,8 +566,8 @@ namespace Sudoku.Controller
         /// <returns>A megtalált üres cellákat tároló lista</returns>
         public List<Pair> FindXNumberOfEmptyCellsInBlocks(int num, int numberOfSoughtEmptyCells)
         {
-            /* tempList: ez tárolja az adott blokkban talált üres cellákat
-             * finalList: ez tárolja majd az összes eredményül kapott üres cellákat*/
+            /* emptyCellsInBlock: ez tárolja az adott blokkban talált üres cellákat
+             * allEmptyCells: ez tárolja majd az összes eredményül kapott üres cellákat*/
             List<Pair> emptyCellsInBlock = new List<Pair>();
             List<Pair> allEmptyCells = new List<Pair>();
 
@@ -645,13 +578,12 @@ namespace Sudoku.Controller
                 emptyCellsInBlock.Clear();
 
                 //Végigmegyek az adott blokkon
-                for (int i = b - (b % 3); i <= b - (b % 3) + 2; i++)
+                for (int row = b - (b % 3); row <= b - (b % 3) + 2; row++)
                 {
-                    for (int j = (b % 3) * 3; j <= (b % 3) * 3 + 2; j++)
+                    for (int col = (b % 3) * 3; col <= (b % 3) * 3 + 2; col++)
                     {
-                        //Ha találok egy üres cellát, akkor elmentem az emptyCellsInBlock-ba
-                        if (se.IsCellEmpty(num, i, j))
-                            emptyCellsInBlock.Add(new Pair(i, j));
+                        if (se.IsCellEmpty(num, row, col))
+                            emptyCellsInBlock.Add(new Pair(row, col));
 
                         //Ha már több cellát találtam üresen, mint amennyit keresek, akkor befejezem a vizsgálatot
                         if (emptyCellsInBlock.Count == numberOfSoughtEmptyCells + 1)
@@ -667,7 +599,6 @@ namespace Sudoku.Controller
                     allEmptyCells.AddRange(emptyCellsInBlock);
             }
 
-            //Visszaadom az eredményül kapott cellákat
             return allEmptyCells;
         }
 
@@ -676,26 +607,20 @@ namespace Sudoku.Controller
         /// <returns>Az üres cellákat tároló listával tér vissza.</returns>
         public List<Pair> FindEmptyCellsInNumberTable(int num)
         {
-            //Lista az üres cellák tárolására
-            List<Pair> list = new List<Pair>();
+            List<Pair> emptyCells = new List<Pair>();
 
-            //Végigmegyek a tömbön
             for (int p = 0; p < 81; p++)
             {
-                //Ha találok üres cellát,
-                if (se.IsCellEmpty(num, p / 9, p % 9))
+                if (se.IsCellEmpty(num, p))
                 {
-                    //akkor azt elmentem lista-ba
-                    list.Add(new Pair(p / 9, p % 9));
+                    emptyCells.Add(new Pair(p / 9, p % 9));
 
-                    //Ha 4-nél több üres cellát találtam, akkor befejezem a keresést
-                    if (list.Count == 5)
+                    if (emptyCells.Count > 4)
                         break;
                 }
             }
 
-            //Az üres cellák visszaadása
-            return list;
+            return emptyCells;
         }
     }
 }
