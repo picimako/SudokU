@@ -11,17 +11,19 @@ namespace Sudoku.Controller
         #region Members
 
         private static SudokuExercise ARRAY;
-        private int[][,] exercise;
+        private const int LAST_CELL_INDEX = 81;
+
         private SudokuType exerciseType;
         private SimpleSudokuController controller;
+        private KillerSudokuExercise killerExercise;
+
+        private int[][,] exercise;
         private int[,] solution;
         private int numberOfEmptyCells;
         private int firstEmptyCell;
         private bool isExerciseKiller;
         private bool isExerciseGenerated;
         private string exerciseFilePath;
-
-        private KillerSudokuExercise killerExercise;
         
         #endregion
 
@@ -100,7 +102,6 @@ namespace Sudoku.Controller
 
         public void InitExercise()
         {
-            //Az üres cellák száma 0 lesz
             numberOfEmptyCells = 0;
             CommonUtil.InitializeArray(out exercise);
         }
@@ -192,15 +193,13 @@ namespace Sudoku.Controller
             return (i / 3) * 3 + (j / 3);
         }
 
-        /// <summary>
-        /// Finds the first empty cell
-        /// </summary>
+        /// <summary>Finds the first empty cell</summary>
         /// <param name="p">The currently examined cell.</param>
         public void RecalculateFirstEmptyCell(int p)
         {
             if (p == firstEmptyCell && numberOfEmptyCells != 0)
             {
-                while (firstEmptyCell < 81 && !IsCellEmpty(0, firstEmptyCell))
+                while (firstEmptyCell < LAST_CELL_INDEX && !IsCellEmpty(0, firstEmptyCell))
                     firstEmptyCell++;
             }
         }
@@ -212,7 +211,12 @@ namespace Sudoku.Controller
 
         public bool IsExerciseEmpty()
         {
-            return numberOfEmptyCells == 81;
+            return numberOfEmptyCells == LAST_CELL_INDEX;
+        }
+
+        public bool IsCellTheLastInTable(int p)
+        {
+            return p == LAST_CELL_INDEX;
         }
 
         #endregion

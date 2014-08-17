@@ -293,6 +293,8 @@ namespace Sudoku.Controller
             //Iterating through the houses
             for (int k = 0; k < 9; k++)
             {
+                //TODO: összevagyolni az iterációk közötti eredményeket, de ha már volt egy true-val visszatért eredmény, akkor kilépni belőle
+
                 /* tombok[r] k indexű során megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű sorban melyik indexű elem az üres
                  * egyébként pedig -1-et*/
                 if ((col = FindOnlyEmptyCellInRow(num, row: k)) > 0)
@@ -372,10 +374,9 @@ namespace Sudoku.Controller
             CommonUtil.CopyJaggedThreeDimensionArray(exerciseBackup, se.Exercise);
             int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
 
-            //Megoldom a feladatot. Ha maradt üres cella, akkor backtrack-et is használni kell,
             if (!SolveExerciseWithoutBackTrack())
                 se.Solution = SolveExerciseWithBackTrack();
-            else //ha pedig nem maradt üres cella
+            else
             {
                 se.Solution = new int[9, 9];
                 //majd belemásolom a megoldott feladat értékeit
@@ -388,11 +389,11 @@ namespace Sudoku.Controller
             se.NumberOfEmptyCells = originalNumberOfEmptyCells;
         }
 
-        /// <summary>Visszalépéses algoritmus használatával megoldja a feladatot</summary>
+        /// <summary>Solves the exercise using backtrack algorithm.</summary>
+        /// <returns>The solved exercise.</returns>
         protected int[,] SolveExerciseWithBackTrack()
         {
             new BackTrackSolver().SolveExerciseWithBackTrack();
-            //Visszatérek a megoldott feladattal
             return se.Exercise[0];
         }
 
@@ -521,12 +522,12 @@ namespace Sudoku.Controller
 
         public int FindOnlyEmptyCellInRow(int num, int row)
         {
-            return FindOnlyEmptyCellInRowOrColumn(num, row, true);
+            return FindOnlyEmptyCellInRowOrColumn(num, row, rowToCheck: true);
         }
 
         public int FindOnlyEmptyCellInColumn(int num, int col)
         {
-            return FindOnlyEmptyCellInRowOrColumn(num, col, false);
+            return FindOnlyEmptyCellInRowOrColumn(num, col, rowToCheck: false);
         }
 
         /// <summary>Searches for the only empty cell in the given block of the passed number table.
@@ -540,11 +541,13 @@ namespace Sudoku.Controller
 
             int startRow = se.StartRowOfBlockByBlockIndex(blockIndex);
             int startCol = se.StartColOfBlockByBlockIndex(blockIndex);
+            int endRow = se.EndRowOfBlockByBlockIndex(blockIndex);
+            int endCol = se.EndColOfBlockByBlockIndex(blockIndex);
             int numberOfEmptyCellsInBlock = 0;
 
-            for (int row = startRow; row <= startRow + 2; row++)
+            for (int row = startRow; row <= endRow; row++)
             {
-                for (int col = startCol; col <= startCol + 2; col++)
+                for (int col = startCol; col <= endCol; col++)
                 {
                     if (se.IsCellEmpty(num, row, col))
                     {
@@ -560,41 +563,35 @@ namespace Sudoku.Controller
             return numberOfEmptyCellsInBlock == 1;
         }
 
-        /// <summary>Azokat a cellákat gyűjti össze, melyek olyan blokkokban vannak, amelyekben csak hanyCella darab üres cella van.</summary>
-        /// <param name="num">A tábla, ahol keresni kell</param>
-        /// <param name="numberOfSoughtEmptyCells">Ennyi üres cellát keresek egy blokkban</param>
-        /// <returns>A megtalált üres cellákat tároló lista</returns>
+        /// <summary>
+        /// Collect the cells (from the specified numbertable)
+        /// that are placed in blocks that have 'numberOfSoughtEmptyCells' number of empty cells.
+        /// <param name="numberOfSoughtEmptyCells">The number of empty cells needed.</param>
         public List<Pair> FindXNumberOfEmptyCellsInBlocks(int num, int numberOfSoughtEmptyCells)
         {
-            /* emptyCellsInBlock: ez tárolja az adott blokkban talált üres cellákat
-             * allEmptyCells: ez tárolja majd az összes eredményül kapott üres cellákat*/
             List<Pair> emptyCellsInBlock = new List<Pair>();
             List<Pair> allEmptyCells = new List<Pair>();
 
-            //Végigmegyek az egyes blokkokon
             for (int b = 0; b < 9; b++)
             {
-                //Még nem találtam üres cellát
+                //Haven't found empty cells
                 emptyCellsInBlock.Clear();
 
-                //Végigmegyek az adott blokkon
-                for (int row = b - (b % 3); row <= b - (b % 3) + 2; row++)
+                for (int row = se.StartRowOfBlockByBlockIndex(b); row <= se.EndRowOfBlockByBlockIndex(b); row++)
                 {
-                    for (int col = (b % 3) * 3; col <= (b % 3) * 3 + 2; col++)
+                    for (int col = se.StartColOfBlockByBlockIndex(b); col <= se.EndColOfBlockByBlockIndex(b); col++)
                     {
                         if (se.IsCellEmpty(num, row, col))
                             emptyCellsInBlock.Add(new Pair(row, col));
 
-                        //Ha már több cellát találtam üresen, mint amennyit keresek, akkor befejezem a vizsgálatot
-                        if (emptyCellsInBlock.Count == numberOfSoughtEmptyCells + 1)
+                        if (emptyCellsInBlock.Count > numberOfSoughtEmptyCells)
                             break;
                     }
 
-                    if (emptyCellsInBlock.Count == numberOfSoughtEmptyCells + 1)
+                    if (emptyCellsInBlock.Count > numberOfSoughtEmptyCells)
                         break;
                 }
 
-                //Ha az emptyCellsInBlock numberOfSoughtEmptyCells elemet tartalmaz (ennyi üres cellát találtam az aktuális blokkban), akkor az mehet az allEmptyCells-be
                 if (emptyCellsInBlock.Count == numberOfSoughtEmptyCells)
                     allEmptyCells.AddRange(emptyCellsInBlock);
             }
@@ -602,9 +599,7 @@ namespace Sudoku.Controller
             return allEmptyCells;
         }
 
-        /// <summary>tombok[r]-ből gyűjti össze az üres cellákat</summary>
-        /// <param name="num">A vizsgálandó tömb indexe</param>
-        /// <returns>Az üres cellákat tároló listával tér vissza.</returns>
+        /// <summary>Collects the first maximum 4 empty cells in the 'num' numbertable.</summary>
         public List<Pair> FindEmptyCellsInNumberTable(int num)
         {
             List<Pair> emptyCells = new List<Pair>();

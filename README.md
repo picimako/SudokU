@@ -1,5 +1,4 @@
-SudokU
-======
+# SudokU
 
 SudokU is basically a Sudoku game where you can solve Sudoku exercises. It is a hugely refactored version of one of my college projects.
 
@@ -13,8 +12,7 @@ It supports not just generating but importing exercises from simple text files i
 
 The application also includes some basic options for validating the cells during and after solving the exercise.
 
-Future plans and todos
-======================
+# Future plans and todos
 
 Plans contain the following items:
 - it currently has many non-English variable/method etc. names and comments, that should be changed to English
@@ -25,3 +23,16 @@ Plans contain the following items:
 - move forms and localization to XAML based implementation
 - add unit test project
 - include functional documentation about the generator and solver algorithms to the project Wiki page
+
+# Changelog
+
+## v0.4
+
+**Improvements**
+- Updated comments
+- Removed unnecessary comments
+- Renamed variables and did refactoring to aid readability in certain classes
+
+**Bugfixes**
+- typing invalid characters into a cell incremented the number of empty cells
+- cannot read KillerSudoku from file (missing object initializations)
