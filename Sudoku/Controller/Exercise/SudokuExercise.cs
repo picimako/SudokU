@@ -11,7 +11,7 @@ namespace Sudoku.Controller
         #region Members
 
         private static SudokuExercise ARRAY;
-        private const int LAST_CELL_INDEX = 81;
+        private const int LAST_CELL = 81;
 
         private SudokuType exerciseType;
         private SimpleSudokuController controller;
@@ -87,6 +87,11 @@ namespace Sudoku.Controller
         {
             get { return exerciseFilePath; }
             set { exerciseFilePath = value; }
+        }
+
+        public int LAST_CELL_INDEX
+        {
+            get { return LAST_CELL; }
         }
 
         public void InitKillerExercise()
@@ -199,7 +204,7 @@ namespace Sudoku.Controller
         {
             if (p == firstEmptyCell && numberOfEmptyCells != 0)
             {
-                while (firstEmptyCell < LAST_CELL_INDEX && !IsCellEmpty(0, firstEmptyCell))
+                while (firstEmptyCell < LAST_CELL && !IsCellEmpty(0, firstEmptyCell))
                     firstEmptyCell++;
             }
         }
@@ -211,12 +216,12 @@ namespace Sudoku.Controller
 
         public bool IsExerciseEmpty()
         {
-            return numberOfEmptyCells == LAST_CELL_INDEX;
+            return numberOfEmptyCells == LAST_CELL;
         }
 
         public bool IsCellTheLastInTable(int p)
         {
-            return p == LAST_CELL_INDEX;
+            return p == LAST_CELL;
         }
 
         #endregion

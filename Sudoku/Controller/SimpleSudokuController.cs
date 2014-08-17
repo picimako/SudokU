@@ -75,7 +75,7 @@ namespace Sudoku.Controller
             se.Exercise[removedValue] = new int[9, 9];
 
             //2.
-            for (int p = 0; p < 81; p++)
+            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
             {
                 if (se.Exercise[0][p / 9, p % 9] == removedValue)
                 {
@@ -218,7 +218,7 @@ namespace Sudoku.Controller
             {
                 cellFillingHappened = false;
 
-                for (int p = se.FirstEmptyCell; p < 81; p++)
+                for (int p = se.FirstEmptyCell; p < se.LAST_CELL_INDEX; p++)
                 {
                     //If the cell in not empty, then moving on to the next cell, as only empty cells are inspected.
                     if (!se.IsCellEmpty(0, p))
@@ -604,7 +604,7 @@ namespace Sudoku.Controller
         {
             List<Pair> emptyCells = new List<Pair>();
 
-            for (int p = 0; p < 81; p++)
+            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
             {
                 if (se.IsCellEmpty(num, p))
                 {

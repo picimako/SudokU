@@ -279,11 +279,11 @@ namespace Sudoku.Controller
             int p = 0;
 
             //Amíg nem lépek ki a tábláról és a vizsgált cella nem üres, átlépek a következő cellára
-            while (p < 81 && se.Killer.Exercise[p / 9, p % 9].CageIndex != 0)
+            while (p < se.LAST_CELL_INDEX && se.Killer.Exercise[p / 9, p % 9].CageIndex != 0)
                 p++;
 
             //Ha nem léptem ki a tábláról, akkor van üres cella, visszatérek az indexeivel
-            if (p < 81)
+            if (p < se.LAST_CELL_INDEX)
                 return new Pair(p / 9, p % 9);
             //Egyébként a (-1,-1) számpárral
             else

@@ -79,7 +79,7 @@ namespace Sudoku.Generate
                 se.Exercise = tombok;
 
                 //81 lesz az üres cellák száma, mert nem kell megadni egyetlen egy számot sem a feladatban
-                se.NumberOfEmptyCells = 81;
+                se.NumberOfEmptyCells = se.LAST_CELL_INDEX;
             }
             //Ha nem Killer
             else

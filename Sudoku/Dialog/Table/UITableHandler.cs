@@ -59,7 +59,7 @@ namespace Sudoku.Dialogusok
 
         public void ReloadTableForRestart(int[][,] exerciseBackup)
         {
-            for (int p = 0; p < 81; p++)
+            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
             {
                 //Since changing the value of the cell, the eventhandler gets temporarily removed
                 guiTable[p / 9, p % 9].TextChanged -= new System.EventHandler(this.TextBox_TextChanged);

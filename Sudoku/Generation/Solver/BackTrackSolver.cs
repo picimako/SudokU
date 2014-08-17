@@ -32,15 +32,11 @@ namespace Sudoku.Generate
 
         #region Private
 
-        /// <summary>Leellenőrzi, hogy a feladat [i,j] indexű cellájába beírható-e az n szám</summary>
-        /// <param name="i">A vizsgálandó cella sorindexe</param>
-        /// <param name="j">A vizsgálandó cella oszlopindexe</param>
-        /// <param name="n">A vizsgálandó érték</param>
-        /// <returns>Ha beírható a szám a megadott helyre, akkor true, egyébként false</returns>
-        private bool ellenorzes(int i, int j, int n)
+        /// <summary>Checks if the n number can be put into the [i,j] cell</summary>
+        /// <returns>True if n can be placed.</returns>
+        private bool CanNBePutIntoCell(int i, int j, int n)
         {
-            /* Ha nem tartalmazza egyik ház sem, tehát beírható n, akkor true
-             * Ha nem írható be n (tehát tartalmazza), akkor false*/
+            //If none of the houses contains n, then it can be placed.
             return !se.Ctrl.HousesContainValue(i, j, n);
         }
 
@@ -56,19 +52,18 @@ namespace Sudoku.Generate
             }
             else
             {
-                //Végigmegyek a számokon
-                for (int i = 1; i <= 9; i++)
+                //Looping through the numbers
+                for (int n = 1; n <= 9; n++)
                 {
-                    //Beírom az aktuális cellába a számot
-                    se.Exercise[0][p / 9, p % 9] = i;
+                    //Filling the current cell with the current number
+                    se.Exercise[0][p / 9, p % 9] = n;
 
-                    /* Leellenőrzöm, hogy beírható-e, és ha igen, 
-                     * akkor nézem a következő üres cellát, hogy mit írhatok oda be*/
-                    if (ellenorzes(p / 9, p % 9, i))
+                    //If n can be placed, then proceeding to the next cell
+                    if (CanNBePutIntoCell(p / 9, p % 9, n))
                         Solve(p + 1);
                 }
 
-                //Törlöm a beírt értéket
+                //Clearing the cell value
                 se.Exercise[0][p / 9, p % 9] = 0;
             }
         }
@@ -76,7 +71,7 @@ namespace Sudoku.Generate
         private int FindFirstEmptyCellAfterP(int pos)
         {
             int p = pos;
-            while (p < 81)
+            while (p < se.LAST_CELL_INDEX)
             {
                 if (se.Exercise[0][p / 9, p % 9] == 0)
                     break;

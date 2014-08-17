@@ -38,7 +38,7 @@ namespace Sudoku.Generate
                         return false;
 
                     //All cells are empty
-                    se.NumberOfEmptyCells = 81;
+                    se.NumberOfEmptyCells = se.LAST_CELL_INDEX;
                 }
             }
             else
