@@ -15,7 +15,7 @@ namespace Sudoku
             InitializeComponent();
             this.productName.Font = new Font(this.productName.Font.FontFamily, 13f, FontStyle.Regular);
             this.productName.Text = "SudokU";
-            this.version.Text = "0.4";
+            this.version.Text = "0.41";
             this.author.Text = "Tamás Balog";
         }
 

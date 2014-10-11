@@ -19,17 +19,12 @@ namespace Sudoku
             {
                 try
                 {
-                    //Ebbe olvasok be egy sort a fájlból
                     string line;
-                    //Sorindex az értékek eltárolásához
                     int indexOfRowToRead = 0;
-                    //Ebbe a tömbbe darabolom szét a beolvasott sort
                     string[] numbers;
 
-                    //Amíg a beolvasott sor nem üres
                     while ((line = reader.ReadLine()) != null)
                     {
-                        //A sor szétdarabolása szóközök mentén
                         numbers = line.Split(' ');
                         for (int j = 0; j < 9; j++)
                         {
@@ -39,19 +34,15 @@ namespace Sudoku
                                 se.NumberOfEmptyCells++;
                         }
 
-                        //Eltároltam az adott sor értékeit, lépek a következő sorba
                         indexOfRowToRead++;
                     }
 
-                    //Ha minden rendben volt, akkor true-val térek vissza
                     return true;
                 }
-                //Akkor dobódik, amikor az adatfolyam vége után próbálunk meg adatot olvasni
                 catch (EndOfStreamException)
                 {
                     return false;
                 }
-                //Ha valamelyik sorba több mindent írtunk, mint amennyi dolog megengedett, akkor nem jól adtuk meg a feladatot
                 catch (IndexOutOfRangeException)
                 {
                     return false;
@@ -69,14 +60,10 @@ namespace Sudoku
             {
                 try
                 {
-                    //Ebbe olvasok be egy sort a fájlból
                     string line;
-                    //Sorindex az értékek eltárolásához
                     int indexOfRowToRead = 0;
                     int numberOfCages;
                     int sumOfNumbersInCage;
-                    int sum = 0;
-                    //Ebbe a tömbbe darabolom szét a beolvasott sort
                     string[] numbers;
 
                     //Beolvasom, hogy mennyi ketrecem van
@@ -90,17 +77,11 @@ namespace Sudoku
                         se.Killer.Cages.Add(k, new Cage(sumOfNumbersInCage));
                     }
 
-                    //Összeadom a ketrecösszegeket
-                    foreach (Cage cage in se.Killer.Cages.Values)
-                        sum += cage.SumOfNumbers;
-
-                    //Ha a ketrecösszeg
-                    if (sum != 405)
+                    if (!IsSumOfValuesCorrect())
                         return false;
 
                     while ((line = reader.ReadLine()) != null)
                     {
-                        //A sor szétdarabolása szóközök mentén
                         numbers = line.Split(' ');
                         for (int j = 0; j < 9; j++)
                         {
@@ -113,23 +94,29 @@ namespace Sudoku
                             se.Killer.Cages[currentCageNumber].Cells.Add(new Pair(indexOfRowToRead, j));
                         }
 
-                        //Eltároltam az adott sor értékeit, lépek a következő sorba
                         indexOfRowToRead++;
                     }
-                    //Ha minden rendben volt, akkor true-val térek vissza
                     return true;
                 }
-                //Akkor dobódik, amikor az adatfolyam vége után próbálunk meg adatot olvasni
                 catch (EndOfStreamException)
                 {
                     return false;
                 }
-                //Ha valamelyik sorba több mindent írtunk, mint amennyi dolog megengedett, akkor nem jól adtuk meg a feladatot, tehát hamissal
                 catch (IndexOutOfRangeException)
                 {
                     return false;
                 }
             }
+        }
+
+        private static bool IsSumOfValuesCorrect()
+        {
+            SudokuExercise se = SudokuExercise.get;
+            int sumOfNumbers = 0;
+            foreach (Cage cage in se.Killer.Cages.Values)
+                sumOfNumbers += cage.SumOfNumbers;
+
+            return sumOfNumbers == 405;
         }
     }
 }

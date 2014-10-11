@@ -1,6 +1,6 @@
 # SudokU
 
-SudokU is basically a Sudoku game where you can solve Sudoku exercises. It is a hugely refactored version of one of my college projects.
+SudokU is basically a Sudoku game where you can solve Sudoku exercises. It is a refactored version of one of my college projects.
 
 It can create and meanwhile solve different types of exercises:
 - Simple sudoku
@@ -14,7 +14,7 @@ The application also includes some basic options for validating the cells during
 
 # Future plans and todos
 
-Plans contain the following items:
+Plans include the followings:
 - it currently has many non-English variable/method etc. names and comments, that should be changed to English
 - remove unnecessary comments
 - refactor and optimize code
@@ -26,6 +26,16 @@ Plans contain the following items:
 
 # Changelog
 
+## v0.41
+
+**Improvements**
+- Updated some comment. Removed some unnecesary comments.
+- Refactoring in exercise reading and simple sudoku processing
+
+**Bugfixes**
+- After reading Killer Sudoku exercise the cells had no background color but the cage sum values were displayed.
+
+
 ## v0.4
 
 **Improvements**
@@ -34,5 +44,5 @@ Plans contain the following items:
 - Renamed variables and did refactoring to aid readability in certain classes
 
 **Bugfixes**
-- typing invalid characters into a cell incremented the number of empty cells
-- cannot read KillerSudoku from file (missing object initializations)
+- Typing invalid characters into a cell incremented the number of empty cells.
+- Cannot read KillerSudoku from file (missing object initializations).

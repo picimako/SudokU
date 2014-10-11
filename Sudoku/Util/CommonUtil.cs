@@ -21,7 +21,7 @@ namespace Sudoku
         /// <summary>Copies the values in the source table to the target table.</summary>
         public static void CopyTwoDimensionArray(int[,] target, int[,] source)
         {
-            //target = source.Clone(); ???????
+            //target = (int[,])source.Clone();
             for (int p = 0; p < 81; p++)
                 target[p / 9, p % 9] = source[p / 9, p % 9];
         }

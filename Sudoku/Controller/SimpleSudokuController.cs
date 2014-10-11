@@ -567,6 +567,7 @@ namespace Sudoku.Controller
         /// Collect the cells (from the specified numbertable)
         /// that are placed in blocks that have 'numberOfSoughtEmptyCells' number of empty cells.
         /// <param name="numberOfSoughtEmptyCells">The number of empty cells needed.</param>
+        /// TODO: make sure to check if the refactor didn't break anything
         public List<Pair> FindXNumberOfEmptyCellsInBlocks(int num, int numberOfSoughtEmptyCells)
         {
             List<Pair> emptyCellsInBlock = new List<Pair>();
@@ -577,19 +578,15 @@ namespace Sudoku.Controller
                 //Haven't found empty cells
                 emptyCellsInBlock.Clear();
 
-                for (int row = se.StartRowOfBlockByBlockIndex(b); row <= se.EndRowOfBlockByBlockIndex(b); row++)
+                for (int row = se.StartRowOfBlockByBlockIndex(b); row <= se.EndRowOfBlockByBlockIndex(b) &&
+                    emptyCellsInBlock.Count <= numberOfSoughtEmptyCells; row++)
                 {
-                    for (int col = se.StartColOfBlockByBlockIndex(b); col <= se.EndColOfBlockByBlockIndex(b); col++)
+                    for (int col = se.StartColOfBlockByBlockIndex(b); col <= se.EndColOfBlockByBlockIndex(b) &&
+                        emptyCellsInBlock.Count <= numberOfSoughtEmptyCells; col++)
                     {
                         if (se.IsCellEmpty(num, row, col))
                             emptyCellsInBlock.Add(new Pair(row, col));
-
-                        if (emptyCellsInBlock.Count > numberOfSoughtEmptyCells)
-                            break;
                     }
-
-                    if (emptyCellsInBlock.Count > numberOfSoughtEmptyCells)
-                        break;
                 }
 
                 if (emptyCellsInBlock.Count == numberOfSoughtEmptyCells)
@@ -600,19 +597,18 @@ namespace Sudoku.Controller
         }
 
         /// <summary>Collects the first maximum 4 empty cells in the 'num' numbertable.</summary>
+        /// TODO: make sure to check if the refactor didn't break anything
         public List<Pair> FindEmptyCellsInNumberTable(int num)
         {
             List<Pair> emptyCells = new List<Pair>();
 
-            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            int p = 0;
+            while (p < se.LAST_CELL_INDEX && emptyCells.Count <= 4)
             {
                 if (se.IsCellEmpty(num, p))
-                {
                     emptyCells.Add(new Pair(p / 9, p % 9));
 
-                    if (emptyCells.Count > 4)
-                        break;
-                }
+                p++;
             }
 
             return emptyCells;
