@@ -91,6 +91,7 @@
     <Compile Include="Generation\FullTableGenerator.cs" />
     <Compile Include="Generation\GeneratorUtil.cs" />
     <Compile Include="Generation\NumberRemover.cs" />
+    <Compile Include="Generation\SudokuCreationType.cs" />
     <Compile Include="Generation\SudokuType.cs" />
     <Compile Include="Language\LocalizationHandler.cs" />
     <Compile Include="Controller\Exercise\Cage.cs" />

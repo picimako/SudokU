@@ -28,7 +28,7 @@ namespace Sudoku.Generate
                     if (!se.Ctrl.ReadSudoku(se.ExerciseFilePath))
                         return false;
 
-                    se.Ctrl.SolveExercise();
+                    se.Ctrl.SolveReadExercise();
                 }
                 else
                 {

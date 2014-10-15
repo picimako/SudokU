@@ -48,7 +48,7 @@ namespace Sudoku.Verifier
             if (Boolean.Parse(conf.GetConfig("rosszakMutat")))
             {
                 bool isSolutionCorrect = true;
-                for (int p = 0; p < 81; p++)
+                for (int p = 0; p < se.LAST_CELL_INDEX; p++)
                 {
                     ParseValueOfCurrentCell(p);
                     if (!IsFieldEmpty(p) && !IsFieldValueMatchValueInSolution(currentCellValue, p))
@@ -65,7 +65,7 @@ namespace Sudoku.Verifier
             else if (Boolean.Parse(conf.GetConfig("hanyRosszMutat")))
             {
                 int numberOfIncorrectCells = 0;
-                for (int p = 0; p < 81; p++)
+                for (int p = 0; p < se.LAST_CELL_INDEX; p++)
                 {
                     ParseValueOfCurrentCell(p);
                     if (!IsFieldEmpty(p) && !IsFieldValueMatchValueInSolution(currentCellValue, p))
@@ -75,7 +75,7 @@ namespace Sudoku.Verifier
             }
             else if (Boolean.Parse(conf.GetConfig("joVagyRosszMutat")))
             {
-                for (int p = 0; p < 81; p++)
+                for (int p = 0; p < se.LAST_CELL_INDEX; p++)
                 {
                     ParseValueOfCurrentCell(p);
                     if (!IsFieldValueMatchValueInSolution(currentCellValue, p))

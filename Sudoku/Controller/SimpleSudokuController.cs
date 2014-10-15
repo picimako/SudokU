@@ -361,31 +361,26 @@ namespace Sudoku.Controller
             return SolveExerciseWithoutBackTrack();
         }
 
-        /// <summary>Megoldja a beolvasott feladatot és visszaadja a feladat megoldását</summary>
-        public void SolveExercise()
+        public void SolveReadExercise()
         {
             GenerateValuesInNumberTables();
 
-            //Létrehozok egy tömböt a beolvasott feladat elmentésére
-            int[][,] exerciseBackup;
-            CommonUtil.InitializeArray(out exerciseBackup);
-
-            //Elmentek minden táblát (a beolvasott feladatot)
-            CommonUtil.CopyJaggedThreeDimensionArray(exerciseBackup, se.Exercise);
+            int[][,] exerciseInitialState;
+            CommonUtil.InitializeArray(out exerciseInitialState);
+            CommonUtil.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
             int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
 
             if (!SolveExerciseWithoutBackTrack())
+                //WARN: investigate this part as there may be a problem generating exercises that need solving
+                //with backtrack
                 se.Solution = SolveExerciseWithBackTrack();
             else
             {
                 se.Solution = new int[9, 9];
-                //majd belemásolom a megoldott feladat értékeit
                 CommonUtil.CopyTwoDimensionArray(se.Solution, se.Exercise[0]);
             }
 
-            /* tombok-be visszaállítom a feladat beolvasás és számtömb feltöltés utáni állapotát, mivel ezekkel a táblaállapotokkal fog dolgozni
-             * a program a feladat kitöltésekor. Az üres cellák számát is visszaállítom*/
-            CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, exerciseBackup);
+            CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, exerciseInitialState);
             se.NumberOfEmptyCells = originalNumberOfEmptyCells;
         }
 
@@ -443,30 +438,23 @@ namespace Sudoku.Controller
              * teli: true az éppen vizsgált ház csak -1-es értéket tartalmaz, egyébként false*/
             bool van = false, teli = false;
 
-            if (IsThereNotFillableRow(t, ref van, ref teli) || IsThereNotFillableColumn(t, ref van, ref teli)
-                || IsThereNotFillableBlock(t, ref van, ref teli))
-            {
-                return true;
-            }
-
-            return false;
+            return IsThereNotFillableRow(t, ref van, ref teli) || IsThereNotFillableColumn(t, ref van, ref teli)
+                || IsThereNotFillableBlock(t, ref van, ref teli);
         }
 
         private bool IsThereNotFillableBlock(int num, ref bool van, ref bool teli)
         {
-            //Végigvizsgálom az összes blokkot
             for (int bl = 0; bl < 9; bl++)
             {
                 //Csak -1-esek vannak
                 teli = true;
 
-                //Végigmegyek a blokkon
-                for (int i = se.StartRowOfBlockByBlockIndex(bl); i <= se.EndRowOfBlockByBlockIndex(bl); i++)
+                for (int row = se.StartRowOfBlockByBlockIndex(bl); row <= se.EndRowOfBlockByBlockIndex(bl); row++)
                 {
-                    for (int j = se.StartColOfBlockByBlockIndex(bl); j <= se.EndColOfBlockByBlockIndex(bl); j++)
+                    for (int col = se.StartColOfBlockByBlockIndex(bl); col <= se.EndColOfBlockByBlockIndex(bl); col++)
                     {
                         //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a blokk vizsgálatát
-                        if (IsThereOccupiedCell(num, i, j, ref teli))
+                        if (IsThereOccupiedCell(num, row, col, ref teli))
                             break;
                     }
 
@@ -484,10 +472,10 @@ namespace Sudoku.Controller
             return false;
         }
 
-        private bool IsThereOccupiedCell(int num, int i, int j, ref bool teli)
+        private bool IsThereOccupiedCell(int num, int row, int col, ref bool teli)
         {
             //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem az oszlop vizsgálatát
-            if (se.Exercise[num][i, j] != -1)
+            if (se.Exercise[num][row, col] != -1)
             {
                 teli = false;
                 return true;
@@ -505,16 +493,12 @@ namespace Sudoku.Controller
         /// </returns>
         public int FindOnlyEmptyCellInRowOrColumn(int num, int i, bool rowToCheck)
         {
-            List<int> list = new List<int>(1);
-
-            for (int k = 0; k < 9; k++)
+            List<int> list = new List<int>(2);
+            //Since we are searching for only one cell, if there are two, the search doesn't need to continue
+            for (int k = 0; k < 9 && list.Count <= 1; k++)
             {
                 if (rowToCheck ? se.IsCellEmpty(num, i, k) : se.IsCellEmpty(num, k, i))
                     list.Add(k);
-
-                //Since we are searching for only one cell, if there are two, the search doesn't need to continue
-                if (list.Count > 1)
-                    return -1;
             }
 
             return list.Count == 1 ? list.First() : -1;

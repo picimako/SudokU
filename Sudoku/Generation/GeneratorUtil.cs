@@ -81,21 +81,19 @@ namespace Sudoku.Generate
         }
 
         /// <summary> Beírja r-t a megfelelő táblákba, és beállítja a foglalt cellákat </summary>
-        /// <param name="r"> A beírandó szám </param>
-        /// <param name="i"> A kitöltött cella sorindexe </param>
-        /// <param name="j"> A kitöltött cella oszlopindexe </param>
+        /// <param name="numToFill"> A beírandó szám </param>
+        /// <param name="row"> A kitöltött cella sorindexe </param>
+        /// <param name="col"> A kitöltött cella oszlopindexe </param>
         /// <param name="kellSzamtombKitolt"> Megadja, hogy el kell-e végezni a foglalt cellák beállítását tombok[r]-ben </param>
-        public void SetValueOfFilledCell(int r, int i, int j, bool kellSzamtombKitolt)
+        public void SetValueOfFilledCell(int numToFill, int row, int col, bool kellSzamtombKitolt)
         {
-            //A feladat, majd r saját számtömbjébe beírom r-t
-            se.Exercise[0][i, j] = se.Exercise[r][i, j] = r;
+            se.Exercise[0][row, col] = se.Exercise[numToFill][row, col] = numToFill;
 
-            //Végigmegyek a számtömbökön
-            for (int k = 1; k <= 9; k++)
+            for (int num = 1; num <= 9; num++)
             {
                 //Ha nem tombok[r]-be akarok írni, akkor tombok[k]-ba írok -1-et az előbb kitöltött cella indexeivel megegyező cellába
-                if (k != r)
-                    se.Exercise[k][i, j] = -1;
+                if (num != numToFill)
+                    se.Exercise[num][row, col] = -1;
             }
 
             /* Ha el kell végezni, akkor elvégzem tombok[r]-ben a foglalt cellák beállítását
@@ -103,7 +101,7 @@ namespace Sudoku.Generate
              * üres cella van, ekkor csak be kell írni a számot, de ebben a tömbben már felesleges a szükséges cellákat -1-re (foglaltra állítani)
              * mert már minden cella r vagy -1 értékű*/
             if (kellSzamtombKitolt)
-                se.Ctrl.MakeHousesOccupied(r, i, j);
+                se.Ctrl.MakeHousesOccupied(numToFill, row, col);
         }
 
         #endregion

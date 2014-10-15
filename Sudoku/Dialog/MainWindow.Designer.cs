@@ -168,7 +168,7 @@
             this.verifyExerciseButton.Size = new System.Drawing.Size(112, 23);
             this.verifyExerciseButton.TabIndex = 19;
             this.verifyExerciseButton.UseVisualStyleBackColor = true;
-            this.verifyExerciseButton.Click += new System.EventHandler(this.ellenorizButton_Click);
+            this.verifyExerciseButton.Click += new System.EventHandler(this.VerifyButton_Click);
             // 
             // ellenorzesLabel
             // 
@@ -186,7 +186,7 @@
             this.stopExerciseButton.Size = new System.Drawing.Size(112, 36);
             this.stopExerciseButton.TabIndex = 22;
             this.stopExerciseButton.UseVisualStyleBackColor = true;
-            this.stopExerciseButton.Click += new System.EventHandler(this.feladatStopButton_Click);
+            this.stopExerciseButton.Click += new System.EventHandler(this.ExerciseStopButton_Click);
             // 
             // killerBox
             // 

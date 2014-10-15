@@ -47,10 +47,11 @@ namespace Sudoku.Dialogusok
         public UITableHandler(Button verifyExerciseButton, Color[] colors, Label numberOfEmptyCellsLabel,
             TableLayoutPanel exerciseTable)
         {
+            this.exerciseTable = exerciseTable;
             this.verifyExerciseButton = verifyExerciseButton;
             this.colors = colors;
             this.numberOfEmptyCellsLabel = numberOfEmptyCellsLabel;
-            this.exerciseTable = exerciseTable;
+            CreateTableOnGUI();
         }
 
         #endregion
@@ -151,6 +152,30 @@ namespace Sudoku.Dialogusok
                     exerciseTable.Controls.Add(guiTable[row, col], col, row);
                 }
             }
+        }
+
+        public void CreateTableOnGUI()
+        {
+            //Making the table not visible to speed up the drawing
+            exerciseTable.Visible = false;
+
+            //No rows and columns in the table initially
+            exerciseTable.RowStyles.Clear();
+            exerciseTable.ColumnStyles.Clear();
+
+            //The table has 9 row and 9 columns
+            exerciseTable.RowCount = exerciseTable.ColumnCount = 9;
+
+            for (int i = 0; i < 9; i++)
+            {
+                //Creating new row. It's height is 11% of the height of the table
+                exerciseTable.RowStyles.Add(new RowStyle(SizeType.Percent, 11f));
+                //Creating new column. It's width is 11% of the width of the table
+                exerciseTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 11f));
+            }
+
+            exerciseTable.BackColor = SystemColors.Window;
+            exerciseTable.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
         }
 
         #endregion

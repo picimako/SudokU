@@ -14,7 +14,7 @@ namespace Sudoku.Dialogusok
         #region Members
 
         private MenuStrip menu;
-        private EventHandler[] eventHandlers;
+        private Dictionary<SudokuCreationType, EventHandler> eventHandlers;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
         private ToolStripMenuItem fileMenu;
@@ -25,11 +25,20 @@ namespace Sudoku.Dialogusok
 
         #region Methods
 
+        #region Constructor
+
+        public MenuHandler()
+        {
+            eventHandlers = new Dictionary<SudokuCreationType, EventHandler>();
+        }
+
+        #endregion
+
         #region Setters
 
-        public void SetEventHandlers(params EventHandler[] handlers)
+        public void AddEventHandler(SudokuCreationType type, EventHandler handler)
         {
-            this.eventHandlers = handlers;
+            this.eventHandlers.Add(type, handler);
         }
 
         #endregion
@@ -63,7 +72,6 @@ namespace Sudoku.Dialogusok
             menu.Items.Add(fileMenu);
             CreateGenerateSubMenu(fileMenu);
             CreateOpenSubMenu(fileMenu);
-            //Adding exit menu
             fileMenu.DropDownItems.Add(CreateMenuItem("exit_app", "exit_app", delegate(object sender, EventArgs e) { Application.Exit(); }));
         }
 
@@ -71,24 +79,18 @@ namespace Sudoku.Dialogusok
         {
             generateSubMenu = CreateMenuItem("generate", "generate");
             fileMenu.DropDownItems.Add(generateSubMenu);
-            //Sudoku
-            generateSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku", "", eventHandlers[0]));
-            //Sudoku-X
-            generateSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku-X", "", eventHandlers[1]));
-            //Center Dot Sudoku
-            generateSubMenu.DropDownItems.Add(CreateMenuItem("centerdot", "centerdot", eventHandlers[2]));
+            generateSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku", "", eventHandlers[SudokuCreationType.GEN_SUD]));
+            generateSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku-X", "", eventHandlers[SudokuCreationType.GEN_SUDX]));
+            generateSubMenu.DropDownItems.Add(CreateMenuItem("centerdot", "centerdot", eventHandlers[SudokuCreationType.GEN_CENT]));
         }
 
         private void CreateOpenSubMenu(ToolStripMenuItem fileMenu)
         {
             openSubMenu = CreateMenuItem("open", "open");
             fileMenu.DropDownItems.Add(openSubMenu);
-            //Sudoku
-            openSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku", "", eventHandlers[3]));
-            //Sudoku-X
-            openSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku-X", "", eventHandlers[4]));
-            //Center Dot Sudoku
-            openSubMenu.DropDownItems.Add(CreateMenuItem("centerdot", "centerdot", eventHandlers[5]));
+            openSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku", "", eventHandlers[SudokuCreationType.OPEN_SUD]));
+            openSubMenu.DropDownItems.Add(CreateMenuItem("Sudoku-X", "", eventHandlers[SudokuCreationType.OPEN_SUDX]));
+            openSubMenu.DropDownItems.Add(CreateMenuItem("centerdot", "centerdot", eventHandlers[SudokuCreationType.OPEN_CENT]));
         }
 
         private ToolStripMenuItem CreateMenuItem(string caption, string locId, params EventHandler[] handler)

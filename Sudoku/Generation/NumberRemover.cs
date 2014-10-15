@@ -38,7 +38,6 @@ namespace Sudoku.Generate
         {
             i = random.Next(0, 9);
             j = random.Next(0, 9);
-            //Eltárolom az [i,j] indexű cellában levő értéket
             cellValue = se.Exercise[0][i, j];
         }
 

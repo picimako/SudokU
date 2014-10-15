@@ -18,8 +18,6 @@ namespace Sudoku.Dialogusok
 
         //a feladat újrakezdéséhez ebbe mentem az üres cellák számát a feladat kezdetekor
         private int uresCellakSzama;
-
-        //Ezen osztály segítségével hozok létre illetve olvatatok be feladatot
         private ExerciseGeneratorInitializer generatorInitializer;
 
         private MenuHandler menuHandler;
@@ -32,9 +30,9 @@ namespace Sudoku.Dialogusok
         public SudokuApp()
         {
             InitializeComponent();
-            //Ablak maximalizálási lehetősége letiltva
+            //Window maximalization is disabled
             this.MaximizeBox = false;
-            //Az ablakot nem lehet átméretezni
+            //Window resizing is disabled
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             GenerateColors();
         }
@@ -42,8 +40,6 @@ namespace Sudoku.Dialogusok
         private void SudokuApp_Load(object sender, EventArgs e)
         {
             BuildMenuBar();
-            CreateTableOnGUI();
-
             tableHandler = new UITableHandler(verifyExerciseButton, colors, numberOfEmptyCellsLabel, exerciseTable);
             se.ExerciseType = SudokuType.SimpleSudoku;
             conf.ExerciseInProgress = false;
@@ -55,23 +51,30 @@ namespace Sudoku.Dialogusok
 
         private void SetFormControlDefaultValues()
         {
-            //A feladat újrakezdése, szüneteltetése, megállítása és ellenőrzése gombok inaktívak lesznek
-            restartExerciseButton.Enabled = stopExerciseButton.Enabled = verifyExerciseButton.Enabled = false;
+            SetButtonDefaultStates();
+            SetDifficultyBarDefaultStatesAndValues();
+            SetSudokuTypeButtonTags();
+        }
 
-            //A nehézség beállítására szolgáló csúszka legkisebb értéke 1, legnagyobb értéke pedig 6 lesz
+        private void SetButtonDefaultStates()
+        {
+            restartExerciseButton.Enabled = stopExerciseButton.Enabled = verifyExerciseButton.Enabled = false;
+        }
+
+        private void SetDifficultyBarDefaultStatesAndValues()
+        {
             difficultyBar.Minimum = 0;
             difficultyBar.Maximum = 6;
+            killerDifficultyBar.Minimum = 1;
+            killerDifficultyBar.Maximum = 7;
+            killerDifficultyBar.Visible = killerDifficultyLabel.Visible = false;
+        }
 
+        private void SetSudokuTypeButtonTags()
+        {
             sudButton.Tag = SudokuType.SimpleSudoku;
             xButton.Tag = SudokuType.SudokuX;
             centerButton.Tag = SudokuType.CenterDot;
-
-            //A Killer feladat nehézségét állító csúszka legkisebb értéke 1, legnagyobb értéke pedig 7 lesz
-            killerDifficultyBar.Minimum = 1;
-            killerDifficultyBar.Maximum = 7;
-
-            //Elrejtem a csúszkát és a hozzá tartozó címkét
-            killerDifficultyBar.Visible = killerDifficultyLabel.Visible = false;
         }
 
         private void GenerateColors()
@@ -84,8 +87,14 @@ namespace Sudoku.Dialogusok
 
         private void BindEventHandlers()
         {
-            difficultyBar.ValueChanged += delegate(object sender, EventArgs e) { difficultyLabel.Text = loc.GetLoc("difficulty") + ": " + difficultyBar.Value.ToString(); };
-            killerDifficultyBar.ValueChanged += delegate(object sender, EventArgs e) { killerDifficultyLabel.Text = "Killer " + loc.GetLoc("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString(); };
+            difficultyBar.ValueChanged += delegate(object sender, EventArgs e)
+            {
+                difficultyLabel.Text = loc.GetLoc("difficulty") + ": " + difficultyBar.Value.ToString();
+            };
+            killerDifficultyBar.ValueChanged += delegate(object sender, EventArgs e)
+            {
+                killerDifficultyLabel.Text = "Killer " + loc.GetLoc("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
+            };
             killerBox.CheckedChanged += delegate(object sender, EventArgs e)
             {
                 /* Killer vagy nem Killer feladat a Killer Sudoku-hoz tartozó checkbox értéke alapján,
@@ -115,34 +124,6 @@ namespace Sudoku.Dialogusok
             CreateExercise(true);
         }
 
-        /// <summary> Táblázat készítése. </summary>
-        private void CreateTableOnGUI()
-        {
-            //Making the table not visible to speed up the drawing
-            exerciseTable.Visible = false;
-
-            //A táblázatnak ne legyen egy sora és oszlopa se
-            exerciseTable.RowStyles.Clear();
-            exerciseTable.ColumnStyles.Clear();
-
-            //A tábla felosztásának kialakítása. A táblázat 9 sorból és 9 oszlopból fog állni
-            exerciseTable.RowCount = exerciseTable.ColumnCount = 9;
-
-            //Cellák kialakítása sorok és oszlopok hozzáadásával
-            for (int i = 0; i < 9; i++)
-            {
-                //Új sor kialakítása, melynek magassága a tábla magasságának 11%-a
-                exerciseTable.RowStyles.Add(new RowStyle(SizeType.Percent, 11f));
-                //Új oszlop kialakítása, melynek szélessége a tábla szélességének 11%-a
-                exerciseTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 11f));
-            }
-
-            exerciseTable.BackColor = SystemColors.Window;
-
-            //Cellakeretek stílusának beállítása sima vonalra
-            exerciseTable.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
-        }
-
         /// <summary> Feladat beolvasása vagy generálása, illetve a táblázat feltöltését végzi el </summary>
         /// <param name="isExerciseGenerated"> Megadja, hogy generált feladatról van szó vagy sem </param>
         private void CreateExercise(bool isExerciseGenerated)
@@ -150,15 +131,11 @@ namespace Sudoku.Dialogusok
             se.IsExerciseGenerated = isExerciseGenerated;
 
             //Ha nem generált feladatról van szó és a feladat választása ablakban Mégsét nyomok, ne történjen semmi
-            if (!se.IsExerciseGenerated && !vanValasztottFeladat())
+            if (!se.IsExerciseGenerated && !HasSelectedFileToOpen())
                 return;
 
-            //Inicializálom a keszit objektumot, ami a megadott fajtájú feladat generálására lesz képes
             generatorInitializer = new ExerciseGeneratorInitializer();
 
-            /* generaltFeladat adja meg, hogy a feladatot beolvasni kell vagy generálni
-             * nehezsegSav.Value adja meg a feladat nehézségét, amit majd a backtrack algoritmusban használok. 
-             * killerSav.Value adja meg a Killer feladat nehézségét*/
             if (!generatorInitializer.GenerateExercise(difficultyBar.Value, killerDifficultyBar.Value))
             {
                 //Ha nem generált feladatról van szó, akkor a beolvasás lehet sikertelen, ebben az esetben pedig semmi más ne történjen
@@ -184,7 +161,6 @@ namespace Sudoku.Dialogusok
                 return;
             }
             
-            //A felhasználói felületen kitöltöm a táblázatot a feladattal
             tableHandler.FillTableOnGUI();
 
             //Inicializálom az exerciseBackup tombot, melyben ezután lementem a feladatot, a feladat esetleges újrakezdéséhez
@@ -194,8 +170,7 @@ namespace Sudoku.Dialogusok
             CommonUtil.CopyJaggedThreeDimensionArray(exerciseBackup, se.Exercise);
             uresCellakSzama = se.NumberOfEmptyCells;
 
-            //Beállítom a gombok állapotát
-            gombokBeallit(true);
+            SetButtonStates(true);
 
             //A beolvasás gomb, valamint a Megnyitás és Generálás menü elemei inaktívak lesznek
             beolvasButton.Enabled = false;
@@ -207,7 +182,6 @@ namespace Sudoku.Dialogusok
             numberOfEmptyCellsLabel.Text = loc.GetLoc("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
-        //Feladat újrakezdéséhez
         private void RestartExerciseButton_Click(object sender, EventArgs e)
         {
             //Visszaállítom a feladat kezdeti értékeit, illetve az üres cellák számát
@@ -226,26 +200,14 @@ namespace Sudoku.Dialogusok
             numberOfEmptyCellsLabel.Text = loc.GetLoc("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
-        /// <summary>Megnyit egy fájlválasztó dialógusablakot</summary>
-        /// <returns>Ha OK-t nyomtam az ablakban, akkor true, egyébként false</returns>
-        private bool vanValasztottFeladat()
+        private bool HasSelectedFileToOpen()
         {
-            //Fájlválasztó ablak létrehozása
             OpenFileDialog selectExerciseDialog = new OpenFileDialog();
-
-            //A dialógus ablak megnyitáskor melyik könyvtár tartalmát mutassa
             selectExerciseDialog.InitialDirectory = conf.GetConfig("alapFajlUtvonal");
-
-            //Az ablak címsorában megjelenő szöveg
             selectExerciseDialog.Title = loc.GetLoc("select_file");
-
-            //A választható fájl-kiterjesztések
             selectExerciseDialog.Filter = loc.GetLoc("text_files") + "(*.txt)|*.txt";
-
-            //Egy változóba beteszem a fájl útvonalát, majd a fájl beolvasásakor ezt a változót adom meg útvonalnak
             if (selectExerciseDialog.ShowDialog() == DialogResult.OK)
             {                
-                //Az első "paraméter" adja meg a fájl útvonalát (a fájlnév nélkül), a második pedig a fájl nevét
                 se.ExerciseFilePath = Path.GetDirectoryName(selectExerciseDialog.FileName) + 
                     "\\" + Path.GetFileName(selectExerciseDialog.FileName);
                 
@@ -301,23 +263,19 @@ namespace Sudoku.Dialogusok
         private void BuildMenuBar()
         {
             menuHandler = new MenuHandler();
-            menuHandler.SetEventHandlers(
-                new EventHandler(GenerateSimpleSudoku),
-                new EventHandler(GenerateSudokuX),
-                new EventHandler(GenerateCenterDot),
-                new EventHandler(OpenSimpleSudoku),
-                new EventHandler(OpenSudokuX),
-                new EventHandler(OpenCenterDot));
+            menuHandler.AddEventHandler(SudokuCreationType.GEN_SUD, GenerateSimpleSudoku);
+            menuHandler.AddEventHandler(SudokuCreationType.GEN_SUDX, GenerateSudokuX);
+            menuHandler.AddEventHandler(SudokuCreationType.GEN_CENT, GenerateCenterDot);
+            menuHandler.AddEventHandler(SudokuCreationType.OPEN_SUD, OpenSimpleSudoku);
+            menuHandler.AddEventHandler(SudokuCreationType.OPEN_SUDX, OpenSudokuX);
+            menuHandler.AddEventHandler(SudokuCreationType.OPEN_CENT, OpenCenterDot);
             this.Controls.Add(menuHandler.BuildMainDialogMenu());
         }
 
-        /// <summary> Elvégzi a változó feliratú címkék feliratozását. </summary>
         private void SetLabels()
         {
-            //A nehezsegSav-hoz tartozó címke feliratozása
             difficultyLabel.Text = loc.GetLoc("difficulty") + ": " + difficultyBar.Value.ToString();
 
-            //A killerSav-hoz tartozó címke feliratozása
             killerDifficultyLabel.Text = "Killer " + loc.GetLoc("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
 
             exerciseTypeGroup.Text = loc.GetLoc("types") + ":";
@@ -342,49 +300,35 @@ namespace Sudoku.Dialogusok
         }
 
         //A 3 fajta ellenőrzés végrehajtására
-        private void ellenorizButton_Click(object sender, EventArgs e)
+        private void VerifyButton_Click(object sender, EventArgs e)
         {
             ExerciseResultVerifier.InitVerifier(verifyExerciseLabel, tableHandler.GUITable);
             ExerciseResultVerifier.VerifyResult();
         }
 
-        //Feladat megállításakor fut le
-        private void feladatStopButton_Click(object sender, EventArgs e)
+        private void ExerciseStopButton_Click(object sender, EventArgs e)
         {
-            //Beállítom a gombok állapotát
-            gombokBeallit(false);
-
-            //Az ellenőrzés gomb inaktív lesz
+            SetButtonStates(false);
             verifyExerciseButton.Enabled = false;
-
-            //Az ellenőrzéshez tartozó címkének nem lesz szövege
             verifyExerciseLabel.Text = "";
-
-            //A beolvasás gomb inaktív lesz
             beolvasButton.Enabled = true;
-
-            //Törlöm a felhasználói felületen levő tábla vezérlőit (azaz a TextBox-okat)
             exerciseTable.Controls.Clear();
-
-            //Üres cellák számának címkéje nem látható
             numberOfEmptyCellsLabel.Visible = false;
-
-            //Megnyitás és Generálás menü elemei aktívak lesznek
             menuHandler.EnableOpenAndGenerateMenuItems();
         }
 
         /// <summary>Beállítja a kezelőfelületen levő gombok állapotát</summary>
-        /// <param name="status">A táblázat láthatósága alapján kap értéket</param>
-        private void gombokBeallit(bool status)
+        /// <param name="state">A táblázat láthatósága alapján kap értéket</param>
+        private void SetButtonStates(bool state)
         {
             //Feladat létének, feladat újrakezdése, szüneteltetése és megállítása gombok, valamint a táblázat láthatóságának állítása
-            conf.ExerciseInProgress = restartExerciseButton.Enabled = stopExerciseButton.Enabled = exerciseTable.Visible = status;
+            conf.ExerciseInProgress = restartExerciseButton.Enabled = stopExerciseButton.Enabled = exerciseTable.Visible = state;
 
             //A generálás, valamint a nehezsegSav csúszka, fajtacsoport és Killer checkbox engedélyezésének/tiltásának beállítása
-            generalButton.Enabled = exerciseTypeGroup.Enabled = killerBox.Enabled = killerDifficultyBar.Enabled = !status;
+            generalButton.Enabled = exerciseTypeGroup.Enabled = killerBox.Enabled = killerDifficultyBar.Enabled = !state;
 
             //Nehézségsáv engedélyezése vagy tiltása
-            difficultyBar.Enabled = (killerBox.Checked || (status == true)) ? false : true;
+            difficultyBar.Enabled = killerBox.Checked || state ? false : true;
         }
     }
 }

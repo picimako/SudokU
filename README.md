@@ -23,6 +23,15 @@ Plans include the followings:
 - move forms and localization to XAML based implementation
 - add unit test project
 - include functional documentation about the generator and solver algorithms to the project Wiki page
+- add an "Export exercise" option with a DEV mode option to be able to export and later import problematic cases
+- options to be able to track the numbers whiches all instances you have already filled in
+
+## Minor technical details
+The .exe file for the application currently can be found in the Sudoku/bin/Debug folder as the build creates it.
+The language files are in the Sudoku/bin/Debug/Languages folder.
+The settings can be found in Sudoku/bin/Debug/config.xml.
+
+There are plans to move them to appropriate places.
 
 # Changelog
 
@@ -34,7 +43,6 @@ Plans include the followings:
 
 **Bugfixes**
 - After reading Killer Sudoku exercise the cells had no background color but the cage sum values were displayed.
-
 
 ## v0.4
 

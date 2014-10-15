@@ -20,8 +20,6 @@ namespace Sudoku
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            //Program indítása
             Application.Run(new SudokuApp());
         }
     }
