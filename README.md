@@ -32,25 +32,3 @@ The language files are in the Sudoku/bin/Debug/Languages folder.
 The settings can be found in Sudoku/bin/Debug/config.xml.
 
 There are plans to move them to appropriate places.
-
-# Changelog
-
-## v0.41
-
-**Improvements**
-- Updated some comment. Removed some unnecesary comments.
-- Refactoring in exercise reading and simple sudoku processing
-
-**Bugfixes**
-- After reading Killer Sudoku exercise the cells had no background color but the cage sum values were displayed.
-
-## v0.4
-
-**Improvements**
-- Updated comments
-- Removed unnecessary comments
-- Renamed variables and did refactoring to aid readability in certain classes
-
-**Bugfixes**
-- Typing invalid characters into a cell incremented the number of empty cells.
-- Cannot read KillerSudoku from file (missing object initializations).
