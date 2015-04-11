@@ -139,7 +139,7 @@ namespace Sudoku.Controller
 
         public bool IsCellEmpty(int num, int position)
         {
-            return exercise[num][position / 9, position % 9] == 0;
+            return IsCellEmpty(num, position / 9, position % 9);
         }
 
         public void MakeCellOccupied(int num, int row, int col)
@@ -154,7 +154,7 @@ namespace Sudoku.Controller
 
         public int EndRowOfBlockByRow(int row)
         {
-            return (row / 3) * 3 + 2;
+            return StartRowOfBlockByRow(row) + 2;
         }
 
         public int StartColOfBlockByCol(int col)
@@ -167,6 +167,7 @@ namespace Sudoku.Controller
             return EndRowOfBlockByRow(col);
         }
 
+        //Indexing the blocks starts from 0
         public int StartRowOfBlockByBlockIndex(int blockIndex)
         {
             return blockIndex - (blockIndex % 3);
@@ -190,12 +191,12 @@ namespace Sudoku.Controller
         /// <summary>
         /// Numbering of blocks: from left to right, from top to bottom, starting with 0
         /// </summary>
-        /// <param name="i">Row index of cell.</param>
-        /// <param name="j">Column index of cell.</param>
+        /// <param name="row">Row index of cell.</param>
+        /// <param name="col">Column index of cell.</param>
         /// <returns>The block index determined by the row and column indeces.</returns>
-        public int BlockIndexByCellIndeces(int i, int j)
+        public int BlockIndexByCellIndeces(int row, int col)
         {
-            return (i / 3) * 3 + (j / 3);
+            return (row / 3) * 3 + (col / 3);
         }
 
         /// <summary>Finds the first empty cell</summary>

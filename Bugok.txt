@@ -1,0 +1,1 @@
+Killer sudoku beolvasásánál nem színezi be a cellákat, de kiiírja az összegeket
