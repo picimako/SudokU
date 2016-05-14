@@ -71,7 +71,7 @@ namespace Sudoku.Verifier
                     if (!IsFieldEmpty(p) && !IsFieldValueMatchValueInSolution(currentCellValue, p))
                         numberOfIncorrectCells++;
                 }
-                checkLabel.Text = loc.GetLoc("show_wrong_number_label") + ": " + numberOfIncorrectCells;
+                checkLabel.Text = loc.Get("show_wrong_number_label") + ": " + numberOfIncorrectCells;
             }
             else if (Boolean.Parse(conf.GetConfig("joVagyRosszMutat")))
             {
@@ -104,12 +104,12 @@ namespace Sudoku.Verifier
 
         private static void PrintSolutionIsGood()
         {
-            checkLabel.Text = loc.GetLoc("good_wrong_solution_label") + " " + loc.GetLoc("good");
+            checkLabel.Text = loc.Get("good_wrong_solution_label") + " " + loc.Get("good");
         }
 
         private static void PrintSolutionIsWrong()
         {
-            checkLabel.Text = loc.GetLoc("good_wrong_solution_label") + " " + loc.GetLoc("wrong");
+            checkLabel.Text = loc.Get("good_wrong_solution_label") + " " + loc.Get("wrong");
         }
 
         private static void ParseValueOfCurrentCell(int pos)

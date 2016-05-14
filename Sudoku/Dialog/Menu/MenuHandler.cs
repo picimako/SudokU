@@ -68,7 +68,7 @@ namespace Sudoku.Dialogusok
 
         private void CreateFileMenu()
         {
-            fileMenu = new ToolStripMenuItem(loc.GetLoc("file_menu"));
+            fileMenu = new ToolStripMenuItem(loc.Get("file_menu"));
             menu.Items.Add(fileMenu);
             CreateGenerateSubMenu(fileMenu);
             CreateOpenSubMenu(fileMenu);
@@ -95,7 +95,7 @@ namespace Sudoku.Dialogusok
 
         private ToolStripMenuItem CreateMenuItem(string caption, string locId, params EventHandler[] handler)
         {
-            ToolStripMenuItem item = new ToolStripMenuItem(String.IsNullOrEmpty(locId) ? caption : loc.GetLoc(caption));
+            ToolStripMenuItem item = new ToolStripMenuItem(String.IsNullOrEmpty(locId) ? caption : loc.Get(caption));
             item.Tag = locId;
             if (handler.Length > 0)
             {
@@ -140,7 +140,7 @@ namespace Sudoku.Dialogusok
         {
             if (item.Tag != null && !"".Equals(item.Tag.ToString()))
             {
-                item.Text = loc.GetLoc(item.Tag.ToString());
+                item.Text = loc.Get(item.Tag.ToString());
             }
             if (item.DropDownItems.Count > 0)
             {

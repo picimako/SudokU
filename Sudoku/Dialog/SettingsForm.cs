@@ -138,20 +138,20 @@ namespace Sudoku.Dialogusok
         private void SetLabels()
         {
             LocHandler loc = LocHandler.get;
-            this.Text = loc.GetLoc("options_menu");
+            this.Text = loc.Get("options_menu");
 
             filePathBox.Text = conf.GetConfig("alapFajlUtvonal");
 
-            utvonalLabel.Text = loc.GetLoc("open_default_folder") + ":";
-            browseButton.Text = loc.GetLoc("browse");
-            nyelvLabel.Text = loc.GetLoc("language") + ":";
-            sameNumberAlreadyInHouseHintBox.Text = loc.GetLoc("helpRed");
-            ellenorzesGroup.Text = loc.GetLoc("check_type") + ":";
-            showWrongCellsRadio.Text = loc.GetLoc("show_wrong");
-            showNumberOfWrongCellsRadio.Text = loc.GetLoc("show_wrong_number");
-            showExerciseCorrectnessRadio.Text = loc.GetLoc("good_wrong_solution");
-            cancelButton.Text = loc.GetLoc("cancel");
-            sumOfNumbersBiggerInCageHintBox.Text = loc.GetLoc("cageSum");
+            utvonalLabel.Text = loc.Get("open_default_folder") + ":";
+            browseButton.Text = loc.Get("browse");
+            nyelvLabel.Text = loc.Get("language") + ":";
+            sameNumberAlreadyInHouseHintBox.Text = loc.Get("helpRed");
+            ellenorzesGroup.Text = loc.Get("check_type") + ":";
+            showWrongCellsRadio.Text = loc.Get("show_wrong");
+            showNumberOfWrongCellsRadio.Text = loc.Get("show_wrong_number");
+            showExerciseCorrectnessRadio.Text = loc.Get("good_wrong_solution");
+            cancelButton.Text = loc.Get("cancel");
+            sumOfNumbersBiggerInCageHintBox.Text = loc.Get("cageSum");
         }
 
         #endregion

@@ -77,7 +77,7 @@ namespace Sudoku.Language
             }
         }
 
-        public string GetLoc(string id)
+        public string Get(string id)
         {
             return localization[id];
         }

@@ -340,7 +340,7 @@ namespace Sudoku.Dialogusok
                 Int32.TryParse(changedCell.Text, out previousCellValue);
             }
 
-            numberOfEmptyCellsLabel.Text = loc.GetLoc("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
+            numberOfEmptyCellsLabel.Text = loc.Get("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
         private bool IsGuiCellEmpty(TextBox cell)

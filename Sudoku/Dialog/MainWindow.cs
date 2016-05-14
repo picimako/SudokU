@@ -89,11 +89,11 @@ namespace Sudoku.Dialogusok
         {
             difficultyBar.ValueChanged += delegate(object sender, EventArgs e)
             {
-                difficultyLabel.Text = loc.GetLoc("difficulty") + ": " + difficultyBar.Value.ToString();
+                difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
             };
             killerDifficultyBar.ValueChanged += delegate(object sender, EventArgs e)
             {
-                killerDifficultyLabel.Text = "Killer " + loc.GetLoc("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
+                killerDifficultyLabel.Text = "Killer " + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
             };
             killerBox.CheckedChanged += delegate(object sender, EventArgs e)
             {
@@ -140,7 +140,7 @@ namespace Sudoku.Dialogusok
             {
                 //Ha nem generált feladatról van szó, akkor a beolvasás lehet sikertelen, ebben az esetben pedig semmi más ne történjen
                 //csak lépjen ki ebből az eljárásból.
-                MessageBox.Show(loc.GetLoc("failed_read_file"), loc.GetLoc("failed_read_file_caption"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(loc.Get("failed_read_file"), loc.Get("failed_read_file_caption"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
                 return;
             }
@@ -156,7 +156,7 @@ namespace Sudoku.Dialogusok
             //Ha fájlból olvastattam be feladatot, és a megoldása tartalmaz 0 értéke(ke)t, akkor a feladat nem megoldható a kiválasztott típus alapján
             if (!se.IsExerciseGenerated && (se.IsExerciseKiller ? false : !CommonUtil.IsExerciseCorrect(se.Solution)))
             {
-                MessageBox.Show(loc.GetLoc("exercise_not_solvable"), loc.GetLoc("exercise_not_solvable_caption"), 
+                MessageBox.Show(loc.Get("exercise_not_solvable"), loc.Get("exercise_not_solvable_caption"), 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -179,7 +179,7 @@ namespace Sudoku.Dialogusok
             //Üres cellák számának címkéje látható
             numberOfEmptyCellsLabel.Visible = true;
             //Üres cellák számának megjelenítése
-            numberOfEmptyCellsLabel.Text = loc.GetLoc("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
+            numberOfEmptyCellsLabel.Text = loc.Get("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
         private void RestartExerciseButton_Click(object sender, EventArgs e)
@@ -197,15 +197,15 @@ namespace Sudoku.Dialogusok
             verifyExerciseLabel.Text = "";
 
             //Üres cellák kijelzése
-            numberOfEmptyCellsLabel.Text = loc.GetLoc("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
+            numberOfEmptyCellsLabel.Text = loc.Get("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
         private bool HasSelectedFileToOpen()
         {
             OpenFileDialog selectExerciseDialog = new OpenFileDialog();
             selectExerciseDialog.InitialDirectory = conf.GetConfig("alapFajlUtvonal");
-            selectExerciseDialog.Title = loc.GetLoc("select_file");
-            selectExerciseDialog.Filter = loc.GetLoc("text_files") + "(*.txt)|*.txt";
+            selectExerciseDialog.Title = loc.Get("select_file");
+            selectExerciseDialog.Filter = loc.Get("text_files") + "(*.txt)|*.txt";
             if (selectExerciseDialog.ShowDialog() == DialogResult.OK)
             {                
                 se.ExerciseFilePath = Path.GetDirectoryName(selectExerciseDialog.FileName) + 
@@ -274,22 +274,22 @@ namespace Sudoku.Dialogusok
 
         private void SetLabels()
         {
-            difficultyLabel.Text = loc.GetLoc("difficulty") + ": " + difficultyBar.Value.ToString();
+            difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
 
-            killerDifficultyLabel.Text = "Killer " + loc.GetLoc("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
+            killerDifficultyLabel.Text = "Killer " + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
 
-            exerciseTypeGroup.Text = loc.GetLoc("types") + ":";
-            centerButton.Text = loc.GetLoc("centerdot");
+            exerciseTypeGroup.Text = loc.Get("types") + ":";
+            centerButton.Text = loc.Get("centerdot");
 
-            generalButton.Text = loc.GetLoc("generate");
-            beolvasButton.Text = loc.GetLoc("open");
-            restartExerciseButton.Text = loc.GetLoc("restart");
+            generalButton.Text = loc.Get("generate");
+            beolvasButton.Text = loc.Get("open");
+            restartExerciseButton.Text = loc.Get("restart");
 
-            verifyExerciseButton.Text = loc.GetLoc("check");
+            verifyExerciseButton.Text = loc.Get("check");
 
-            stopExerciseButton.Text = loc.GetLoc("stop");
+            stopExerciseButton.Text = loc.Get("stop");
 
-            difficultyLabel.Text = loc.GetLoc("difficulty") + ": " + difficultyBar.Value.ToString();
+            difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
 
             menuHandler.SetLabels();
 
