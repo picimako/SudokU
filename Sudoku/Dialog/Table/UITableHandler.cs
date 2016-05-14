@@ -7,6 +7,7 @@ using System.Drawing;
 using Sudoku.Controller;
 using Sudoku.Language;
 using Sudoku.Generate;
+using Sudoku.Util;
 
 namespace Sudoku.Dialogusok
 {
@@ -21,7 +22,7 @@ namespace Sudoku.Dialogusok
         private ConfigHandler conf = ConfigHandler.get;
 
         private Button verifyExerciseButton;
-        private Color[] colors;
+        private Color[] colors = new ColorListFactory().GetColors();
         private Label numberOfEmptyCellsLabel;
         private TableLayoutPanel exerciseTable;
         /*The previous value of the cell. To be able to change the number tables, I need to know the value of the cell before
@@ -44,12 +45,10 @@ namespace Sudoku.Dialogusok
 
         #region Constructor
 
-        public UITableHandler(Button verifyExerciseButton, Color[] colors, Label numberOfEmptyCellsLabel,
-            TableLayoutPanel exerciseTable)
+        public UITableHandler(Button verifyExerciseButton, Label numberOfEmptyCellsLabel, TableLayoutPanel exerciseTable)
         {
             this.exerciseTable = exerciseTable;
             this.verifyExerciseButton = verifyExerciseButton;
-            this.colors = colors;
             this.numberOfEmptyCellsLabel = numberOfEmptyCellsLabel;
             CreateTableOnGUI();
         }

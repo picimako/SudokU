@@ -25,7 +25,6 @@ namespace Sudoku.Dialogusok
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
-        private Color[] colors;
 
         public SudokuApp()
         {
@@ -34,13 +33,12 @@ namespace Sudoku.Dialogusok
             this.MaximizeBox = false;
             //Window resizing is disabled
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            GenerateColors();
         }
 
         private void SudokuApp_Load(object sender, EventArgs e)
         {
             BuildMenuBar();
-            tableHandler = new UITableHandler(verifyExerciseButton, colors, numberOfEmptyCellsLabel, exerciseTable);
+            tableHandler = new UITableHandler(verifyExerciseButton, numberOfEmptyCellsLabel, exerciseTable);
             se.ExerciseType = SudokuType.SimpleSudoku;
             conf.ExerciseInProgress = false;
 
@@ -75,14 +73,6 @@ namespace Sudoku.Dialogusok
             sudButton.Tag = SudokuType.SimpleSudoku;
             xButton.Tag = SudokuType.SudokuX;
             centerButton.Tag = SudokuType.CenterDot;
-        }
-
-        private void GenerateColors()
-        {
-            colors = new Color[] {new Color(), Color.LightCoral, Color.LightCyan, Color.LightGoldenrodYellow, Color.LightGreen, Color.LightPink, 
-                                    Color.LightSalmon, Color.LightSeaGreen, Color.LightSkyBlue, Color.LightSteelBlue, Color.LightYellow, 
-                                    Color.LightSlateGray, Color.LightGray, Color.Coral, Color.CornflowerBlue, Color.PaleVioletRed, Color.PeachPuff, 
-                                    Color.MediumSeaGreen, Color.IndianRed};
         }
 
         private void BindEventHandlers()

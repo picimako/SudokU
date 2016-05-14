@@ -110,6 +110,7 @@
     <Compile Include="Controller\SimpleSudokuController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ColorListFactory.cs" />
     <Compile Include="Verifier\ExerciseResultVerifier.cs" />
     <EmbeddedResource Include="Dialog\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
