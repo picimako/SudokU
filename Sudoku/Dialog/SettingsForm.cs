@@ -3,7 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using Sudoku.Language;
 
-namespace Sudoku.Dialogusok
+namespace Sudoku.Dialog
 {
     public partial class SettingsForm : Form
     {

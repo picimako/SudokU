@@ -6,7 +6,7 @@ using Sudoku.Controller;
 using Sudoku.Verifier;
 using Sudoku.Language;
 
-namespace Sudoku.Dialogusok
+namespace Sudoku.Dialog
 {
     public partial class SudokuApp : Form
     {
@@ -15,8 +15,8 @@ namespace Sudoku.Dialogusok
 
         //a feladat újrakezdéséhez ebbe mentem az üres cellák számát a feladat kezdetekor
         private int uresCellakSzama;
-        private ExerciseGeneratorInitializer generatorInitializer;
 
+        private ExerciseGeneratorInitializer generatorInitializer;
         private MenuHandler menuHandler;
         private UITableHandler tableHandler;
         private SudokuExercise se = SudokuExercise.get;
@@ -40,15 +40,10 @@ namespace Sudoku.Dialogusok
             conf.ExerciseInProgress = false;
 
             SetLabels();
-            SetFormControlDefaultValues();
-            BindEventHandlers();
-        }
-
-        private void SetFormControlDefaultValues()
-        {
             SetButtonDefaultStates();
             SetDifficultyBarDefaultStatesAndValues();
             SetSudokuTypeButtonTags();
+            BindEventHandlers();
         }
 
         private void SetButtonDefaultStates()
@@ -91,12 +86,12 @@ namespace Sudoku.Dialogusok
                 //Ha Killer Sudoku-t készítek, akkor a nehézség sáv inaktív lesz, mert nincs rá szükség
                 difficultyBar.Enabled = !se.IsExerciseKiller;
             };
-            sudButton.CheckedChanged += new EventHandler(checkBoxCheckedChanged);
-            xButton.CheckedChanged += new EventHandler(checkBoxCheckedChanged);
-            centerButton.CheckedChanged += new EventHandler(checkBoxCheckedChanged);
+            sudButton.CheckedChanged += new EventHandler(SetExerciseType);
+            xButton.CheckedChanged += new EventHandler(SetExerciseType);
+            centerButton.CheckedChanged += new EventHandler(SetExerciseType);
         }
 
-        private void checkBoxCheckedChanged(object sender, EventArgs e)
+        private void SetExerciseType(object sender, EventArgs e)
         {
             se.ExerciseType = (SudokuType)((RadioButton)sender).Tag;
         }
@@ -112,7 +107,7 @@ namespace Sudoku.Dialogusok
         }
 
         /// <summary> Feladat beolvasása vagy generálása, illetve a táblázat feltöltését végzi el </summary>
-        /// <param name="isExerciseGenerated"> Megadja, hogy generált feladatról van szó vagy sem </param>
+        /// <param name="isExerciseGenerated"> Megadja, hogy generált vagy beolvasott feladatról van szó vagy sem </param>
         private void CreateExercise(bool isExerciseGenerated)
         {
             se.IsExerciseGenerated = isExerciseGenerated;
@@ -121,9 +116,7 @@ namespace Sudoku.Dialogusok
             if (!se.IsExerciseGenerated && !HasSelectedFileToOpen())
                 return;
 
-            generatorInitializer = new ExerciseGeneratorInitializer();
-
-            if (!generatorInitializer.GenerateExercise(difficultyBar.Value, killerDifficultyBar.Value))
+            if (!new ExerciseGeneratorInitializer().GenerateExercise(difficultyBar.Value, killerDifficultyBar.Value))
             {
                 //Ha nem generált feladatról van szó, akkor a beolvasás lehet sikertelen, ebben az esetben pedig semmi más ne történjen
                 //csak lépjen ki ebből az eljárásból.
@@ -189,10 +182,7 @@ namespace Sudoku.Dialogusok
 
         private bool HasSelectedFileToOpen()
         {
-            OpenFileDialog selectExerciseDialog = new OpenFileDialog();
-            selectExerciseDialog.InitialDirectory = conf.GetConfig("alapFajlUtvonal");
-            selectExerciseDialog.Title = loc.Get("select_file");
-            selectExerciseDialog.Filter = loc.Get("text_files") + "(*.txt)|*.txt";
+            OpenFileDialog selectExerciseDialog = new SelectExerciseDialogFactory().CreateDialog();
             if (selectExerciseDialog.ShowDialog() == DialogResult.OK)
             {                
                 se.ExerciseFilePath = Path.GetDirectoryName(selectExerciseDialog.FileName) + 
@@ -204,58 +194,27 @@ namespace Sudoku.Dialogusok
             return false;     
         }
 
-        /// <summary></summary>
-        /// <param name="exerciseType"></param>
-        /// <param name="generalButton"></param>
-        private void ButtonClick(SudokuType exerciseType, bool generalButton, object sender, EventArgs e)
+        private void ReadForType(SudokuType exerciseType, object sender, EventArgs e)
         {
             se.ExerciseType = exerciseType;
-
-            if (generalButton)
-                GeneralButton_Click(sender, e);
-            else
-                BeolvasButton_Click(sender, e);
+            BeolvasButton_Click(sender, e);
         }
 
-        private void GenerateSimpleSudoku(object sender, EventArgs e)
+        private void GenerateForType(SudokuType exerciseType, object sender, EventArgs e)
         {
-            ButtonClick(SudokuType.SimpleSudoku, true, sender, e);
-        }
-
-        private void GenerateSudokuX(object sender, EventArgs e)
-        {
-            ButtonClick(SudokuType.SudokuX, true, sender, e);
-        }
-
-        private void GenerateCenterDot(object sender, EventArgs e)
-        {
-            ButtonClick(SudokuType.CenterDot, true, sender, e);
-        }
-
-        private void OpenSimpleSudoku(object sender, EventArgs e)
-        {
-            ButtonClick(SudokuType.SimpleSudoku, false, sender, e);
-        }
-
-        private void OpenSudokuX(object sender, EventArgs e)
-        {
-            ButtonClick(SudokuType.SudokuX, false, sender, e);
-        }
-
-        private void OpenCenterDot(object sender, EventArgs e)
-        {
-            ButtonClick(SudokuType.CenterDot, false, sender, e);
+            se.ExerciseType = exerciseType;
+            GeneralButton_Click(sender, e);
         }
 
         private void BuildMenuBar()
         {
             menuHandler = new MenuHandler();
-            menuHandler.AddEventHandler(SudokuCreationType.GEN_SUD, GenerateSimpleSudoku);
-            menuHandler.AddEventHandler(SudokuCreationType.GEN_SUDX, GenerateSudokuX);
-            menuHandler.AddEventHandler(SudokuCreationType.GEN_CENT, GenerateCenterDot);
-            menuHandler.AddEventHandler(SudokuCreationType.OPEN_SUD, OpenSimpleSudoku);
-            menuHandler.AddEventHandler(SudokuCreationType.OPEN_SUDX, OpenSudokuX);
-            menuHandler.AddEventHandler(SudokuCreationType.OPEN_CENT, OpenCenterDot);
+            menuHandler.AddEventHandler(SudokuCreationType.GEN_SUD, (sender, e) => GenerateForType(SudokuType.SimpleSudoku, sender, e));
+            menuHandler.AddEventHandler(SudokuCreationType.GEN_SUDX, (sender, e) => GenerateForType(SudokuType.SudokuX, sender, e));
+            menuHandler.AddEventHandler(SudokuCreationType.GEN_CENT, (sender, e) => GenerateForType(SudokuType.CenterDot, sender, e));
+            menuHandler.AddEventHandler(SudokuCreationType.OPEN_SUD, (sender, e) => ReadForType(SudokuType.SimpleSudoku, sender, e));
+            menuHandler.AddEventHandler(SudokuCreationType.OPEN_SUDX, (sender, e) => ReadForType(SudokuType.SudokuX, sender, e));
+            menuHandler.AddEventHandler(SudokuCreationType.OPEN_CENT, (sender, e) => ReadForType(SudokuType.CenterDot, sender, e));
             this.Controls.Add(menuHandler.BuildMainDialogMenu());
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO;
-using Sudoku.Dialogusok;
+using Sudoku.Dialog;
 using Sudoku.Language;
 
 namespace Sudoku

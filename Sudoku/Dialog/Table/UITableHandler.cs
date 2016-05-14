@@ -7,7 +7,7 @@ using Sudoku.Language;
 using Sudoku.Generate;
 using Sudoku.Util;
 
-namespace Sudoku.Dialogusok
+namespace Sudoku.Dialog
 {
     class UITableHandler
     {

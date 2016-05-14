@@ -1,4 +1,4 @@
-﻿namespace Sudoku.Dialogusok
+﻿namespace Sudoku.Dialog
 {
     partial class SettingsForm
     {

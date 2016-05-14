@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using Sudoku.Controller;
 
-namespace Sudoku.Dialogusok
+namespace Sudoku.Dialog
 {
     public class KillerTextBox : TextBox
     {

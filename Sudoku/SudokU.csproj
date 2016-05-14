@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialog\SelectExerciseDialogFactory.cs" />
     <Compile Include="Dialog\Table\UITableHandler.cs" />
     <Compile Include="Generation\ExerciseGeneratorInitializer.cs" />
     <Compile Include="Dialog\Menu\MenuHandler.cs" />

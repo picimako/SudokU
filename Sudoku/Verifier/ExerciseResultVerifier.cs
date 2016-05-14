@@ -6,6 +6,7 @@ using Sudoku.Language;
 
 namespace Sudoku.Verifier
 {
+    //TODO: make this non-static
     public class ExerciseResultVerifier
     {
         #region Members

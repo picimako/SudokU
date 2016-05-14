@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using Sudoku.Generate;
 using Sudoku.Language;
 
-namespace Sudoku.Dialogusok
+namespace Sudoku.Dialog
 {
     class MenuHandler
     {
