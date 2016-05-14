@@ -15,8 +15,15 @@ namespace Sudoku
         [STAThread]
         static void Main()
         {
-            ConfigHandler.get.ReadConfiguration();
-            LocHandler.get.ReadLocalization();
+            try
+            {
+                ConfigHandler.get.ReadConfiguration();
+                LocHandler.get.ReadLocalization();
+            }
+            catch (IOException)
+            {
+                return;
+            }
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

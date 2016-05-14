@@ -70,10 +70,12 @@ namespace Sudoku.Language
             {
                 //TODO: megoldani valahogy, hogy lokalizált hibaüzenetet írjak ki
                 MessageBox.Show("Language folder cannot be found.", "Missing folder", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new IOException();
             }
             catch (FileNotFoundException)
             {
                 MessageBox.Show("Selected language file cannot be found.", "Missing file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new IOException();
             }
         }
 

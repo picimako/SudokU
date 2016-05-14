@@ -71,6 +71,7 @@ namespace Sudoku
             {
                 //TODO: localize error messages
                 MessageBox.Show("Configuration file cannot be found.", "Missing file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new IOException();
             }
         }
 

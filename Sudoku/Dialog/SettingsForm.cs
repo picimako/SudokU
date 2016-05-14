@@ -34,21 +34,40 @@ namespace Sudoku.Dialogusok
 
         #region SetDefaultValues
 
-        private void SetFormControlDefaultValues()
+        private void SetLanguages()
+        {
+            if (!Directory.Exists("Languages"))
+            {
+                //TODO: create localization for this message
+                languageDropdown.DataSource = new string[1] { "No language files." };
+                return;
+            }
+            else
+            {
+                CreateValidLanguageDropdown();
+            }
+        }
+
+        private void CreateValidLanguageDropdown()
         {
             //A Languages mappából beolvasom az .xml kiterjesztésű fájlok neveit kiterjesztéssel együtt (a nyelvi fájlok .xml kiterjesztésűek)
             string[] availableLanguages = Directory.GetFiles("Languages", "*.xml");
 
             //Minden fájlnév végéről levágom a kiterjesztést
             for (int i = 0; i < availableLanguages.Length; i++)
+            {
                 availableLanguages[i] = Path.GetFileNameWithoutExtension(availableLanguages[i]);
+            }
 
             //A lenyíló lista nyelvek elemeit fogja megjeleníteni
             languageDropdown.DataSource = availableLanguages;
 
             //Beállítom, hogy az aktuálisan beállított nyelv legyen kijelölve a listában
             languageDropdown.SelectedItem = conf.GetConfig("alapNyelv");
+        }
 
+        private void SetFormControlDefaultValues()
+        {
             //CheckBox-ok beállítása
             sameNumberAlreadyInHouseHintBox.Checked = Boolean.Parse(conf.GetConfig("helpRed"));
             sumOfNumbersBiggerInCageHintBox.Checked = Boolean.Parse(conf.GetConfig("cageSum"));
@@ -69,6 +88,7 @@ namespace Sudoku.Dialogusok
         //Az ablak betöltődésekor fog lefutni
         private void SettingsForm_Load(object sender, EventArgs e)
         {
+            SetLanguages();
             SetFormControlDefaultValues();
             SetLabels();
             BindEventHandlers();
@@ -118,8 +138,15 @@ namespace Sudoku.Dialogusok
 
             if (SelectedLanguageChanged())
             {
+                try
+                {
+                    LocHandler.get.ReadLocalization();
+                }
+                catch (IOException)
+                {
+                    return;
+                }
                 conf.SetAttributeValue("alapNyelv", (string)languageDropdown.SelectedItem);
-                LocHandler.get.ReadLocalization();
             }
 
             conf.SaveConfiguration();
