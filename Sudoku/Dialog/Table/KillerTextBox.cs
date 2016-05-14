@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using Sudoku.Controller;
-using Sudoku.Generate;
 
 namespace Sudoku.Dialogusok
 {
