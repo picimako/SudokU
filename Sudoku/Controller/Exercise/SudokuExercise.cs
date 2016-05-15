@@ -9,56 +9,20 @@ namespace Sudoku.Controller
         private static SudokuExercise ARRAY;
         private const int LAST_CELL = 81;
 
-        private SudokuType exerciseType;
         private SimpleSudokuController controller;
         private KillerSudokuExercise killerExercise;
 
         private int[][,] exercise;
         private int[,] solution;
-        private int numberOfEmptyCells;
-        private int firstEmptyCell;
-        private bool isExerciseKiller;
-        private bool isExerciseGenerated;
-        private string exerciseFilePath;
         
         #endregion
 
         #region Properties
 
-        public int NumberOfEmptyCells
-        {
-            get { return numberOfEmptyCells; }
-            set { numberOfEmptyCells = value; }
-        }
-
         public int[][,] Exercise
         {
             get { return exercise; }
             set { exercise = value; }
-        }
-
-        public int FirstEmptyCell
-        {
-            get { return firstEmptyCell; }
-            set { firstEmptyCell = value; }
-        }
-
-        public SudokuType ExerciseType
-        {
-            get { return exerciseType; }
-            set { exerciseType = value; }
-        }
-
-        public bool IsExerciseKiller
-        {
-            get { return isExerciseKiller; }
-            set { isExerciseKiller = value; }
-        }
-
-        public bool IsExerciseGenerated
-        {
-            get { return isExerciseGenerated; }
-            set { isExerciseGenerated = value; }
         }
 
         public int[,] Solution
@@ -79,21 +43,22 @@ namespace Sudoku.Controller
             set { killerExercise = value; }
         }
 
-        public string ExerciseFilePath
-        {
-            get { return exerciseFilePath; }
-            set { exerciseFilePath = value; }
-        }
-
         public int LAST_CELL_INDEX
         {
             get { return LAST_CELL; }
         }
 
-        public void InitKillerExercise()
-        {
-            killerExercise = new KillerSudokuExercise();
-        }
+        public int NumberOfEmptyCells { get; set; }
+
+        public int FirstEmptyCell { get; set; }
+
+        public SudokuType ExerciseType { get; set; }
+
+        public bool IsExerciseKiller { get; set; }
+
+        public bool IsExerciseGenerated { get; set; }
+
+        public string ExerciseFilePath { get; set; }
 
         #endregion
 
@@ -103,8 +68,13 @@ namespace Sudoku.Controller
 
         public void InitExercise()
         {
-            numberOfEmptyCells = 0;
+            NumberOfEmptyCells = 0;
             Arrays.Initialize(out exercise);
+        }
+
+        public void InitKillerExercise()
+        {
+            killerExercise = new KillerSudokuExercise();
         }
 
         #endregion
@@ -198,21 +168,21 @@ namespace Sudoku.Controller
         /// <param name="p">The currently examined cell.</param>
         public void RecalculateFirstEmptyCell(int p)
         {
-            if (p == firstEmptyCell && numberOfEmptyCells != 0)
+            if (p == FirstEmptyCell && NumberOfEmptyCells != 0)
             {
-                while (firstEmptyCell < LAST_CELL && !IsCellEmpty(0, firstEmptyCell))
-                    firstEmptyCell++;
+                while (FirstEmptyCell < LAST_CELL && !IsCellEmpty(0, FirstEmptyCell))
+                    FirstEmptyCell++;
             }
         }
 
         public bool IsExerciseFull()
         {
-            return numberOfEmptyCells == 0;
+            return NumberOfEmptyCells == 0;
         }
 
         public bool IsExerciseEmpty()
         {
-            return numberOfEmptyCells == LAST_CELL;
+            return NumberOfEmptyCells == LAST_CELL;
         }
 
         public bool IsCellTheLastInTable(int p)
