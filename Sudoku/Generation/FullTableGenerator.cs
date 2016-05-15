@@ -63,7 +63,7 @@ namespace Sudoku.Generate
                     break;
             }
 
-            CommonUtil.InitializeArray(out tempTable);
+            Arrays.Initialize(out tempTable);
 
             int numberToFillIn = 0;
             while (++numberToFillIn <= 9)
@@ -72,7 +72,7 @@ namespace Sudoku.Generate
                     instanceOfCurrentNumber <= 9; instanceOfCurrentNumber++)
                 {
                     // Saving the current state of the generated exercise for possible restoration later
-                    CommonUtil.CopyJaggedThreeDimensionArray(tempTable, se.Exercise);
+                    Arrays.CopyJaggedThreeDimensionArray(tempTable, se.Exercise);
                     if (numberToFillIn < 9 && AreCellsPlacedAsRectangle(ref rectangularCells, numberToFillIn))
                     {
                         util.RectangularCells.Add(numberToFillIn, rectangularCells);
@@ -119,7 +119,7 @@ namespace Sudoku.Generate
                     if (se.Ctrl.IsThereNotFillableHouseForNumber(numberToFillIn))
                     {
                         // Restoring the exercise to the state when the filling of the current number started
-                        CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, tempTable);
+                        Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tempTable);
 
                         numberToFillIn--;
 
@@ -138,7 +138,7 @@ namespace Sudoku.Generate
 
             if (!se.IsExerciseKiller)
                 //Elmentem a megoldott táblát
-                CommonUtil.CopyJaggedThreeDimensionArray(util.Solution, se.Exercise);
+                Arrays.CopyJaggedThreeDimensionArray(util.Solution, se.Exercise);
 
             return true;
         }

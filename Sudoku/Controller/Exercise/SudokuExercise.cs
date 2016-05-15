@@ -104,7 +104,7 @@ namespace Sudoku.Controller
         public void InitExercise()
         {
             numberOfEmptyCells = 0;
-            CommonUtil.InitializeArray(out exercise);
+            Arrays.Initialize(out exercise);
         }
 
         #endregion

@@ -74,7 +74,7 @@ namespace Sudoku.Generate
 
         public void InitializeSolutionContainer()
         {
-            CommonUtil.InitializeArray(out solution);
+            Arrays.Initialize(out solution);
         }
 
         /// <summary> Beírja r-t a megfelelő táblákba, és beállítja a foglalt cellákat </summary>

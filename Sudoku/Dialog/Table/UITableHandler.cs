@@ -275,7 +275,7 @@ namespace Sudoku.Dialog
                     if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
                     {
                         foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
-                            CommonUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Regular);
+                            FontUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Regular);
                     }
                 }
 
@@ -328,7 +328,7 @@ namespace Sudoku.Dialog
                     if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
                     {
                         foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
-                            CommonUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Bold);
+                            FontUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Bold);
                     }
                 }
 

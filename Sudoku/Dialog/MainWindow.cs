@@ -16,7 +16,7 @@ namespace Sudoku.Dialog
         //a feladat újrakezdéséhez ebbe mentem az üres cellák számát a feladat kezdetekor
         private int uresCellakSzama;
 
-        private ExerciseGeneratorInitializer generatorInitializer;
+        private ExerciseResultVerifier resultVerifier;
         private MenuHandler menuHandler;
         private UITableHandler tableHandler;
         private SudokuExercise se = SudokuExercise.get;
@@ -134,7 +134,7 @@ namespace Sudoku.Dialog
             }
 
             //Ha fájlból olvastattam be feladatot, és a megoldása tartalmaz 0 értéke(ke)t, akkor a feladat nem megoldható a kiválasztott típus alapján
-            if (!se.IsExerciseGenerated && (se.IsExerciseKiller ? false : !CommonUtil.IsExerciseCorrect(se.Solution)))
+            if (!se.IsExerciseGenerated && (se.IsExerciseKiller ? false : !ExerciseResultVerifier.IsExerciseCorrect(se.Solution)))
             {
                 MessageBox.Show(loc.Get("exercise_not_solvable"), loc.Get("exercise_not_solvable_caption"), 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -144,10 +144,10 @@ namespace Sudoku.Dialog
             tableHandler.FillTableOnGUI();
 
             //Inicializálom az exerciseBackup tombot, melyben ezután lementem a feladatot, a feladat esetleges újrakezdéséhez
-            CommonUtil.InitializeArray(out exerciseBackup);
+            Arrays.Initialize(out exerciseBackup);
 
             //Elmentem a feladatot a hozzá tartozó tömbökkel és az üres cellák számával együtt
-            CommonUtil.CopyJaggedThreeDimensionArray(exerciseBackup, se.Exercise);
+            Arrays.CopyJaggedThreeDimensionArray(exerciseBackup, se.Exercise);
             uresCellakSzama = se.NumberOfEmptyCells;
 
             SetButtonStates(true);
@@ -158,14 +158,13 @@ namespace Sudoku.Dialog
 
             //Üres cellák számának címkéje látható
             numberOfEmptyCellsLabel.Visible = true;
-            //Üres cellák számának megjelenítése
-            numberOfEmptyCellsLabel.Text = loc.Get("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
+            SetNumberOfEmptyCellsLabel();
         }
 
         private void RestartExerciseButton_Click(object sender, EventArgs e)
         {
             //Visszaállítom a feladat kezdeti értékeit, illetve az üres cellák számát
-            CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, exerciseBackup);
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseBackup);
             se.NumberOfEmptyCells = uresCellakSzama;
 
             tableHandler.ReloadTableForRestart(exerciseBackup);
@@ -176,7 +175,11 @@ namespace Sudoku.Dialog
             //Az ellenőrzéshez tartozó címkének nem lesz szövege
             verifyExerciseLabel.Text = "";
 
-            //Üres cellák kijelzése
+            SetNumberOfEmptyCellsLabel();
+        }
+
+        private void SetNumberOfEmptyCellsLabel()
+        {
             numberOfEmptyCellsLabel.Text = loc.Get("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
@@ -248,8 +251,8 @@ namespace Sudoku.Dialog
         //A 3 fajta ellenőrzés végrehajtására
         private void VerifyButton_Click(object sender, EventArgs e)
         {
-            ExerciseResultVerifier.InitVerifier(verifyExerciseLabel, tableHandler.GUITable);
-            ExerciseResultVerifier.VerifyResult();
+            resultVerifier = new ExerciseResultVerifier(verifyExerciseLabel, tableHandler.GUITable);
+            resultVerifier.VerifyResult();
         }
 
         private void ExerciseStopButton_Click(object sender, EventArgs e)

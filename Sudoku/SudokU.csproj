@@ -112,6 +112,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ColorListFactory.cs" />
+    <Compile Include="Util\FontUtil.cs" />
     <Compile Include="Verifier\ExerciseResultVerifier.cs" />
     <EmbeddedResource Include="Dialog\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
@@ -148,7 +149,7 @@
     <Compile Include="Controller\SudokuXController.cs" />
     <Compile Include="Util\Pair.cs" />
     <Compile Include="IO\ExerciseReader.cs" />
-    <Compile Include="Util\CommonUtil.cs" />
+    <Compile Include="Util\Arrays.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

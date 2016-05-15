@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Sudoku.Controller;
 using Sudoku.Language;
+using Sudoku.Util;
+
 
 namespace Sudoku.Verifier
 {
@@ -11,12 +15,12 @@ namespace Sudoku.Verifier
     {
         #region Members
 
-        private static SudokuExercise se = SudokuExercise.get;
-        private static LocHandler loc = LocHandler.get;
-        private static ConfigHandler conf = ConfigHandler.get;
-        private static Label checkLabel;
-        private static TextBox[,] activeTable;
-        private static int currentCellValue;
+        private SudokuExercise se = SudokuExercise.get;
+        private LocHandler loc = LocHandler.get;
+        private ConfigHandler conf = ConfigHandler.get;
+        private Label checkLabel;
+        private TextBox[,] activeTable;
+        private int currentCellValue;
 
         #endregion
 
@@ -24,13 +28,13 @@ namespace Sudoku.Verifier
 
         #region Public
 
-        public static void InitVerifier(Label checkLabelParam, TextBox[,] activeTableParam)
+        public ExerciseResultVerifier(Label checkLabelParam, TextBox[,] activeTableParam)
         {
-            checkLabel = checkLabelParam;
-            activeTable = activeTableParam;
+            this.checkLabel = checkLabelParam;
+            this.activeTable = activeTableParam;
         }
 
-        public static void VerifyResult()
+        public void VerifyResult()
         {
             if (se.IsExerciseKiller && !se.IsExerciseGenerated)
             {
@@ -49,11 +53,11 @@ namespace Sudoku.Verifier
                     ParseValueOfCurrentCell(p);
                     if (!IsFieldEmpty(p) && !IsFieldValueMatchValueInSolution(currentCellValue, p))
                     {
-                        CommonUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Italic);
+                        FontUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Italic);
                         isSolutionCorrect = false;
                     }
                     else
-                        CommonUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Regular);
+                        FontUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Regular);
                 }
                 if (isSolutionCorrect)
                     PrintSolutionIsGood();
@@ -88,29 +92,38 @@ namespace Sudoku.Verifier
 
         #region Private
 
-        private static bool IsFieldEmpty(int p)
+        private bool IsFieldEmpty(int p)
         {
             return activeTable[p / 9, p % 9].Text == "";
         }
 
-        private static bool IsFieldValueMatchValueInSolution(int currentCellValue, int p)
+        private bool IsFieldValueMatchValueInSolution(int currentCellValue, int p)
         {
             return currentCellValue == se.Solution[p / 9, p % 9];
         }
 
-        private static void PrintSolutionIsGood()
+        private void PrintSolutionIsGood()
         {
             checkLabel.Text = loc.Get("good_wrong_solution_label") + " " + loc.Get("good");
         }
 
-        private static void PrintSolutionIsWrong()
+        private void PrintSolutionIsWrong()
         {
             checkLabel.Text = loc.Get("good_wrong_solution_label") + " " + loc.Get("wrong");
         }
 
-        private static void ParseValueOfCurrentCell(int pos)
+        private void ParseValueOfCurrentCell(int pos)
         {
             Int32.TryParse(activeTable[pos / 9, pos % 9].Text, out currentCellValue);
+        }
+
+        /// <summary>Megvizsgálja, hogy a feladat megoldásában van-e 0 értékű cella.</summary>
+        /// <param name="solution">A feladat megoldása.</param>
+        /// <returns>A nincs 0 értékű cella a megoldásban, akkor true, egyébként false</returns>
+        public static bool IsExerciseCorrect(int[,] solution)
+        {
+            List<int> list = solution.OfType<int>().ToList<int>();
+            return !list.Contains(0);
         }
 
         #endregion

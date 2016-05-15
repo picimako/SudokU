@@ -81,7 +81,7 @@ namespace Sudoku.Generate
             } while (se.Ctrl.IsExerciseSolvableWithoutBackTrack(util.RemovedCellsAndValuesBeforeRemoval.Count));
 
             //Mivel az utolsó megoldás során marad üres cella, így a teljes megoldás értékeit megkapja Exercise
-            CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, util.Solution);
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, util.Solution);
 
             //Az utolsó törölt cella kivételével az összes többi cella értékét törlöm
             visszaallit(true);
@@ -121,7 +121,7 @@ namespace Sudoku.Generate
             //Ebbe a tömbbe mentem el a feladatot ...
             int[][,] tombokMentes;
 
-            CommonUtil.InitializeArray(out tombokMentes);
+            Arrays.Initialize(out tombokMentes);
 
             //Annyiszor veszek ki 2 darab számot, amekkora nehézséget beállítottam
             for (int n = 1; n <= util.Difficulty; n++)
@@ -130,7 +130,7 @@ namespace Sudoku.Generate
                 if (n == 1)
                 {
                     //Elmentem a feladat eddigi állapotát
-                    CommonUtil.CopyJaggedThreeDimensionArray(tombokMentes, se.Exercise);
+                    Arrays.CopyJaggedThreeDimensionArray(tombokMentes, se.Exercise);
                     //Elmentem a feladatban levő üres cellák számát
                     uresCellakSzama = se.NumberOfEmptyCells;
                 }
@@ -149,7 +149,7 @@ namespace Sudoku.Generate
                     if (++szamlalo > 1)
                     {
                         //Visszaállítom a tömbök mentett állapotát (az utoljára törölt 2 cella törlése előtti állapotot)
-                        CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, tombokMentes);
+                        Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tombokMentes);
                         //Visszaállítom az üres cellák számát
                         se.NumberOfEmptyCells = uresCellakSzama;
                     }
@@ -191,7 +191,7 @@ namespace Sudoku.Generate
         private void visszaallitBT(int[][,] tombokMentes, ref int uresCellakSzama)
         {
             //Visszaállítom a "korábbi állapotot"
-            CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, tombokMentes);
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tombokMentes);
 
             //Végigmegyek az utolsó két törölt cellán
             foreach (KeyValuePair<Pair, int> cella in util.RemovedCellsAndValuesBeforeRemoval)

@@ -363,8 +363,8 @@ namespace Sudoku.Controller
             GenerateValuesInNumberTables();
 
             int[][,] exerciseInitialState;
-            CommonUtil.InitializeArray(out exerciseInitialState);
-            CommonUtil.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
+            Arrays.Initialize(out exerciseInitialState);
+            Arrays.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
             int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
 
             if (!SolveExerciseWithoutBackTrack())
@@ -374,10 +374,10 @@ namespace Sudoku.Controller
             else
             {
                 se.Solution = new int[9, 9];
-                CommonUtil.CopyTwoDimensionArray(se.Solution, se.Exercise[0]);
+                Arrays.CopyTwoDimensionArray(se.Solution, se.Exercise[0]);
             }
 
-            CommonUtil.CopyJaggedThreeDimensionArray(se.Exercise, exerciseInitialState);
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseInitialState);
             se.NumberOfEmptyCells = originalNumberOfEmptyCells;
         }
 
