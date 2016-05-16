@@ -10,14 +10,14 @@ using Sudoku.Util;
 
 namespace Sudoku.Verifier
 {
-    //TODO: make this non-static
     public class ExerciseResultVerifier
     {
         #region Members
 
+        private static ConfigHandler conf = ConfigHandler.get;
+
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
-        private ConfigHandler conf = ConfigHandler.get;
         private Label checkLabel;
         private TextBox[,] activeTable;
         private int currentCellValue;
@@ -94,7 +94,7 @@ namespace Sudoku.Verifier
 
         private bool IsFieldEmpty(int p)
         {
-            return activeTable[p / 9, p % 9].Text == "";
+            return String.IsNullOrEmpty(activeTable[p / 9, p % 9].Text);
         }
 
         private bool IsFieldValueMatchValueInSolution(int currentCellValue, int p)
@@ -124,6 +124,16 @@ namespace Sudoku.Verifier
         {
             List<int> list = solution.OfType<int>().ToList<int>();
             return !list.Contains(0);
+        }
+
+        public static bool ToCheckSumOfNumbersBiggerInCage()
+        {
+            return Boolean.Parse(conf.GetConfig("cageSum"));
+        }
+
+        public static bool ToCheckSameNumberAlreadyInHouse()
+        {
+            return Boolean.Parse(conf.GetConfig("helpRed"));
         }
 
         #endregion

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
+using Sudoku.Cell;
 using Sudoku.Controller;
 using Sudoku.Language;
-using Sudoku.Generate;
 using Sudoku.Util;
+using static Sudoku.Cell.CellHandler;
+using static Sudoku.Verifier.ExerciseResultVerifier;
 
 namespace Sudoku.Dialog
 {
@@ -18,6 +20,7 @@ namespace Sudoku.Dialog
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
+        private CellHandler cellHandler;
 
         private Button verifyExerciseButton;
         private Color[] colors = new ColorListFactory().GetColors();
@@ -60,10 +63,10 @@ namespace Sudoku.Dialog
             for (int p = 0; p < se.LAST_CELL_INDEX; p++)
             {
                 //Since changing the value of the cell, the eventhandler gets temporarily removed
-                guiTable[p / 9, p % 9].TextChanged -= new System.EventHandler(this.TextBox_TextChanged);
+                guiTable[p / 9, p % 9].TextChanged -= new EventHandler(this.TextBox_TextChanged);
                 //Changing the value of the cell to the value at the beginning of the exercise
                 guiTable[p / 9, p % 9].Text = (exerciseBackup[0][p / 9, p % 9] > 0) ? exerciseBackup[0][p / 9, p % 9].ToString() : "";
-                guiTable[p / 9, p % 9].TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+                guiTable[p / 9, p % 9].TextChanged += new EventHandler(this.TextBox_TextChanged);
             }
         }
 
@@ -135,7 +138,7 @@ namespace Sudoku.Dialog
                     else
                         SetOriginalKillerCellBackgroundColor(guiTable[row, col]);
 
-                    guiTable[row, col].TextChanged += new System.EventHandler(TextBox_TextChanged);
+                    guiTable[row, col].TextChanged += new EventHandler(TextBox_TextChanged);
                     guiTable[row, col].GotFocus += delegate(object sender, EventArgs e)
                     {
                         //Storing the indeces of the TextBox in focus
@@ -144,11 +147,12 @@ namespace Sudoku.Dialog
                         Int32.TryParse(guiTable[_i, _j].Text, out previousCellValue);
                     };
 
-                    guiTable[row, col].KeyDown += new System.Windows.Forms.KeyEventHandler(TextBox_KeyDown);
+                    guiTable[row, col].KeyDown += new KeyEventHandler(TextBox_KeyDown);
 
                     exerciseTable.Controls.Add(guiTable[row, col], col, row);
                 }
             }
+            cellHandler = new CellHandler(guiTable);
         }
 
         public void CreateTableOnGUI()
@@ -179,7 +183,7 @@ namespace Sudoku.Dialog
 
         #region Private
 
-        private void TextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             //The indeces of the cell that has changed
             int row = GetSenderTag(sender).row;
@@ -188,61 +192,21 @@ namespace Sudoku.Dialog
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    col = FindNearestEditableCellLeft(row, col);
+                    col = cellHandler.FindNearestEditableCellLeft(row, col);
                     break;
                 case Keys.Right:
-                    col = FindNearestEditableCellRight(row, col);
+                    col = cellHandler.FindNearestEditableCellRight(row, col);
                     break;
                 case Keys.Up:
-                    row = FindNearestEditableCellUp(row, col);
+                    row = cellHandler.FindNearestEditableCellUp(row, col);
                     break;
                 case Keys.Down:
-                    row = FindNearestEditableCellDown(row, col);
+                    row = cellHandler.FindNearestEditableCellDown(row, col);
                     break;
             }
 
             //Setting the focus to the desired cell
             guiTable[row, col].Focus();
-        }
-
-        private int FindNearestEditableCellLeft(int row, int col)
-        {
-            while (col > 0)
-            {
-                if (guiTable[row, --col].Enabled)
-                    break;
-            }
-            return col;
-        }
-
-        private int FindNearestEditableCellRight(int row, int col)
-        {
-            while (col < 8)
-            {
-                if (guiTable[row, ++col].Enabled)
-                    break;
-            }
-            return col;
-        }
-
-        private int FindNearestEditableCellUp(int row, int col)
-        {
-            while (row > 0)
-            {
-                if (guiTable[--row, col].Enabled)
-                    break;
-            }
-            return row;
-        }
-
-        private int FindNearestEditableCellDown(int row, int col)
-        {
-            while (row < 8)
-            {
-                if (guiTable[++row, col].Enabled)
-                    break;
-            }
-            return row;
         }
 
         private void TextBox_TextChanged(object sender, EventArgs e)
@@ -253,7 +217,7 @@ namespace Sudoku.Dialog
             TextBox changedCell = guiTable[row, col];
 
             //If the cell is empty, the value got removed from it
-            if (IsGuiCellEmpty(changedCell))
+            if (String.IsNullOrEmpty(changedCell.Text))
             {
                 se.Exercise[0][row, col] = 0;
 
@@ -340,20 +304,10 @@ namespace Sudoku.Dialog
             numberOfEmptyCellsLabel.Text = loc.Get("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
 
-        private bool IsGuiCellEmpty(TextBox cell)
-        {
-            return "".Equals(cell.Text);
-        }
-
-        private bool IsCellSpecial(int row, int col)
-        {
-            return (se.ExerciseType == SudokuType.SudokuX && SudokuXController.CellIsInAnyDiagonal(row, col))
-                || (se.ExerciseType == SudokuType.CenterDot && CenterDotController.CellIsAtMiddleOfAnyBlock(row, col));
-        }
-
         private void SetOriginalCellBackgroundColor(TextBox cell)
         {
-            cell.BackColor = IsCellSpecial((cell.Tag as Pair).row, (cell.Tag as Pair).col) ? Color.LightBlue : Color.White;
+            Pair aCell = cell.Tag as Pair;
+            cell.BackColor = IsCellSpecial(aCell.row, aCell.col) ? Color.LightBlue : Color.White;
         }
 
         private void SetOriginalKillerCellBackgroundColor(TextBox cell)
@@ -364,16 +318,6 @@ namespace Sudoku.Dialog
                 se.Killer.Exercise[row, col].CageIndex <= 10
                 ? colors[se.Killer.Exercise[row, col].CageIndex]
                 : colors[se.Killer.Exercise[row, col].CageIndex - 10];
-        }
-
-        private bool ToCheckSumOfNumbersBiggerInCage()
-        {
-            return Boolean.Parse(conf.GetConfig("cageSum"));
-        }
-
-        private bool ToCheckSameNumberAlreadyInHouse()
-        {
-            return Boolean.Parse(conf.GetConfig("helpRed"));
         }
 
         private void SetIncorrectCellBackground(TextBox cell)
@@ -389,9 +333,9 @@ namespace Sudoku.Dialog
 
         private void ClearCellWithInvalidValue(TextBox cell)
         {
-            cell.TextChanged -= new System.EventHandler(this.TextBox_TextChanged);         
+            cell.TextChanged -= new EventHandler(this.TextBox_TextChanged);         
             cell.Clear();
-            cell.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
+            cell.TextChanged += new EventHandler(this.TextBox_TextChanged);
         }
 
         private Pair GetSenderTag(object sender)

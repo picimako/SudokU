@@ -60,7 +60,7 @@ namespace Sudoku.Dialog
         private void CreateAboutMenu()
         {
             menu.Items.Add(
-                CreateMenuItem("about_menu", "about_menu", delegate(object sender, EventArgs e) { new AboutBox().ShowDialog(); }));
+                CreateMenuItem("about_menu", "about_menu", (sender, e) => { new AboutBox().ShowDialog(); }));
         }
 
         private void CreateFileMenu()
@@ -69,7 +69,7 @@ namespace Sudoku.Dialog
             menu.Items.Add(fileMenu);
             CreateGenerateSubMenu(fileMenu);
             CreateOpenSubMenu(fileMenu);
-            fileMenu.DropDownItems.Add(CreateMenuItem("exit_app", "exit_app", delegate(object sender, EventArgs e) { Application.Exit(); }));
+            fileMenu.DropDownItems.Add(CreateMenuItem("exit_app", "exit_app", (sender, e) => { Application.Exit(); }));
         }
 
         private void CreateGenerateSubMenu(ToolStripMenuItem fileMenu)
@@ -135,7 +135,7 @@ namespace Sudoku.Dialog
 
         private void SetLabelText(ToolStripMenuItem item)
         {
-            if (item.Tag != null && !"".Equals(item.Tag.ToString()))
+            if (item.Tag != null && !String.IsNullOrEmpty(item.Tag.ToString()))
             {
                 item.Text = loc.Get(item.Tag.ToString());
             }
@@ -151,15 +151,15 @@ namespace Sudoku.Dialog
 
         public void EnableOpenAndGenerateMenuItems()
         {
-            SetOpenAndGenerateMenuItems(true);
+            SetOpenAndGenerateMenuItemsStatus(true);
         }
 
         public void DisableOpenAndGenerateMenuItems()
         {
-            SetOpenAndGenerateMenuItems(false);
+            SetOpenAndGenerateMenuItemsStatus(false);
         }
 
-        private void SetOpenAndGenerateMenuItems(bool value)
+        private void SetOpenAndGenerateMenuItemsStatus(bool value)
         {
             foreach (ToolStripMenuItem item in generateSubMenu.DropDownItems)
             {
