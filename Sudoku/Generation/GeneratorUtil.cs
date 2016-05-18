@@ -13,10 +13,10 @@ namespace Sudoku.Generate
 
         //Ebben a szótárban tárolom azokat az Pair listákat, amelyek azon táblákhoz tartoznak melyben a hátramaradt 4 cella négyzet/téglalap alakú
         //kulcsként tárolom a tábla számát
-        private Dictionary<int, List<Pair>> rectangularCells;
+        private Dictionary<int, List<Cell>> rectangularCells;
 
         //a törölt értékű cellák indexeit és törlés előtti értékét tárolja
-        private Dictionary<Pair, int> removedCellsAndValuesBeforeRemoval;
+        private Dictionary<Cell, int> removedCellsAndValuesBeforeRemoval;
 
         #endregion
 
@@ -40,13 +40,13 @@ namespace Sudoku.Generate
             set { solution = value; }
         }
 
-        public Dictionary<int, List<Pair>> RectangularCells
+        public Dictionary<int, List<Cell>> RectangularCells
         {
             get { return rectangularCells; }
             set { rectangularCells = value; }
         }
 
-        public Dictionary<Pair, int> RemovedCellsAndValuesBeforeRemoval
+        public Dictionary<Cell, int> RemovedCellsAndValuesBeforeRemoval
         {
             get { return removedCellsAndValuesBeforeRemoval; }
             set { removedCellsAndValuesBeforeRemoval = value; }
@@ -68,8 +68,8 @@ namespace Sudoku.Generate
 
         public void InitializeDictionaries()
         {
-            rectangularCells = new Dictionary<int, List<Pair>>();
-            removedCellsAndValuesBeforeRemoval = new Dictionary<Pair, int>();
+            rectangularCells = new Dictionary<int, List<Cell>>();
+            removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
         }
 
         public void InitializeSolutionContainer()

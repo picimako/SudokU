@@ -48,7 +48,7 @@ namespace Sudoku.Generate
 
             //Ez a lista szolgál az utolsó 6 törölt cella blokkszámának tárolására.
             List<int> blockIndecesOfRemovedCells = new List<int>(1);
-            util.RectangularCells = new Dictionary<int, List<Pair>>();
+            util.RectangularCells = new Dictionary<int, List<Cell>>();
 
             do
             {
@@ -75,7 +75,7 @@ namespace Sudoku.Generate
                 se.Exercise[0][i, j] = 0;
 
                 //Elmentem a törölt cella indexeit, és törlés előtti értékét
-                util.RemovedCellsAndValuesBeforeRemoval.Add(new Pair(i, j), cellValue);
+                util.RemovedCellsAndValuesBeforeRemoval.Add(new Cell(i, j), cellValue);
 
                 //Cella törlése miatt a törölhető értékek beállítása a számtömbökben.
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(cellValue, i, j);
@@ -96,7 +96,7 @@ namespace Sudoku.Generate
             if (nemKellUtolso)
                 util.RemovedCellsAndValuesBeforeRemoval.Remove(util.RemovedCellsAndValuesBeforeRemoval.Last().Key);
 
-            foreach (KeyValuePair<Pair, int> cell in util.RemovedCellsAndValuesBeforeRemoval)
+            foreach (KeyValuePair<Cell, int> cell in util.RemovedCellsAndValuesBeforeRemoval)
             {
                 //Törlöm az aktuális cella értékét
                 se.Exercise[0][cell.Key.row, cell.Key.col] = 0;
@@ -168,7 +168,7 @@ namespace Sudoku.Generate
                         se.Exercise[0][i, j] = 0;
 
                         //Mentem a törölt cella indexeit, és törlés előtti értékét
-                        util.RemovedCellsAndValuesBeforeRemoval.Add(new Pair(i, j), t);
+                        util.RemovedCellsAndValuesBeforeRemoval.Add(new Cell(i, j), t);
 
                         //Törlöm a szükséges értékeket a számtömbökből
                         se.Ctrl.RegenerateNumberTablesForRemovedValue(t, i, j);
@@ -195,7 +195,7 @@ namespace Sudoku.Generate
             Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tombokMentes);
 
             //Végigmegyek az utolsó két törölt cellán
-            foreach (KeyValuePair<Pair, int> cella in util.RemovedCellsAndValuesBeforeRemoval)
+            foreach (KeyValuePair<Cell, int> cella in util.RemovedCellsAndValuesBeforeRemoval)
             {
                 //Az utoljára törölt két cellát ismét kitörlöm
                 se.Exercise[0][cella.Key.row, cella.Key.col] = 0;

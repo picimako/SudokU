@@ -44,9 +44,9 @@ namespace Sudoku.Generate
             //For filling the first house in the table
             List<int> sudokuNumbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             //1. Azokat az indexeket fogja tárolni, melyek olyan blokkokhoz tartoznak amelyekben a blokkok közül a legkevesebb üres cella található
-            List<Pair> cellsInTheMostlyFilledBlock = null;
+            List<Cell> cellsInTheMostlyFilledBlock = null;
             // For storing cell indeces whiches placement is rectangular (it will be 4 cells)
-            List<Pair> rectangularCells = null;
+            List<Cell> rectangularCells = null;
 
             se.InitExercise();
             switch (se.ExerciseType)
@@ -158,7 +158,7 @@ namespace Sudoku.Generate
         /// Decides if the provided cells are placed as rectangular, based on the method parameters.
         /// Example for 4 rectangular cells with x,y cell indeces: [1, 0], [1, 4], [5, 0], [5, 4]
         /// </summary>
-        private bool AreCellsPlacedAsRectangle(ref List<Pair> rectangularCells, int numberToFillIn)
+        private bool AreCellsPlacedAsRectangle(ref List<Cell> rectangularCells, int numberToFillIn)
         {
             return (rectangularCells = se.Ctrl.FindEmptyCellsInNumberTable(numberToFillIn)).Count == 4 &&
                         (rectangularCells[0].row == rectangularCells[1].row
@@ -260,7 +260,7 @@ namespace Sudoku.Generate
         private void kozosCellaKeres(int r)
         {
             //Végigmegyek a szótár elemein
-            foreach (KeyValuePair<int, List<Pair>> _4cella in util.RectangularCells)
+            foreach (KeyValuePair<int, List<Cell>> _4cella in util.RectangularCells)
             {
                 //Ha nem ugyanazt a 4 cellát akarom vizsgálni
                 if (util.RectangularCells[r] != _4cella.Value)
@@ -310,7 +310,7 @@ namespace Sudoku.Generate
             int _i, _j;
 
             //Blokkban való kereséshez
-            Pair index = new Pair();
+            Cell index = new Cell();
 
             //Végigmegyek az összes házon
             for (int k = 0; k < 9; k++)
@@ -357,7 +357,7 @@ namespace Sudoku.Generate
             int egyezoTabla = -1;
 
             //Elkezdek a szótár elemein végighaladni
-            foreach (KeyValuePair<int, List<Pair>> _4cella in util.RectangularCells)
+            foreach (KeyValuePair<int, List<Cell>> _4cella in util.RectangularCells)
             {
                 //l azt jelenti, hogy a 4-elemű lista hanyadik elemén állok éppen
                 for (int l = 0; l < _4cella.Value.Count; l++)

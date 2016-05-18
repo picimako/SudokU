@@ -70,7 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cell\CellHandler.cs" />
+    <Compile Include="Cells\CellHandler.cs" />
     <Compile Include="Dialog\SelectExerciseDialogFactory.cs" />
     <Compile Include="Dialog\Table\UITableHandler.cs" />
     <Compile Include="Generation\ExerciseGeneratorInitializer.cs" />
@@ -149,7 +149,7 @@
     <Compile Include="Generation\ExerciseGenerator.cs" />
     <Compile Include="Controller\Exercise\SudokuExercise.cs" />
     <Compile Include="Controller\SudokuXController.cs" />
-    <Compile Include="Util\Pair.cs" />
+    <Compile Include="Util\Cell.cs" />
     <Compile Include="IO\ExerciseReader.cs" />
     <Compile Include="Util\Arrays.cs" />
   </ItemGroup>

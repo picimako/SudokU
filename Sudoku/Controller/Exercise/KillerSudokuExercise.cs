@@ -8,7 +8,7 @@ namespace Sudoku.Controller
 
         //i: cage index
         //j: value in the exercise
-        private Pair[,] killerExercise;
+        private Cell[,] killerExercise;
 
         //Id of cage, the cage itself
         private Dictionary<int, Cage> cages;
@@ -30,7 +30,7 @@ namespace Sudoku.Controller
             set { controller = value; }
         }
 
-        public Pair[,] Exercise
+        public Cell[,] Exercise
         {
             get { return killerExercise; }
             set { killerExercise = value; }
@@ -53,12 +53,12 @@ namespace Sudoku.Controller
 
         private void InitExercise()
         {
-            killerExercise = new Pair[9, 9];
+            killerExercise = new Cell[9, 9];
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    killerExercise[i, j] = new Pair();
+                    killerExercise[i, j] = new Cell();
                 }
             }
         }

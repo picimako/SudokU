@@ -286,7 +286,7 @@ namespace Sudoku.Controller
         /// <returns>True if an empty cell was found and could be filled in the house of the given cell, otherwise false.</returns>
         private bool FindAndFillOnlyEmptyCellInHouses(int num, out int row, out int col)
         {
-            Pair emptyCell = new Pair();
+            Cell emptyCell = new Cell();
 
             //Iterating through the houses
             for (int k = 0; k < 9; k++)
@@ -517,9 +517,9 @@ namespace Sudoku.Controller
         /// <param name="blockIndex">The index of the block to check.</param>
         /// <param name="cell">The only empty cell in the block.</param>
         /// <returns>True if there is only one empty cell in the block, otherwise false.</returns>
-        public bool FindOnlyEmptyCellInBlock(int num, out Pair cell, int blockIndex)
+        public bool FindOnlyEmptyCellInBlock(int num, out Cell cell, int blockIndex)
         {
-            cell = new Pair();
+            cell = new Cell();
 
             int startRow = StartRowOfBlockByBlockIndex(blockIndex);
             int startCol = StartColOfBlockByBlockIndex(blockIndex);
@@ -550,10 +550,10 @@ namespace Sudoku.Controller
         /// that are placed in blocks that have 'numberOfSoughtEmptyCells' number of empty cells.
         /// <param name="numberOfSoughtEmptyCells">The number of empty cells needed.</param>
         /// TODO: make sure to check if the refactor didn't break anything
-        public List<Pair> FindXNumberOfEmptyCellsInBlocks(int num, int numberOfSoughtEmptyCells)
+        public List<Cell> FindXNumberOfEmptyCellsInBlocks(int num, int numberOfSoughtEmptyCells)
         {
-            List<Pair> emptyCellsInBlock = new List<Pair>();
-            List<Pair> allEmptyCells = new List<Pair>();
+            List<Cell> emptyCellsInBlock = new List<Cell>();
+            List<Cell> allEmptyCells = new List<Cell>();
 
             for (int b = 0; b < 9; b++)
             {
@@ -567,7 +567,7 @@ namespace Sudoku.Controller
                         emptyCellsInBlock.Count <= numberOfSoughtEmptyCells; col++)
                     {
                         if (se.IsCellEmpty(num, row, col))
-                            emptyCellsInBlock.Add(new Pair(row, col));
+                            emptyCellsInBlock.Add(new Cell(row, col));
                     }
                 }
 
@@ -580,15 +580,15 @@ namespace Sudoku.Controller
 
         /// <summary>Collects the first maximum 4 empty cells in the 'num' numbertable.</summary>
         /// TODO: make sure to check if the refactor didn't break anything
-        public List<Pair> FindEmptyCellsInNumberTable(int num)
+        public List<Cell> FindEmptyCellsInNumberTable(int num)
         {
-            List<Pair> emptyCells = new List<Pair>();
+            List<Cell> emptyCells = new List<Cell>();
 
             int p = 0;
             while (p < se.LAST_CELL_INDEX && emptyCells.Count <= 4)
             {
                 if (se.IsCellEmpty(num, p))
-                    emptyCells.Add(new Pair(p / 9, p % 9));
+                    emptyCells.Add(new Cell(p / 9, p % 9));
 
                 p++;
             }

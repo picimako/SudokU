@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
-using Sudoku.Cell;
+using Sudoku.Cells;
 using Sudoku.Controller;
 using Sudoku.Language;
 using Sudoku.Util;
-using static Sudoku.Cell.CellHandler;
+using static Sudoku.Cells.CellHandler;
 using static Sudoku.Verifier.ExerciseResultVerifier;
 
 namespace Sudoku.Dialog
@@ -72,7 +72,7 @@ namespace Sudoku.Dialog
 
         public void FillTableOnGUI()
         {
-            Dictionary<Pair, int> cageCornersAndSums = new Dictionary<Pair, int>();
+            Dictionary<Cell, int> cageCornersAndSums = new Dictionary<Cell, int>();
             if (se.IsExerciseKiller)
                 cageCornersAndSums = se.Killer.Ctrl.GetSumOfNumbersAndIndicatorCages();
             guiTable = new TextBox[9, 9];
@@ -83,7 +83,7 @@ namespace Sudoku.Dialog
                 {
                     if (se.IsExerciseKiller)
                     {
-                        foreach (KeyValuePair<Pair, int> cage in cageCornersAndSums)
+                        foreach (KeyValuePair<Cell, int> cage in cageCornersAndSums)
                         {
                             if (se.Killer.Ctrl.IsCellAtTopLeftOfCage(cage, row, col))
                             {
@@ -123,7 +123,7 @@ namespace Sudoku.Dialog
                     guiTable[row, col].MaxLength = 1;
 
                     //Setting the cell indeces in the Tag property for later usage
-                    guiTable[row, col].Tag = new Pair(row, col);
+                    guiTable[row, col].Tag = new Cell(row, col);
 
                     if (!se.IsExerciseKiller)
                     {
@@ -238,7 +238,7 @@ namespace Sudoku.Dialog
                     int cageIndex = se.Killer.Exercise[row, col].CageIndex;
                     if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
                     {
-                        foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
+                        foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
                             FontUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Regular);
                     }
                 }
@@ -291,7 +291,7 @@ namespace Sudoku.Dialog
                     int cageIndex = se.Killer.Exercise[row, col].CageIndex;
                     if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
                     {
-                        foreach (Pair cell in se.Killer.Cages[cageIndex].Cells)
+                        foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
                             FontUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Bold);
                     }
                 }
@@ -306,14 +306,14 @@ namespace Sudoku.Dialog
 
         private void SetOriginalCellBackgroundColor(TextBox cell)
         {
-            Pair aCell = cell.Tag as Pair;
+            Cell aCell = cell.Tag as Cell;
             cell.BackColor = IsCellSpecial(aCell.row, aCell.col) ? Color.LightBlue : Color.White;
         }
 
         private void SetOriginalKillerCellBackgroundColor(TextBox cell)
         {
-            int row = (cell.Tag as Pair).row;
-            int col = (cell.Tag as Pair).col;
+            int row = (cell.Tag as Cell).row;
+            int col = (cell.Tag as Cell).col;
             cell.BackColor =
                 se.Killer.Exercise[row, col].CageIndex <= 10
                 ? colors[se.Killer.Exercise[row, col].CageIndex]
@@ -338,9 +338,9 @@ namespace Sudoku.Dialog
             cell.TextChanged += new EventHandler(this.TextBox_TextChanged);
         }
 
-        private Pair GetSenderTag(object sender)
+        private Cell GetSenderTag(object sender)
         {
-            return ((TextBox)sender).Tag as Pair;
+            return ((TextBox)sender).Tag as Cell;
         }
 
         #endregion

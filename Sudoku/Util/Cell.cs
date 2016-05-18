@@ -1,6 +1,6 @@
 ﻿namespace Sudoku
 {
-    public class Pair
+    public class Cell
     {
         #region Members
 
@@ -22,9 +22,9 @@
 
         #region Constructor
 
-        public Pair() { }
+        public Cell() { }
 
-        public Pair(int i, int j)
+        public Cell(int i, int j)
         {
             this.i = i;
             this.j = j;

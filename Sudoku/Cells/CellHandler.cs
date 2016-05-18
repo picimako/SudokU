@@ -2,7 +2,7 @@
 using Sudoku.Controller;
 using Sudoku.Generate;
 
-namespace Sudoku.Cell
+namespace Sudoku.Cells
 {
     class CellHandler
     {

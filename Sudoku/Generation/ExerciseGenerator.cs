@@ -100,11 +100,11 @@ namespace Sudoku.Generate
             int kSzam = 1, aktKetrecMeret, p;
             
             //Egy cella lehetséges szomszédai indexeinek tárolására
-            List<Pair> szomszedok = new List<Pair>();
+            List<Cell> szomszedok = new List<Cell>();
             //Egy egyedül maradt cella, lehetséges szomszéd ketreceinek tárolására
             List<int> szomszedKetrecek = new List<int>();
             //Az aktuálisan feldolgozandó cella indexeit tárolja
-            Pair aktCella = new Pair(0, 0);
+            Cell aktCella = new Cell(0, 0);
 
             do
             {
