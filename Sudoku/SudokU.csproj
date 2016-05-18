@@ -71,6 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cells\CellHandler.cs" />
+    <Compile Include="Controller\Finder\EmptyCellFinder.cs" />
+    <Compile Include="Controller\Finder\NotFillableItemFinder.cs" />
     <Compile Include="Dialog\SelectExerciseDialogFactory.cs" />
     <Compile Include="Dialog\Table\UITableHandler.cs" />
     <Compile Include="Generation\ExerciseGeneratorInitializer.cs" />

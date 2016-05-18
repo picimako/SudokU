@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Sudoku.Controller;
+using Sudoku.Controller.Finder;
 
 namespace Sudoku.Generate
 {
@@ -14,7 +15,9 @@ namespace Sudoku.Generate
         private const int MAX_NUMBER_OF_WRONG_GENERATIONS = 3;
         private SudokuExercise se = SudokuExercise.get;
         private GeneratorUtil util;
-        private Random random;
+        private NotFillableItemFinder itemFinder = new NotFillableItemFinder();
+        private EmptyCellFinder emptyCellFinder = new EmptyCellFinder();
+        private Random random = new Random();
 
         #endregion
 
@@ -23,7 +26,6 @@ namespace Sudoku.Generate
         public FullTableGenerator(GeneratorUtil util)
         {
             this.util = util;
-            this.random = new Random();
         }
 
         #endregion
@@ -96,7 +98,7 @@ namespace Sudoku.Generate
                         do
                         {
                             //Lekérem az előbb leírtaknak megfelelő cellák indexeit. Ha 1-nél több ilyen cella van (minimum 2 lesz vagy pedig egy sem)
-                            if ((cellsInTheMostlyFilledBlock = se.Ctrl.FindXNumberOfEmptyCellsInBlocks(numberToFillIn, hanyCella)).Count > 1)
+                            if ((cellsInTheMostlyFilledBlock = emptyCellFinder.FindXNumberOfEmptyCellsInBlocks(numberToFillIn, hanyCella)).Count > 1)
                             {
                                 index = random.Next(0, cellsInTheMostlyFilledBlock.Count);
 
@@ -116,7 +118,7 @@ namespace Sudoku.Generate
                         } while (++hanyCella <= (10 - numberToFillIn)); //10-numberToFillIn üres cella lehet maximálisan egy blokkban
                     }
 
-                    if (se.Ctrl.IsThereNotFillableHouseForNumber(numberToFillIn))
+                    if (itemFinder.IsThereNotFillableHouseForNumber(numberToFillIn))
                     {
                         // Restoring the exercise to the state when the filling of the current number started
                         Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tempTable);
@@ -160,7 +162,7 @@ namespace Sudoku.Generate
         /// </summary>
         private bool AreCellsPlacedAsRectangle(ref List<Cell> rectangularCells, int numberToFillIn)
         {
-            return (rectangularCells = se.Ctrl.FindEmptyCellsInNumberTable(numberToFillIn)).Count == 4 &&
+            return (rectangularCells = emptyCellFinder.FindEmptyCellsInNumberTable(numberToFillIn)).Count == 4 &&
                         (rectangularCells[0].row == rectangularCells[1].row
                         && rectangularCells[2].row == rectangularCells[3].row
                         && rectangularCells[0].col == rectangularCells[2].col
@@ -317,7 +319,7 @@ namespace Sudoku.Generate
             {
                 /* tombok[r] k indexű során megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű sorban melyik indexű elem az üres
                  * egyébként pedig -1-et*/
-                if ((_j = se.Ctrl.FindOnlyEmptyCellInRow(r, row: k)) > 0)
+                if ((_j = emptyCellFinder.FindOnlyEmptyCellInRow(r, row: k)) > 0)
                 {
                     //beírom a megfelelő tömbökbe az r számot, és minden számtömbben beállítom a foglalt cellákat
                     util.SetValueOfFilledCell(r, k, _j, kellSzamTombKitolt);
@@ -328,7 +330,7 @@ namespace Sudoku.Generate
                 }
                 /* tombok[r] k indexű oszlopán megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű oszlopban melyik indexű elem
                  * az üres, egyébként pedig -1-et*/
-                else if ((_i = se.Ctrl.FindOnlyEmptyCellInColumn(r, col: k)) > 0)
+                else if ((_i = emptyCellFinder.FindOnlyEmptyCellInColumn(r, col: k)) > 0)
                 {
                     util.SetValueOfFilledCell(r, _i, k, kellSzamTombKitolt);
                     egyezesKereses(_i, k);
@@ -336,7 +338,7 @@ namespace Sudoku.Generate
                 }
                 /* tombok[r] k index-szel jelzett blokkján megy végig, és index-be belerakja a megtalált üres cella indexeit
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
-                else if (se.Ctrl.FindOnlyEmptyCellInBlock(r, out index, blockIndex: k))
+                else if (emptyCellFinder.FindOnlyEmptyCellInBlock(r, out index, blockIndex: k))
                 {
                     util.SetValueOfFilledCell(r, index.row, index.col, kellSzamTombKitolt);
                     egyezesKereses(index.row, index.col);

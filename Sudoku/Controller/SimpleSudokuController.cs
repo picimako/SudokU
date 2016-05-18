@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Sudoku.Generate;
+﻿using Sudoku.Generate;
+using Sudoku.Controller.Finder;
 using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller
@@ -8,6 +7,7 @@ namespace Sudoku.Controller
     public class SimpleSudokuController
     {
         protected SudokuExercise se = SudokuExercise.get;
+        private EmptyCellFinder finder = new EmptyCellFinder();
 
         #region Constructor
 
@@ -295,7 +295,7 @@ namespace Sudoku.Controller
 
                 /* tombok[r] k indexű során megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű sorban melyik indexű elem az üres
                  * egyébként pedig -1-et*/
-                if ((col = FindOnlyEmptyCellInRow(num, row: k)) > 0)
+                if ((col = finder.FindOnlyEmptyCellInRow(num, row: k)) > 0)
                 {
                     //beírom a megfelelő tömbökbe az r számot, és minden számtömbben beállítom a foglalt cellákat
                     PutNumToExerciseAndMakeCellsOccupied(num, k, col);
@@ -307,7 +307,7 @@ namespace Sudoku.Controller
                 }
                 /* tombok[r] k indexű oszlopán megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű oszlopban melyik indexű elem
                  * az üres, egyébként pedig -1-et*/
-                else if ((row = FindOnlyEmptyCellInColumn(num, col: k)) > 0)
+                else if ((row = finder.FindOnlyEmptyCellInColumn(num, col: k)) > 0)
                 {
                     PutNumToExerciseAndMakeCellsOccupied(num, row, k);
 
@@ -316,7 +316,7 @@ namespace Sudoku.Controller
                 }
                 /* tombok[num] k index-szel jelzett blokkján megy végig, és index-be belerakja a megtalált üres cella indexeit
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
-                else if (FindOnlyEmptyCellInBlock(num, out emptyCell, blockIndex: k))
+                else if (finder.FindOnlyEmptyCellInBlock(num, out emptyCell, blockIndex: k))
                 {
                     PutNumToExerciseAndMakeCellsOccupied(num, emptyCell.row, emptyCell.col);
 
@@ -388,212 +388,6 @@ namespace Sudoku.Controller
         {
             new BackTrackSolver().SolveExerciseWithBackTrack();
             return se.Exercise[0];
-        }
-
-        private bool IsThereNotFillableRow(int num, ref bool van, ref bool teli)
-        {
-            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, true);
-        }
-
-        private bool IsThereNotFillableColumn(int num, ref bool van, ref bool teli)
-        {
-            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, false);
-        }
-
-        private bool IsThereNotFillableRowOrColumn(int t, ref bool van, ref bool teli, bool row)
-        {
-            //Végigmegyek a soron/oszlopon
-            for (int i = 0; i < 9; i++)
-            {
-                //Csak -1-esek vannak
-                teli = true;
-
-                //Végigmegyek az oszlopon/soron
-                for (int j = 0; j < 9; j++)
-                {
-                    //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a sor vizsgálatát
-                    if (row ? IsThereOccupiedCell(t, i, j, ref teli) : IsThereOccupiedCell(t, j, i, ref teli))
-                        break;
-                }
-
-                //van értéke van|teli lesz
-                van |= teli;
-
-                //Ha van olyan sor, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
-                if (van)
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Megvizsgálja, hogy van-e olyan ház, ahol csak -1 értékek szerepelnek, a t szám viszont nem</summary>
-        /// <param name="t">A vizsgálandó tábla indexe</param>
-        /// <returns>Ha van egyetlen egy olyan ház is, ahol a vizsgálat igaz értéket ad, akkor true, egyébként false</returns>
-        public bool IsThereNotFillableHouseForNumber(int t)
-        {
-            /* van: az eddig vizsgált összes cella teliségét tárolja
-             * teli: true az éppen vizsgált ház csak -1-es értéket tartalmaz, egyébként false*/
-            bool van = false, teli = false;
-
-            return IsThereNotFillableRow(t, ref van, ref teli) || IsThereNotFillableColumn(t, ref van, ref teli)
-                || IsThereNotFillableBlock(t, ref van, ref teli);
-        }
-
-        private bool IsThereNotFillableBlock(int num, ref bool van, ref bool teli)
-        {
-            for (int bl = 0; bl < 9; bl++)
-            {
-                //Csak -1-esek vannak
-                teli = true;
-
-                for (int row = StartRowOfBlockByBlockIndex(bl); row <= EndRowOfBlockByBlockIndex(bl); row++)
-                {
-                    for (int col = StartColOfBlockByBlockIndex(bl); col <= EndColOfBlockByBlockIndex(bl); col++)
-                    {
-                        //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a blokk vizsgálatát
-                        if (IsThereOccupiedCell(num, row, col, ref teli))
-                            break;
-                    }
-
-                    if (!teli)
-                        break;
-                }
-
-                //van értéke van|teli lesz
-                van |= teli;
-
-                //Ha van olyan blokk, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
-                if (van)
-                    return true;
-            }
-            return false;
-        }
-
-        private bool IsThereOccupiedCell(int num, int row, int col, ref bool teli)
-        {
-            //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem az oszlop vizsgálatát
-            if (se.Exercise[num][row, col] != se.OCCUPIED)
-            {
-                teli = false;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Iterates through the 'i' row or column in the 'num' numbertable and searches for an only empty cell
-        /// in the row or column</summary>
-        /// <param name="i">The row or column to check.</param>
-        /// <returns>
-        /// The found row or column index if there is only one cell found.
-        /// -1 if there is more or less then 1 cell is found.
-        /// </returns>
-        public int FindOnlyEmptyCellInRowOrColumn(int num, int i, bool rowToCheck)
-        {
-            List<int> list = new List<int>(2);
-            //Since we are searching for only one cell, if there are two, the search doesn't need to continue
-            for (int k = 0; k < 9 && list.Count <= 1; k++)
-            {
-                if (rowToCheck ? se.IsCellEmpty(num, i, k) : se.IsCellEmpty(num, k, i))
-                    list.Add(k);
-            }
-
-            return list.Count == 1 ? list.First() : -1;
-        }
-
-        public int FindOnlyEmptyCellInRow(int num, int row)
-        {
-            return FindOnlyEmptyCellInRowOrColumn(num, row, rowToCheck: true);
-        }
-
-        public int FindOnlyEmptyCellInColumn(int num, int col)
-        {
-            return FindOnlyEmptyCellInRowOrColumn(num, col, rowToCheck: false);
-        }
-
-        /// <summary>Searches for the only empty cell in the given block of the passed number table.
-        /// The indeces of the empty cell is stored in 'cell'.</summary>
-        /// <param name="blockIndex">The index of the block to check.</param>
-        /// <param name="cell">The only empty cell in the block.</param>
-        /// <returns>True if there is only one empty cell in the block, otherwise false.</returns>
-        public bool FindOnlyEmptyCellInBlock(int num, out Cell cell, int blockIndex)
-        {
-            cell = new Cell();
-
-            int startRow = StartRowOfBlockByBlockIndex(blockIndex);
-            int startCol = StartColOfBlockByBlockIndex(blockIndex);
-            int endRow = EndRowOfBlockByBlockIndex(blockIndex);
-            int endCol = EndColOfBlockByBlockIndex(blockIndex);
-            int numberOfEmptyCellsInBlock = 0;
-
-            for (int row = startRow; row <= endRow; row++)
-            {
-                for (int col = startCol; col <= endCol; col++)
-                {
-                    if (se.IsCellEmpty(num, row, col))
-                    {
-                        if (++numberOfEmptyCellsInBlock > 1)
-                            return false;
-
-                        cell.row = row;
-                        cell.col = col;
-                    }
-                }
-            }
-
-            return numberOfEmptyCellsInBlock == 1;
-        }
-
-        /// <summary>
-        /// Collect the cells (from the specified numbertable)
-        /// that are placed in blocks that have 'numberOfSoughtEmptyCells' number of empty cells.
-        /// <param name="numberOfSoughtEmptyCells">The number of empty cells needed.</param>
-        /// TODO: make sure to check if the refactor didn't break anything
-        public List<Cell> FindXNumberOfEmptyCellsInBlocks(int num, int numberOfSoughtEmptyCells)
-        {
-            List<Cell> emptyCellsInBlock = new List<Cell>();
-            List<Cell> allEmptyCells = new List<Cell>();
-
-            for (int b = 0; b < 9; b++)
-            {
-                //Haven't found empty cells
-                emptyCellsInBlock.Clear();
-
-                for (int row = StartRowOfBlockByBlockIndex(b); row <= EndRowOfBlockByBlockIndex(b) &&
-                    emptyCellsInBlock.Count <= numberOfSoughtEmptyCells; row++)
-                {
-                    for (int col = StartColOfBlockByBlockIndex(b); col <= EndColOfBlockByBlockIndex(b) &&
-                        emptyCellsInBlock.Count <= numberOfSoughtEmptyCells; col++)
-                    {
-                        if (se.IsCellEmpty(num, row, col))
-                            emptyCellsInBlock.Add(new Cell(row, col));
-                    }
-                }
-
-                if (emptyCellsInBlock.Count == numberOfSoughtEmptyCells)
-                    allEmptyCells.AddRange(emptyCellsInBlock);
-            }
-
-            return allEmptyCells;
-        }
-
-        /// <summary>Collects the first maximum 4 empty cells in the 'num' numbertable.</summary>
-        /// TODO: make sure to check if the refactor didn't break anything
-        public List<Cell> FindEmptyCellsInNumberTable(int num)
-        {
-            List<Cell> emptyCells = new List<Cell>();
-
-            int p = 0;
-            while (p < se.LAST_CELL_INDEX && emptyCells.Count <= 4)
-            {
-                if (se.IsCellEmpty(num, p))
-                    emptyCells.Add(new Cell(p / 9, p % 9));
-
-                p++;
-            }
-
-            return emptyCells;
         }
     }
 }
