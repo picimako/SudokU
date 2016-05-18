@@ -90,7 +90,7 @@ namespace Sudoku.Generate
             {
                 //Ha nem tombok[r]-be akarok írni, akkor tombok[k]-ba írok -1-et az előbb kitöltött cella indexeivel megegyező cellába
                 if (num != numToFill)
-                    se.Exercise[num][row, col] = -1;
+                    se.Exercise[num][row, col] = se.OCCUPIED;
             }
 
             /* Ha el kell végezni, akkor elvégzem tombok[r]-ben a foglalt cellák beállítását

@@ -112,6 +112,7 @@
     <Compile Include="Controller\SimpleSudokuController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Table\TableUtil.cs" />
     <Compile Include="Util\ColorListFactory.cs" />
     <Compile Include="Util\FontUtil.cs" />
     <Compile Include="Verifier\ExerciseResultVerifier.cs" />

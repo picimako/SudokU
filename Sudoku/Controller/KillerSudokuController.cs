@@ -546,7 +546,7 @@ namespace Sudoku.Controller
             {
                 //Foglalt cellák beállítása
                 if (se.Solution[cell.row, cell.col] == 0)
-                    se.Solution[cell.row, cell.col] = -1;
+                    se.Solution[cell.row, cell.col] = se.OCCUPIED;
             }
         }
     }

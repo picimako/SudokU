@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Sudoku.Generate;
+using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller
 {
@@ -126,9 +127,9 @@ namespace Sudoku.Controller
         /// <returns>True in case of inclusion, otherwise false.</returns>
         protected bool BlockContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
-            for (int row = se.StartRowOfBlockByRow(rowOfCurrentCell); row <= se.EndRowOfBlockByRow(rowOfCurrentCell); row++)
+            for (int row = StartRowOfBlockByRow(rowOfCurrentCell); row <= EndRowOfBlockByRow(rowOfCurrentCell); row++)
             {
-                for (int col = se.StartColOfBlockByCol(colOfCurrentCell); col <= se.EndColOfBlockByCol(colOfCurrentCell); col++)
+                for (int col = StartColOfBlockByCol(colOfCurrentCell); col <= EndColOfBlockByCol(colOfCurrentCell); col++)
                 {
                     if (row != rowOfCurrentCell && col != colOfCurrentCell && se.Exercise[0][row, col] == value)
                         return true;
@@ -197,7 +198,7 @@ namespace Sudoku.Controller
         {
             MakeRowOccupied(num, row);
             MakeColumnOccupied(num, col);
-            MakeBlockOccupied(num, se.StartRowOfBlockByRow(row), se.StartColOfBlockByCol(col));
+            MakeBlockOccupied(num, StartRowOfBlockByRow(row), StartColOfBlockByCol(col));
         }
 
         /// <summary>Solves the exercise without using backtrack algorithm (as much as the difficulty of the exercise makes it possible).</summary>
@@ -446,9 +447,9 @@ namespace Sudoku.Controller
                 //Csak -1-esek vannak
                 teli = true;
 
-                for (int row = se.StartRowOfBlockByBlockIndex(bl); row <= se.EndRowOfBlockByBlockIndex(bl); row++)
+                for (int row = StartRowOfBlockByBlockIndex(bl); row <= EndRowOfBlockByBlockIndex(bl); row++)
                 {
-                    for (int col = se.StartColOfBlockByBlockIndex(bl); col <= se.EndColOfBlockByBlockIndex(bl); col++)
+                    for (int col = StartColOfBlockByBlockIndex(bl); col <= EndColOfBlockByBlockIndex(bl); col++)
                     {
                         //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a blokk vizsgálatát
                         if (IsThereOccupiedCell(num, row, col, ref teli))
@@ -472,7 +473,7 @@ namespace Sudoku.Controller
         private bool IsThereOccupiedCell(int num, int row, int col, ref bool teli)
         {
             //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem az oszlop vizsgálatát
-            if (se.Exercise[num][row, col] != -1)
+            if (se.Exercise[num][row, col] != se.OCCUPIED)
             {
                 teli = false;
                 return true;
@@ -520,10 +521,10 @@ namespace Sudoku.Controller
         {
             cell = new Pair();
 
-            int startRow = se.StartRowOfBlockByBlockIndex(blockIndex);
-            int startCol = se.StartColOfBlockByBlockIndex(blockIndex);
-            int endRow = se.EndRowOfBlockByBlockIndex(blockIndex);
-            int endCol = se.EndColOfBlockByBlockIndex(blockIndex);
+            int startRow = StartRowOfBlockByBlockIndex(blockIndex);
+            int startCol = StartColOfBlockByBlockIndex(blockIndex);
+            int endRow = EndRowOfBlockByBlockIndex(blockIndex);
+            int endCol = EndColOfBlockByBlockIndex(blockIndex);
             int numberOfEmptyCellsInBlock = 0;
 
             for (int row = startRow; row <= endRow; row++)
@@ -559,10 +560,10 @@ namespace Sudoku.Controller
                 //Haven't found empty cells
                 emptyCellsInBlock.Clear();
 
-                for (int row = se.StartRowOfBlockByBlockIndex(b); row <= se.EndRowOfBlockByBlockIndex(b) &&
+                for (int row = StartRowOfBlockByBlockIndex(b); row <= EndRowOfBlockByBlockIndex(b) &&
                     emptyCellsInBlock.Count <= numberOfSoughtEmptyCells; row++)
                 {
-                    for (int col = se.StartColOfBlockByBlockIndex(b); col <= se.EndColOfBlockByBlockIndex(b) &&
+                    for (int col = StartColOfBlockByBlockIndex(b); col <= EndColOfBlockByBlockIndex(b) &&
                         emptyCellsInBlock.Count <= numberOfSoughtEmptyCells; col++)
                     {
                         if (se.IsCellEmpty(num, row, col))

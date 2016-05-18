@@ -8,6 +8,7 @@ namespace Sudoku.Controller
 
         private static SudokuExercise ARRAY;
         private const int LAST_CELL = 81;
+        private const int OCCUPIED_CELL = -1;
 
         private SimpleSudokuController controller;
         private KillerSudokuExercise killerExercise;
@@ -46,6 +47,11 @@ namespace Sudoku.Controller
         public int LAST_CELL_INDEX
         {
             get { return LAST_CELL; }
+        }
+
+        public int OCCUPIED
+        {
+            get { return OCCUPIED_CELL; }
         }
 
         public int NumberOfEmptyCells { get; set; }
@@ -110,58 +116,7 @@ namespace Sudoku.Controller
 
         public void MakeCellOccupied(int num, int row, int col)
         {
-            exercise[num][row, col] = -1;
-        }
-
-        public int StartRowOfBlockByRow(int row)
-        {
-            return (row / 3) * 3;
-        }
-
-        public int EndRowOfBlockByRow(int row)
-        {
-            return (row / 3) * 3 + 2;
-        }
-
-        public int StartColOfBlockByCol(int col)
-        {
-            return StartRowOfBlockByRow(col);
-        }
-
-        public int EndColOfBlockByCol(int col)
-        {
-            return EndRowOfBlockByRow(col);
-        }
-
-        public int StartRowOfBlockByBlockIndex(int blockIndex)
-        {
-            return blockIndex - (blockIndex % 3);
-        }
-
-        public int EndRowOfBlockByBlockIndex(int blockIndex)
-        {
-            return StartRowOfBlockByBlockIndex(blockIndex) + 2;
-        }
-
-        public int StartColOfBlockByBlockIndex(int blockIndex)
-        {
-            return (blockIndex % 3) * 3;
-        }
-
-        public int EndColOfBlockByBlockIndex(int blockIndex)
-        {
-            return StartColOfBlockByBlockIndex(blockIndex) + 2;
-        }
-
-        /// <summary>
-        /// Numbering of blocks: from left to right, from top to bottom, starting with 0
-        /// </summary>
-        /// <param name="i">Row index of cell.</param>
-        /// <param name="j">Column index of cell.</param>
-        /// <returns>The block index determined by the row and column indeces.</returns>
-        public int BlockIndexByCellIndeces(int i, int j)
-        {
-            return (i / 3) * 3 + (j / 3);
+            exercise[num][row, col] = OCCUPIED;
         }
 
         /// <summary>Finds the first empty cell</summary>

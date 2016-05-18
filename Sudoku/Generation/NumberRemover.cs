@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Sudoku.Controller;
+using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Generate
 {
@@ -62,12 +63,12 @@ namespace Sudoku.Generate
                     if (blockIndecesOfRemovedCells.Count == MAX_NUMBER_OF_REMEMBERED_REMOVED_CELL_INDECES)
                         blockIndecesOfRemovedCells.RemoveAt(0);
 
-                    blockIndecesOfRemovedCells.Add(se.BlockIndexByCellIndeces(i, j));
+                    blockIndecesOfRemovedCells.Add(BlockIndexByCellIndeces(i, j));
 
                     //Ha i és j benne van az előző 6 körben generált valamely indexekhez tartozó blokkban
                     //vagy a feladat táblában az i,j indexen lévő elem 0, akkor újragenerálom az indexeket
                     do GenerateCellIndeces(ref i, ref j, ref cellValue); 
-                        while (blockIndecesOfRemovedCells.Contains(se.BlockIndexByCellIndeces(i, j)) || cellValue == 0);
+                        while (blockIndecesOfRemovedCells.Contains(BlockIndexByCellIndeces(i, j)) || cellValue == 0);
                 }
 
                 //Kitörlöm a generált indexeken levő számot
