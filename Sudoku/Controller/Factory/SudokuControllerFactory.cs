@@ -9,20 +9,20 @@ namespace Sudoku.Generate
         /// <param name="killer">Megadja, hogy a feladat Killer-e vagy sem</param>
         public SimpleSudokuController CreateController(SudokuType exerciseType)
         {
-            SimpleSudokuController s = null;
+            SimpleSudokuController controller = null;
             switch (exerciseType)
             {
                 case SudokuType.SimpleSudoku:
-                    s = new SimpleSudokuController();
+                    controller = new SimpleSudokuController();
                     break;
                 case SudokuType.SudokuX:
-                    s = new SudokuXController();
+                    controller = new SudokuXController();
                     break;
                 case SudokuType.CenterDot:
-                    s = new CenterDotController();
+                    controller = new CenterDotController();
                     break;
             }
-            return s;
+            return controller;
         }
     }
 }
