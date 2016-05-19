@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Sudoku.Generate;
+using Sudoku.Controller.Finder;
 
 namespace Sudoku.Controller
 {
@@ -328,28 +329,28 @@ namespace Sudoku.Controller
 
         /// <summary>Megvizsgálja az [i,j] indexű cella 4 szomszéd celláját, 
         /// hogy melyik szomszéd cella értéke van benne az [i,j] indexű cella ketrecében</summary>
-        /// <param name="irany">1: balra: [i, j - 1], 2: jobbra: [i, j + 1], 3: fel: [i - 1, j], 4: le: [i + 1, j]</param>
+        /// <param name="direction">1: balra: [i, j - 1], 2: jobbra: [i, j + 1], 3: fel: [i - 1, j], 4: le: [i + 1, j]</param>
         /// <param name="i">A viszonyítást képező cella sorindexe</param>
         /// <param name="j">A viszonyítást képező cella oszlopindexe</param>
         /// <param name="kSzam">Az [i,j] indexű cella ketrecszáma</param>
         /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
         /// <param name="lista">Ebben a listában tárolja el a lehetséges szomszédokat</param>
-        private void iranyMegad(int irany, int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
+        private void iranyMegad(Direction direction, int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
         {
             int ii = i, jj = j;
 
-            switch (irany)
+            switch (direction)
             {
-                case 1:
+                case Direction.LEFT:
                     --jj;
                     break;
-                case 2:
+                case Direction.RIGHT:
                     ++jj;
                     break;
-                case 3:
+                case Direction.UP:
                     --ii;
                     break;
-                case 4:
+                case Direction.DOWN:
                     ++ii;
                     break;
             }
@@ -368,33 +369,27 @@ namespace Sudoku.Controller
 
         private void balraJobbraViszgalat(int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
         {
-            //Balra
-            iranyMegad(1, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.LEFT, i, j, kSzam, egyenlo, lista);
 
-            //Jobbra
-            iranyMegad(2, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.RIGHT, i, j, kSzam, egyenlo, lista);
         }
 
         private void felLeVizsgalat(int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
         {
-            //Fel
-            iranyMegad(3, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.UP, i, j, kSzam, egyenlo, lista);
 
-            //Le
-            iranyMegad(4, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.DOWN, i, j, kSzam, egyenlo, lista);
         }
 
         private void sarokEsBenneSorVizsgalat(int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
         {
             //i=0: Ha a bal felső sarokban van, i=8: Ha a bal alsó sarokban van
             if (j == 0)
-                //Jobbra
-                iranyMegad(2, i, j, kSzam, egyenlo, lista);
+                iranyMegad(Direction.RIGHT, i, j, kSzam, egyenlo, lista);
 
             //i=0: Ha a jobb felső sarokban van, i=8: Ha a jobb alsó sarokban van
             else if (j == 8)
-                //Balra
-                iranyMegad(1, i, j, kSzam, egyenlo, lista);
+                iranyMegad(Direction.LEFT, i, j, kSzam, egyenlo, lista);
 
             //Ha az előző 2 kivételével valahol a sorban
             else
@@ -414,8 +409,7 @@ namespace Sudoku.Controller
             //Ha a cella az első sorban van
             if (cella.row == 0)
             {
-                //Le
-                iranyMegad(4, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.DOWN, cella.row, cella.col, kSzam, egyenlo, lista);
 
                 sarokEsBenneSorVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
@@ -425,8 +419,7 @@ namespace Sudoku.Controller
             //Ha a cella az utolsó sorban van
             if (cella.row == 8)
             {
-                //Fel
-                iranyMegad(3, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.UP, cella.row, cella.col, kSzam, egyenlo, lista);
 
                 sarokEsBenneSorVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
 
@@ -436,8 +429,7 @@ namespace Sudoku.Controller
             //Ha a cella a bal szélső oszlopban van
             if (cella.col == 0)
             {
-                //Jobbra
-                iranyMegad(2, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.RIGHT, cella.row, cella.col, kSzam, egyenlo, lista);
 
                 //Fel, le
                 felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
@@ -448,8 +440,7 @@ namespace Sudoku.Controller
             //Ha a cella a jobb szélső oszlopban van
             if (cella.col == 8)
             {
-                //Balra
-                iranyMegad(1, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.LEFT, cella.row, cella.col, kSzam, egyenlo, lista);
 
                 //Fel, le
                 felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);

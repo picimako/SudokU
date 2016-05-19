@@ -1,5 +1,7 @@
 ﻿namespace Sudoku
 {
+    //TODO: move this to the Cells namespace
+    //TODO: create a CellPositionComparator and add it to this class. Could be used in KillerSudokuController.GetSumOfNumbersAndIndicatorCages()
     public class Cell
     {
         #region Members
