@@ -104,6 +104,11 @@ namespace Sudoku.Controller
         #region Methods
         #region Public
 
+        public void SetControllerForCurrentExerciseType()
+        {
+            controller = new SudokuControllerFactory().CreateController(ExerciseType);
+        }
+
         public bool IsCellEmpty(int num, int row, int col)
         {
             return exercise[num][row, col] == 0;

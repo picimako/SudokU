@@ -17,7 +17,7 @@ namespace Sudoku.Generate
 
             if (!se.IsExerciseGenerated)
             {
-                se.Ctrl = new SudokuControllerFactory().CreateController(se.ExerciseType);
+                se.SetControllerForCurrentExerciseType();
                 if (!se.IsExerciseKiller)
                 {
                     if (!se.Ctrl.ReadSudoku(se.ExerciseFilePath))
@@ -38,8 +38,7 @@ namespace Sudoku.Generate
             }
             else
             {
-                ExerciseGenerator generator = new ExerciseGenerator(difficulty, killerDifficulty);
-                generator.Generate();
+                new ExerciseGenerator(difficulty, killerDifficulty).Generate();
             }
             return true;
         }

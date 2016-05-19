@@ -39,7 +39,7 @@ namespace Sudoku.Generate
 
                 /* Controller osztály példányosítása, melynek megadom a feladat fajtáját
                  * Ezzel a feladat eddig generált értékeit (ha voltak), törli*/
-                se.Ctrl = new SudokuControllerFactory().CreateController(se.ExerciseType);
+                se.SetControllerForCurrentExerciseType();
 
                 /* Létrehozok egy teljesen kitöltött sudoku feladatot.
                  * Ha ütközés jött létre a táblában, akkor a feladat generálásának újrakezdése.*/
