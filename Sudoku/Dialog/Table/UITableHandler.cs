@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
-using Sudoku.Cells;
+using Sudoku.Dialog.Table.Finder;
 using Sudoku.Controller;
 using Sudoku.Language;
 using Sudoku.Util;
@@ -20,7 +20,7 @@ namespace Sudoku.Dialog
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
-        private CellHandler cellHandler;
+        private NearestEditableGUICellFinder cellFinder;
 
         private Button verifyExerciseButton;
         private Color[] colors = new ColorListFactory().GetColors();
@@ -152,7 +152,7 @@ namespace Sudoku.Dialog
                     exerciseTable.Controls.Add(guiTable[row, col], col, row);
                 }
             }
-            cellHandler = new CellHandler(guiTable);
+            cellFinder = new NearestEditableGUICellFinder(guiTable);
         }
 
         public void CreateTableOnGUI()
@@ -192,16 +192,16 @@ namespace Sudoku.Dialog
             switch (e.KeyCode)
             {
                 case Keys.Left:
-                    col = cellHandler.FindNearestEditableCellLeft(row, col);
+                    col = cellFinder.FindNearestEditableCellLeft(row, col);
                     break;
                 case Keys.Right:
-                    col = cellHandler.FindNearestEditableCellRight(row, col);
+                    col = cellFinder.FindNearestEditableCellRight(row, col);
                     break;
                 case Keys.Up:
-                    row = cellHandler.FindNearestEditableCellUp(row, col);
+                    row = cellFinder.FindNearestEditableCellUp(row, col);
                     break;
                 case Keys.Down:
-                    row = cellHandler.FindNearestEditableCellDown(row, col);
+                    row = cellFinder.FindNearestEditableCellDown(row, col);
                     break;
             }
 
