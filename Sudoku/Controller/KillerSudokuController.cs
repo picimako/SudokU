@@ -329,138 +329,135 @@ namespace Sudoku.Controller
 
         /// <summary>Megvizsgálja az [i,j] indexű cella 4 szomszéd celláját, 
         /// hogy melyik szomszéd cella értéke van benne az [i,j] indexű cella ketrecében</summary>
-        /// <param name="direction">1: balra: [i, j - 1], 2: jobbra: [i, j + 1], 3: fel: [i - 1, j], 4: le: [i + 1, j]</param>
-        /// <param name="i">A viszonyítást képező cella sorindexe</param>
-        /// <param name="j">A viszonyítást képező cella oszlopindexe</param>
+        /// <param name="direction">The direction to search towards</param>
+        /// <param name="cell">A viszonyítást képező cella</param>
         /// <param name="kSzam">Az [i,j] indexű cella ketrecszáma</param>
         /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
         /// <param name="lista">Ebben a listában tárolja el a lehetséges szomszédokat</param>
-        private void iranyMegad(Direction direction, int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
+        private void iranyMegad(Direction direction, Cell cell, int kSzam, bool egyenlo, List<Cell> lista)
         {
-            int ii = i, jj = j;
+            int row = cell.row, col = cell.col;
 
             switch (direction)
             {
                 case Direction.LEFT:
-                    --jj;
+                    --col;
                     break;
                 case Direction.RIGHT:
-                    ++jj;
+                    ++col;
                     break;
                 case Direction.UP:
-                    --ii;
+                    --row;
                     break;
                 case Direction.DOWN:
-                    ++ii;
+                    ++row;
                     break;
             }
 
             if (egyenlo
                 /* Ha az [i, j] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
                  * A szomszéd szerepel-e már valamelyik ketrecben, és a szomszéd cella értéke benne van-e az [i,j] indexű cella ketrecében*/
-                ? se.Killer.Exercise[ii, jj].CageIndex == 0 && !ketrecTartalmazErtek(se.Solution[ii, jj], kSzam, se.Solution)
+                ? se.Killer.Exercise[row, col].CageIndex == 0 && !ketrecTartalmazErtek(se.Solution[row, col], kSzam, se.Solution)
 
                 /* Ha az [i,j] indexű cellát szeretném valamelyik szomszéd cella ketrecében elhelyezni.
                 * Ez akkor jöhet elő, ha az [i,j] indexű cella üresen marad, és a körülötte levő cellák már mind benne vannak egy ketrecben.
                 * Ha a szomszéd már benne van egy ketrecben, és a szomszéd cella ketrece nem tartalmazza az [i,j] indexű cella értékét*/
-                : se.Killer.Exercise[ii, jj].CageIndex != 0 && !ketrecTartalmazErtek(se.Solution[i, j], se.Killer.Exercise[ii, jj].CageIndex, se.Solution))
-                lista.Add(new Cell(ii, jj));
+                : se.Killer.Exercise[row, col].CageIndex != 0 && !ketrecTartalmazErtek(se.Solution[cell.row, cell.col], se.Killer.Exercise[row, col].CageIndex, se.Solution))
+                lista.Add(new Cell(row, col));
         }
 
-        private void balraJobbraViszgalat(int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
+        private void balraJobbraViszgalat(Cell cell, int kSzam, bool egyenlo, List<Cell> lista)
         {
-            iranyMegad(Direction.LEFT, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.LEFT, cell, kSzam, egyenlo, lista);
 
-            iranyMegad(Direction.RIGHT, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.RIGHT, cell, kSzam, egyenlo, lista);
         }
 
-        private void felLeVizsgalat(int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
+        private void felLeVizsgalat(Cell cell, int kSzam, bool egyenlo, List<Cell> lista)
         {
-            iranyMegad(Direction.UP, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.UP, cell, kSzam, egyenlo, lista);
 
-            iranyMegad(Direction.DOWN, i, j, kSzam, egyenlo, lista);
+            iranyMegad(Direction.DOWN, cell, kSzam, egyenlo, lista);
         }
 
-        private void sarokEsBenneSorVizsgalat(int i, int j, int kSzam, bool egyenlo, List<Cell> lista)
+        private void sarokEsBenneSorVizsgalat(Cell cell, int kSzam, bool egyenlo, List<Cell> lista)
         {
             //i=0: Ha a bal felső sarokban van, i=8: Ha a bal alsó sarokban van
-            if (j == 0)
-                iranyMegad(Direction.RIGHT, i, j, kSzam, egyenlo, lista);
-
+            if (cell.col == 0)
+            {
+                iranyMegad(Direction.RIGHT, cell, kSzam, egyenlo, lista);
+            }
             //i=0: Ha a jobb felső sarokban van, i=8: Ha a jobb alsó sarokban van
-            else if (j == 8)
-                iranyMegad(Direction.LEFT, i, j, kSzam, egyenlo, lista);
-
+            else if (cell.col == 8)
+            {
+                iranyMegad(Direction.LEFT, cell, kSzam, egyenlo, lista);
+            }
             //Ha az előző 2 kivételével valahol a sorban
             else
-                //Balra, jobbra
-                balraJobbraViszgalat(i, j, kSzam, egyenlo, lista);
+            {
+                balraJobbraViszgalat(cell, kSzam, egyenlo, lista);
+            }
         }
 
         /// <summary>A megadott cella elhelyezkedésétől függően megkeresi a cella lehetséges szomszédait</summary>
-        /// <param name="cella">A viszonyítást képző cella</param>
+        /// <param name="cell">A viszonyítást képző cella</param>
         /// <param name="kSzam">A vizsgálandó ketrec száma</param>
         /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
         /// <returns>A lehetséges szomszédokat tartalmazó listával tér vissza</returns>
-        public List<Cell> FindPossibleNeighbourCells(Cell cella, int kSzam, bool egyenlo)
+        public List<Cell> FindPossibleNeighbourCells(Cell cell, int kSzam, bool egyenlo)
         {
             List<Cell> lista = new List<Cell>();
 
             //Ha a cella az első sorban van
-            if (cella.row == 0)
+            if (cell.row == 0)
             {
-                iranyMegad(Direction.DOWN, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.DOWN, cell, kSzam, egyenlo, lista);
 
-                sarokEsBenneSorVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
+                sarokEsBenneSorVizsgalat(cell, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             //Ha a cella az utolsó sorban van
-            if (cella.row == 8)
+            if (cell.row == 8)
             {
-                iranyMegad(Direction.UP, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.UP, cell, kSzam, egyenlo, lista);
 
-                sarokEsBenneSorVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
+                sarokEsBenneSorVizsgalat(cell, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             //Ha a cella a bal szélső oszlopban van
-            if (cella.col == 0)
+            if (cell.col == 0)
             {
-                iranyMegad(Direction.RIGHT, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.RIGHT, cell, kSzam, egyenlo, lista);
 
-                //Fel, le
-                felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
+                felLeVizsgalat(cell, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             //Ha a cella a jobb szélső oszlopban van
-            if (cella.col == 8)
+            if (cell.col == 8)
             {
-                iranyMegad(Direction.LEFT, cella.row, cella.col, kSzam, egyenlo, lista);
+                iranyMegad(Direction.LEFT, cell, kSzam, egyenlo, lista);
 
-                //Fel, le
-                felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
+                felLeVizsgalat(cell, kSzam, egyenlo, lista);
 
                 return lista;
             }
 
             /* Ha a cella indexei egyik előző esetnek sem felelnek meg, akkor mind a 4 szomszédot megvizsgálhatom*/
-            //Balra, jobbra
-            balraJobbraViszgalat(cella.row, cella.col, kSzam, egyenlo, lista);
+            balraJobbraViszgalat(cell, kSzam, egyenlo, lista);
 
-            //Fel, le
-            felLeVizsgalat(cella.row, cella.col, kSzam, egyenlo, lista);
+            felLeVizsgalat(cell, kSzam, egyenlo, lista);
 
             return lista;
         }
 
         /// <summary>Összegyűjti a ketrecekben levő számok összegét, és minden ketrecnek azt a celláját,
         /// amelybe a megjelenítéskor a ketrecben levő értékek összegét kell írni</summary>
-        /// <param name="generaltFeladat">Azt mondja meg, hogy a feladat generált vagy fájlból van beolvasva.</param>
         public Dictionary<Cell, int> GetSumOfNumbersAndIndicatorCages()
         {
             //Csak akkor kell kiszámolni a ketrecösszegeket, ha a feladat generált. Beolvasáskor az összegek beolvasásre kerülnek.
