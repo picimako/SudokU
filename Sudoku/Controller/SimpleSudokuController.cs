@@ -32,6 +32,7 @@ namespace Sudoku.Controller
         /// <returns>True if there is a solvable exercise, otherwise false.</returns>
         protected bool GenerateValuesInNumberTables()
         {
+            bool isThereSolvableExercise = false;
             if (!se.IsExerciseFull() && !se.IsExerciseEmpty())
             {
                 //Iterating through the table
@@ -55,12 +56,9 @@ namespace Sudoku.Controller
                     }
                 }
 
-                //There is a solvable exercise
-                return true;
+                isThereSolvableExercise = true;
             }
-            //There is no solvable exercise
-            else
-                return false;
+            return isThereSolvableExercise;
         }
 
         /// <summary> During the generation, when a number is removed from a cell, then:
