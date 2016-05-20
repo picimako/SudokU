@@ -219,7 +219,7 @@ namespace Sudoku.Dialog
             //If the cell is empty, the value got removed from it
             if (String.IsNullOrEmpty(changedCell.Text))
             {
-                se.Exercise[0][row, col] = 0;
+                se.Exercise[0][row, col] = se.EMPTY;
 
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(previousCellValue, row, col);
 
@@ -263,7 +263,7 @@ namespace Sudoku.Dialog
                     se.Killer.Ctrl.ketrecKitolt(se.Killer.Exercise[row, col].CageIndex);
 
                 //If the cell was empty, then decrementing the number of empty cells
-                if (previousCellValue == 0)
+                if (previousCellValue == se.EMPTY)
                     se.NumberOfEmptyCells--;
 
                 //If there is no more empty cell, then the exercise can be verified

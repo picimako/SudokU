@@ -206,10 +206,10 @@ namespace Sudoku.Generate
             //Végigmegyek a mellékátlón
             for (r = 1; r <= 9; r += (r == cellAtMiddleOfTable - 1) ? 2 : 1)
             {
-                //Az r szám tömbjének mellékátlójában összegyűjtöm azokat a cellákat, amelyek üresek, és elmentem őket listaint-be
+                //Az r szám tömbjének mellékátlójában összegyűjtöm azokat a cellákat, amelyek üresek, és elmentem őket sudokuNumbers-be
                 for (int i = 8; i >= 0; i--)
                 {
-                    if (se.Exercise[r][i, 8 - i] == 0)
+                    if (se.Exercise[r][i, 8 - i] == se.EMPTY)
                         sudokuNumbers.Add(i);
                 }
 

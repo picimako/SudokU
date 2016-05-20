@@ -68,11 +68,11 @@ namespace Sudoku.Generate
                     //Ha i és j benne van az előző 6 körben generált valamely indexekhez tartozó blokkban
                     //vagy a feladat táblában az i,j indexen lévő elem 0, akkor újragenerálom az indexeket
                     do GenerateCellIndeces(ref i, ref j, ref cellValue); 
-                        while (blockIndecesOfRemovedCells.Contains(BlockIndexByCellIndeces(i, j)) || cellValue == 0);
+                        while (blockIndecesOfRemovedCells.Contains(BlockIndexByCellIndeces(i, j)) || cellValue == se.EMPTY);
                 }
 
                 //Kitörlöm a generált indexeken levő számot
-                se.Exercise[0][i, j] = 0;
+                se.Exercise[0][i, j] = se.EMPTY;
 
                 //Elmentem a törölt cella indexeit, és törlés előtti értékét
                 util.RemovedCellsAndValuesBeforeRemoval.Add(new Cell(i, j), cellValue);
@@ -99,7 +99,7 @@ namespace Sudoku.Generate
             foreach (KeyValuePair<Cell, int> cell in util.RemovedCellsAndValuesBeforeRemoval)
             {
                 //Törlöm az aktuális cella értékét
-                se.Exercise[0][cell.Key.row, cell.Key.col] = 0;
+                se.Exercise[0][cell.Key.row, cell.Key.col] = se.EMPTY;
                 //A törlendő cellák törlése
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(cell.Value, cell.Key.row, cell.Key.col);
             }
@@ -165,7 +165,7 @@ namespace Sudoku.Generate
                         while (t == 0);
 
                         //Törlöm a generált indexű cella értékét
-                        se.Exercise[0][i, j] = 0;
+                        se.Exercise[0][i, j] = se.EMPTY;
 
                         //Mentem a törölt cella indexeit, és törlés előtti értékét
                         util.RemovedCellsAndValuesBeforeRemoval.Add(new Cell(i, j), t);
@@ -198,7 +198,7 @@ namespace Sudoku.Generate
             foreach (KeyValuePair<Cell, int> cella in util.RemovedCellsAndValuesBeforeRemoval)
             {
                 //Az utoljára törölt két cellát ismét kitörlöm
-                se.Exercise[0][cella.Key.row, cella.Key.col] = 0;
+                se.Exercise[0][cella.Key.row, cella.Key.col] = se.EMPTY;
                 //A törölhető cellák törlése a számtömbökben
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(cella.Value, cella.Key.row, cella.Key.col);
             }

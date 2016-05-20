@@ -8,6 +8,7 @@ namespace Sudoku.Controller
 
         private static SudokuExercise ARRAY;
         private const int LAST_CELL = 81;
+        private const int EMPTY_CELL = 0;
         private const int OCCUPIED_CELL = -1;
 
         private SimpleSudokuController controller;
@@ -52,6 +53,11 @@ namespace Sudoku.Controller
         public int OCCUPIED
         {
             get { return OCCUPIED_CELL; }
+        }
+
+        public int EMPTY
+        {
+            get { return EMPTY_CELL; }
         }
 
         public int NumberOfEmptyCells { get; set; }
@@ -111,12 +117,12 @@ namespace Sudoku.Controller
 
         public bool IsCellEmpty(int num, int row, int col)
         {
-            return exercise[num][row, col] == 0;
+            return exercise[num][row, col] == EMPTY;
         }
 
         public bool IsCellEmpty(int num, int position)
         {
-            return exercise[num][position / 9, position % 9] == 0;
+            return exercise[num][position / 9, position % 9] == EMPTY;
         }
 
         public void MakeCellOccupied(int num, int row, int col)

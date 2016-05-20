@@ -533,7 +533,7 @@ namespace Sudoku.Controller
             foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
             {
                 //Foglalt cellák beállítása
-                if (se.Solution[cell.row, cell.col] == 0)
+                if (se.Solution[cell.row, cell.col] == se.EMPTY)
                     se.Solution[cell.row, cell.col] = se.OCCUPIED;
             }
         }

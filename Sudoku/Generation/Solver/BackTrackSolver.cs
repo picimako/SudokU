@@ -59,7 +59,7 @@ namespace Sudoku.Generate
                 }
 
                 //Clearing the cell value
-                se.Exercise[0][p / 9, p % 9] = 0;
+                se.Exercise[0][p / 9, p % 9] = se.EMPTY;
             }
         }
 
@@ -68,7 +68,7 @@ namespace Sudoku.Generate
             int p = pos;
             while (p < se.LAST_CELL_INDEX)
             {
-                if (se.Exercise[0][p / 9, p % 9] == 0)
+                if (se.Exercise[0][p / 9, p % 9] == se.EMPTY)
                     break;
 
                 p++;

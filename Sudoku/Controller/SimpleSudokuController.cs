@@ -92,7 +92,7 @@ namespace Sudoku.Controller
             {
                 if (num != removedValue && !HousesContainValue(deletedCellRow, deletedCellColumn, num))
                 {
-                    se.Exercise[num][deletedCellRow, deletedCellColumn] = 0;
+                    se.Exercise[num][deletedCellRow, deletedCellColumn] = se.EMPTY;
                 }
             }
         }
