@@ -17,15 +17,15 @@ namespace Sudoku.Controller.Finder
         /// </returns>
         public int FindOnlyEmptyCellInRowOrColumn(int num, int i, bool rowToCheck)
         {
-            List<int> list = new List<int>(2);
+            List<int> emptyCells = new List<int>(2);
             //Since we are searching for only one cell, if there are two, the search doesn't need to continue
-            for (int k = 0; k < 9 && list.Count <= 1; k++)
+            for (int k = 0; k < 9 && emptyCells.Count <= 1; k++)
             {
                 if (rowToCheck ? se.IsCellEmpty(num, i, k) : se.IsCellEmpty(num, k, i))
-                    list.Add(k);
+                    emptyCells.Add(k);
             }
 
-            return list.Count == 1 ? list.First() : -1;
+            return emptyCells.Count == 1 ? emptyCells.First() : -1;
         }
 
         public int FindOnlyEmptyCellInRow(int num, int row)
@@ -62,8 +62,8 @@ namespace Sudoku.Controller.Finder
                         if (++numberOfEmptyCellsInBlock > 1)
                             return false;
 
-                        cell.row = row;
-                        cell.col = col;
+                        cell.Row = row;
+                        cell.Col = col;
                     }
                 }
             }

@@ -1,23 +1,25 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Sudoku.Controller;
 
 namespace Sudoku
 {
     class ExerciseReader
     {
-        /// <summary> A megadott fájlból beolvassa az értékeket. </summary>
-        /// <param name="filePath"> A beolvasandó fájl útvonala </param>
-        /// <returns>false-szal tér vissza, ha nincs megoldandó feladat vagy a beolvasás sikertelen volt, egyébként true-val</returns>
+        private static SudokuExercise se = SudokuExercise.get;
+
+        /// <summary>Reads the exercise value from the given file.</summary>
+        /// <param name="filePath">The file path to read from.</param>
+        /// <returns>False if there is no exercise to solve or reading was unsuccessful.</returns>
         public static bool ReadSudoku(string filePath)
         {
-            SudokuExercise se = SudokuExercise.get;
             using (StreamReader reader = new StreamReader(filePath))
             {
                 try
                 {
                     string line;
-                    int indexOfRowToRead = 0;
+                    int indexOfRowRead = 0;
                     string[] numbers;
 
                     while ((line = reader.ReadLine()) != null)
@@ -25,34 +27,28 @@ namespace Sudoku
                         numbers = line.Split(' ');
                         for (int j = 0; j < 9; j++)
                         {
-                            /* Ha a konvertálás nem sikerült, akkor az üres cellának számít,
-                             * ezért növelni kell az üres cellák számát tároló változó értékét.*/
-                            if (!(Int32.TryParse(numbers[j], out se.Exercise[0][indexOfRowToRead, j])))
+                            //If the conversion can't happen that is an empty cell.
+                            if (!(Int32.TryParse(numbers[j], out se.Exercise[0][indexOfRowRead, j])))
                                 se.NumberOfEmptyCells++;
                         }
 
-                        indexOfRowToRead++;
+                        indexOfRowRead++;
                     }
 
                     return true;
                 }
-                catch (EndOfStreamException)
-                {
-                    return false;
-                }
-                catch (IndexOutOfRangeException)
+                catch (Exception ex) when (ex is EndOfStreamException || ex is IndexOutOfRangeException)
                 {
                     return false;
                 }
             }
         }
 
-        /// <summary>Beolvassa a megadott fájlból a killer típusú feladatot</summary>
-        /// <param name="filePath">A beolvasandó fájl</param>
-        /// <returns>Ha hiba volt, akkor false, ha minden rendben volt a beolvasás során, akkor true</returns>
+        /// <summary>Reads the Killer exercise value from the given file.</summary>
+        /// <param name="filePath">The file path to read from.</param>
+        /// <returns>False if there was any problem with the exercise or the reading was unsuccessful.</returns>
         public static bool ReadKillerSudoku(string filePath)
         {
-            SudokuExercise se = SudokuExercise.get;
             using (StreamReader reader = new StreamReader(filePath))
             {
                 try
@@ -66,12 +62,12 @@ namespace Sudoku
                     //Beolvasom, hogy mennyi ketrecem van
                     Int32.TryParse(reader.ReadLine(), out numberOfCages);
                     //Ennyi ketrecösszeget olvasok be
-                    for (int k = 1; k <= numberOfCages; k++)
+                    for (int cage = 1; cage <= numberOfCages; cage++)
                     {
                         //A ketrecben levő számok összegét beolvasom, és számmá alakítom
                         Int32.TryParse(reader.ReadLine(), out sumOfNumbersInCage);
                         //Elmentem az aktuális ketrecszám, ketrecösszeg párost
-                        se.Killer.Cages.Add(k, new Cage(sumOfNumbersInCage));
+                        se.Killer.Cages.Add(cage, new Cage(sumOfNumbersInCage));
                     }
 
                     if (!IsSumOfValuesCorrect())
@@ -95,11 +91,7 @@ namespace Sudoku
                     }
                     return true;
                 }
-                catch (EndOfStreamException)
-                {
-                    return false;
-                }
-                catch (IndexOutOfRangeException)
+                catch (Exception ex) when (ex is EndOfStreamException || ex is IndexOutOfRangeException)
                 {
                     return false;
                 }
@@ -108,12 +100,7 @@ namespace Sudoku
 
         private static bool IsSumOfValuesCorrect()
         {
-            SudokuExercise se = SudokuExercise.get;
-            int sumOfNumbers = 0;
-            foreach (Cage cage in se.Killer.Cages.Values)
-                sumOfNumbers += cage.SumOfNumbers;
-
-            return sumOfNumbers == 405;
+            return 405 == se.Killer.Cages.Values.Sum(cage => cage.SumOfNumbers);
         }
     }
 }

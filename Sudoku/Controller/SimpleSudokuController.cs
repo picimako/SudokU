@@ -316,10 +316,10 @@ namespace Sudoku.Controller
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
                 else if (finder.FindOnlyEmptyCellInBlock(num, out emptyCell, blockIndex: k))
                 {
-                    PutNumToExerciseAndMakeCellsOccupied(num, emptyCell.row, emptyCell.col);
+                    PutNumToExerciseAndMakeCellsOccupied(num, emptyCell.Row, emptyCell.Col);
 
-                    row = emptyCell.row;
-                    col = emptyCell.col;
+                    row = emptyCell.Row;
+                    col = emptyCell.Col;
                     return true;
                 }
             }

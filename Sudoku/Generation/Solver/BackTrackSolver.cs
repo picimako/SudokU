@@ -58,7 +58,6 @@ namespace Sudoku.Generate
                         Solve(p + 1);
                 }
 
-                //Clearing the cell value
                 se.Exercise[0][p / 9, p % 9] = se.EMPTY;
             }
         }

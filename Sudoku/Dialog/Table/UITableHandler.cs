@@ -142,8 +142,8 @@ namespace Sudoku.Dialog
                     guiTable[row, col].GotFocus += delegate(object sender, EventArgs e)
                     {
                         //Storing the indeces of the TextBox in focus
-                        int _i = GetSenderTag(sender).row;
-                        int _j = GetSenderTag(sender).col;
+                        int _i = GetSenderTag(sender).Row;
+                        int _j = GetSenderTag(sender).Col;
                         Int32.TryParse(guiTable[_i, _j].Text, out previousCellValue);
                     };
 
@@ -186,8 +186,8 @@ namespace Sudoku.Dialog
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             //The indeces of the cell that has changed
-            int row = GetSenderTag(sender).row;
-            int col = GetSenderTag(sender).col;
+            int row = GetSenderTag(sender).Row;
+            int col = GetSenderTag(sender).Col;
 
             switch (e.KeyCode)
             {
@@ -212,8 +212,8 @@ namespace Sudoku.Dialog
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
             //Indeces of the changed TextBox cell
-            int row = GetSenderTag(sender).row;
-            int col = GetSenderTag(sender).col;
+            int row = GetSenderTag(sender).Row;
+            int col = GetSenderTag(sender).Col;
             TextBox changedCell = guiTable[row, col];
 
             //If the cell is empty, the value got removed from it
@@ -239,7 +239,7 @@ namespace Sudoku.Dialog
                     if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
                     {
                         foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
-                            FontUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Regular);
+                            FontUtil.SetTextboxFont(changedCell, guiTable[cell.Row, cell.Col], FontStyle.Regular);
                     }
                 }
 
@@ -292,7 +292,7 @@ namespace Sudoku.Dialog
                     if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
                     {
                         foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
-                            FontUtil.SetTextboxFont(changedCell, guiTable[cell.row, cell.col], FontStyle.Bold);
+                            FontUtil.SetTextboxFont(changedCell, guiTable[cell.Row, cell.Col], FontStyle.Bold);
                     }
                 }
 
@@ -307,13 +307,13 @@ namespace Sudoku.Dialog
         private void SetOriginalCellBackgroundColor(TextBox cell)
         {
             Cell aCell = cell.Tag as Cell;
-            cell.BackColor = IsCellSpecial(aCell.row, aCell.col) ? Color.LightBlue : Color.White;
+            cell.BackColor = IsCellSpecial(aCell.Row, aCell.Col) ? Color.LightBlue : Color.White;
         }
 
         private void SetOriginalKillerCellBackgroundColor(TextBox cell)
         {
-            int row = (cell.Tag as Cell).row;
-            int col = (cell.Tag as Cell).col;
+            int row = (cell.Tag as Cell).Row;
+            int col = (cell.Tag as Cell).Col;
             cell.BackColor =
                 se.Killer.Exercise[row, col].CageIndex <= 10
                 ? colors[se.Killer.Exercise[row, col].CageIndex]

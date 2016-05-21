@@ -159,7 +159,7 @@ namespace Sudoku.Generate
                 kSzam++;
                 /* Megkeresem a legelső 0 ketrecértékű cellát, és a megtalált cella indexeit kapja értékül aktCella.
                  * Ha az indexek értéke -1, akkor teli van a tábla, tehát kész a felosztás.*/
-            } while ((aktCella = se.Killer.Ctrl.FindFirstEmptyCell()).row != -1);
+            } while ((aktCella = se.Killer.Ctrl.FindFirstEmptyCell()).Row != -1);
 
             return true;
         }

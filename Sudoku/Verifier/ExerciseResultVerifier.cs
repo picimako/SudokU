@@ -122,8 +122,7 @@ namespace Sudoku.Verifier
         /// <returns>A nincs 0 értékű cella a megoldásban, akkor true, egyébként false</returns>
         public static bool IsExerciseCorrect(int[,] solution)
         {
-            List<int> list = solution.OfType<int>().ToList<int>();
-            return !list.Contains(0);
+            return !solution.OfType<int>().ToList().Contains(0);
         }
 
         public static bool ToCheckSumOfNumbersBiggerInCage()

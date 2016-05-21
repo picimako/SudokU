@@ -45,12 +45,12 @@
         /// <summary>
         /// Numbering of blocks: from left to right, from top to bottom, starting with 0
         /// </summary>
-        /// <param name="i">Row index of cell.</param>
-        /// <param name="j">Column index of cell.</param>
+        /// <param name="row">Row index of cell.</param>
+        /// <param name="col">Column index of cell.</param>
         /// <returns>The block index determined by the row and column indeces.</returns>
-        public static int BlockIndexByCellIndeces(int i, int j)
+        public static int BlockIndexByCellIndeces(int row, int col)
         {
-            return (i / 3) * 3 + (j / 3);
+            return (row / 3) * 3 + (col / 3);
         }
     }
 }

@@ -4,8 +4,7 @@ namespace Sudoku.Controller
 {
     public class Cage
     {
-        //List of cells in the cage - the sum of numbers in the cage
-        private List<Cell> cells;
+        private List<Cell> cells = new List<Cell>();
         private int sumOfNumbers;
 
         public List<Cell> Cells
@@ -22,13 +21,11 @@ namespace Sudoku.Controller
 
         public Cage()
         {
-            this.cells = new List<Cell>();
             this.sumOfNumbers = 0;
         }
 
         public Cage(int sumOfNumbers)
         {
-            cells = new List<Cell>();
             this.sumOfNumbers = sumOfNumbers;
         }
     }
