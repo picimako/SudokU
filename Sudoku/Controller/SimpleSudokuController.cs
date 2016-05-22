@@ -18,39 +18,6 @@ namespace Sudoku.Controller
 
         #endregion
 
-        /// <summary>Fills the number tables according to the values in the exercise.</summary>
-        /// <returns>True if there is a solvable exercise, otherwise false.</returns>
-        protected bool GenerateValuesInNumberTables()
-        {
-            bool isThereSolvableExercise = false;
-            if (!se.IsExerciseFull() && !se.IsExerciseEmpty())
-            {
-                //Iterating through the table
-                for (int i = 0; i < 9; i++)
-                {
-                    for (int j = 0; j < 9; j++)
-                    {
-                        if (!se.IsCellEmpty(0, i, j))
-                        {
-                            int currentCellValue = se.Exercise[0][i, j];
-                            se.Exercise[currentCellValue][i, j] = currentCellValue;
-
-                            for (int numberTable = 1; numberTable <= 9; numberTable++)
-                            {
-                                if (numberTable != currentCellValue)
-                                    se.MakeCellOccupied(numberTable, i, j);
-                            }
-
-                            MakeHousesOccupied(currentCellValue, i, j);
-                        }
-                    }
-                }
-
-                isThereSolvableExercise = true;
-            }
-            return isThereSolvableExercise;
-        }
-
         /// <summary> During the generation, when a number is removed from a cell, then:
         /// 1. the number table of the removed value gets cleared
         /// 2. the number table gets regenerated based on the values in the exercise
@@ -83,6 +50,105 @@ namespace Sudoku.Controller
                     se.Exercise[num][deletedCellRow, deletedCellColumn] = se.EMPTY;
                 }
             }
+        }
+
+        /// <summary>Inspects whether value is present in any houses of the current cell of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        public virtual bool HousesContainValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
+        {
+            if (!RowContainsValue(rowOfCurrentCell, colOfCurrentCell, value)
+                && !ColumnContainsValue(rowOfCurrentCell, colOfCurrentCell, value)
+                && !BlockContainsValue(rowOfCurrentCell, colOfCurrentCell, value))
+                return false;
+
+            return true;
+        }
+
+        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
+        /// <param name="num">The number table.</param>
+        public virtual void MakeHousesOccupied(int num, int row, int col)
+        {
+            MakeRowOccupied(num, row);
+            MakeColumnOccupied(num, col);
+            MakeBlockOccupied(num, StartRowOfBlockByRow(row), StartColOfBlockByCol(col));
+        }
+
+        /// <summary>Megoldja a feladatot visszalépéses algoritmus használata nélkül.
+        /// Akkor oldható meg backtrack nélkül egy feladat, ha csak a sima kitöltést elvégezve nem marad üres cella a táblában.
+        /// Ez a függvény eldönti, hogy a feladat megoldaható-e backtrack nélkül, sima kitöltéssel vagy sem.
+        /// </summary>
+        /// <param name="numberOfEmptyCells">Az üres cellák száma</param>
+        /// <returns>Ha megoldható backtrack használata nélkül, akkor true, egyébként false</returns>
+        public bool IsExerciseSolvableWithoutBackTrack(int numberOfEmptyCells)
+        {
+            //az üres cellák száma a generáláskori üres cellák száma lesz
+            se.NumberOfEmptyCells = numberOfEmptyCells;
+
+            return SolveExerciseWithoutBackTrack();
+        }
+
+        public void SolveReadExercise()
+        {
+            GenerateValuesInNumberTables();
+
+            int[][,] exerciseInitialState;
+            Arrays.Initialize(out exerciseInitialState);
+            Arrays.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
+            int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
+
+            if (!SolveExerciseWithoutBackTrack())
+                //WARN: investigate this part as there may be a problem generating exercises that need solving
+                //with backtrack
+                se.Solution = SolveExerciseWithBackTrack();
+            else
+            {
+                se.Solution = new int[9, 9];
+                Arrays.CopyTwoDimensionArray(se.Solution, se.Exercise[0]);
+            }
+
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseInitialState);
+            se.NumberOfEmptyCells = originalNumberOfEmptyCells;
+        }
+
+        /// <summary>Solves the exercise using backtrack algorithm.</summary>
+        /// <returns>The solved exercise.</returns>
+        protected int[,] SolveExerciseWithBackTrack()
+        {
+            new BackTrackSolver().SolveExerciseWithBackTrack();
+            return se.Exercise[0];
+        }
+
+        /// <summary>Fills the number tables according to the values in the exercise.</summary>
+        /// <returns>True if there is a solvable exercise, otherwise false.</returns>
+        protected bool GenerateValuesInNumberTables()
+        {
+            bool isThereSolvableExercise = false;
+            if (!se.IsExerciseFull() && !se.IsExerciseEmpty())
+            {
+                //Iterating through the table
+                for (int i = 0; i < 9; i++)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        if (!se.IsCellEmpty(0, i, j))
+                        {
+                            int currentCellValue = se.Exercise[0][i, j];
+                            se.Exercise[currentCellValue][i, j] = currentCellValue;
+
+                            for (int numberTable = 1; numberTable <= 9; numberTable++)
+                            {
+                                if (numberTable != currentCellValue)
+                                    se.MakeCellOccupied(numberTable, i, j);
+                            }
+
+                            MakeHousesOccupied(currentCellValue, i, j);
+                        }
+                    }
+                }
+
+                isThereSolvableExercise = true;
+            }
+            return isThereSolvableExercise;
         }
 
         /// <summary>Inspects whether value is present in the colOfCurrentCell column of the exercise.</summary>
@@ -126,18 +192,6 @@ namespace Sudoku.Controller
 
             return false;
         }
-
-        /// <summary>Inspects whether value is present in any houses of the current cell of the exercise.</summary>
-        /// <returns>True in case of inclusion, otherwise false.</returns>
-        public virtual bool HousesContainValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
-        {
-            if (!RowContainsValue(rowOfCurrentCell, colOfCurrentCell, value)
-                && !ColumnContainsValue(rowOfCurrentCell, colOfCurrentCell, value)
-                && !BlockContainsValue(rowOfCurrentCell, colOfCurrentCell, value))
-                    return false;
-
-            return true;
-        }
 		
         /// <summary>Marks all the not empty cells as occupied in the block of the current cell.</summary>
         // __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __
@@ -178,15 +232,6 @@ namespace Sudoku.Controller
         {
             if (se.IsCellEmpty(num, row, col))
                 se.MakeCellOccupied(num, row, col);
-        }
-
-        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
-        /// <param name="num">The number table.</param>
-        public virtual void MakeHousesOccupied(int num, int row, int col)
-        {
-            MakeRowOccupied(num, row);
-            MakeColumnOccupied(num, col);
-            MakeBlockOccupied(num, StartRowOfBlockByRow(row), StartColOfBlockByCol(col));
         }
 
         /// <summary>Solves the exercise without using backtrack algorithm (as much as the difficulty of the exercise makes it possible).</summary>
@@ -331,51 +376,6 @@ namespace Sudoku.Controller
             }
 
             MakeHousesOccupied(num, row, col);
-        }
-
-        /// <summary>Megoldja a feladatot visszalépéses algoritmus használata nélkül.
-        /// Akkor oldható meg backtrack nélkül egy feladat, ha csak a sima kitöltést elvégezve nem marad üres cella a táblában.
-        /// Ez a függvény eldönti, hogy a feladat megoldaható-e backtrack nélkül, sima kitöltéssel vagy sem.
-        /// </summary>
-        /// <param name="numberOfEmptyCells">Az üres cellák száma</param>
-        /// <returns>Ha megoldható backtrack használata nélkül, akkor true, egyébként false</returns>
-        public bool IsExerciseSolvableWithoutBackTrack(int numberOfEmptyCells)
-        {
-            //az üres cellák száma a generáláskori üres cellák száma lesz
-            se.NumberOfEmptyCells = numberOfEmptyCells;
-
-            return SolveExerciseWithoutBackTrack();
-        }
-
-        public void SolveReadExercise()
-        {
-            GenerateValuesInNumberTables();
-
-            int[][,] exerciseInitialState;
-            Arrays.Initialize(out exerciseInitialState);
-            Arrays.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
-            int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
-
-            if (!SolveExerciseWithoutBackTrack())
-                //WARN: investigate this part as there may be a problem generating exercises that need solving
-                //with backtrack
-                se.Solution = SolveExerciseWithBackTrack();
-            else
-            {
-                se.Solution = new int[9, 9];
-                Arrays.CopyTwoDimensionArray(se.Solution, se.Exercise[0]);
-            }
-
-            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseInitialState);
-            se.NumberOfEmptyCells = originalNumberOfEmptyCells;
-        }
-
-        /// <summary>Solves the exercise using backtrack algorithm.</summary>
-        /// <returns>The solved exercise.</returns>
-        protected int[,] SolveExerciseWithBackTrack()
-        {
-            new BackTrackSolver().SolveExerciseWithBackTrack();
-            return se.Exercise[0];
         }
     }
 }

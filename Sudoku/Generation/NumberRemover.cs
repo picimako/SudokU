@@ -29,17 +29,6 @@ namespace Sudoku.Generate
 
         #region Methods
 
-        /// <summary> Generates random row and col cell indeces</summary>
-        /// <param name="row">Row index</param>
-        /// <param name="col">Column index</param>
-        /// <param name="cellValue">The value of the [row, col] cell in the actual exercise.</param>
-        private void GenerateCellIndeces(ref int row, ref int col, ref int cellValue)
-        {
-            row = random.Next(0, 9);
-            col = random.Next(0, 9);
-            cellValue = se.Exercise[0][row, col];
-        }
-
         /// <summary> Számokat vesz ki.
         /// Addig teszi ezt, míg tud olyan számot kivenni, ami után a feladat még megoldható visszalépéses algoritmus
         /// használata nélkül.</summary>
@@ -86,21 +75,6 @@ namespace Sudoku.Generate
 
             //Az utolsó törölt cella kivételével az összes többi cella értékét törlöm
             RestoreToPreviousState(true);
-        }
-
-        /// <summary> A RemoveNumbersWithoutBackTrack eljárásban szükséges. A generált táblát egy előző állapotába állítja vissza.</summary>
-        /// <param name="nemKellUtolso">Az mondja meg, hogy az utolsó elemet vissza kell-e állítani</param>
-        private void RestoreToPreviousState(bool nemKellUtolso)
-        {
-            //Mivel az utolsó elemet (az utoljára kivett számot) nem kell visszaállítani, törlöm a lista utolsó elemét
-            if (nemKellUtolso)
-                util.RemovedCellsAndValuesBeforeRemoval.Remove(util.RemovedCellsAndValuesBeforeRemoval.Last().Key);
-
-            //Törlöm az aktuális cella értékét
-            //A törlendő cellák törlése
-            RemoveCellsAndRegenerateTablesForRestoration();
-            
-            se.NumberOfEmptyCells = util.RemovedCellsAndValuesBeforeRemoval.Count;
         }
 
         /// <summary> Számokat vesz ki, és mellé használja a visszalépéses algoritmust is. 
@@ -174,6 +148,32 @@ namespace Sudoku.Generate
             }
 
             RestoreExerciseToItsLastSolvableState(tombokMentes, ref uresCellakSzama);
+        }
+
+        /// <summary> Generates random row and col cell indeces</summary>
+        /// <param name="row">Row index</param>
+        /// <param name="col">Column index</param>
+        /// <param name="cellValue">The value of the [row, col] cell in the actual exercise.</param>
+        private void GenerateCellIndeces(ref int row, ref int col, ref int cellValue)
+        {
+            row = random.Next(0, 9);
+            col = random.Next(0, 9);
+            cellValue = se.Exercise[0][row, col];
+        }
+
+        /// <summary> A RemoveNumbersWithoutBackTrack eljárásban szükséges. A generált táblát egy előző állapotába állítja vissza.</summary>
+        /// <param name="nemKellUtolso">Az mondja meg, hogy az utolsó elemet vissza kell-e állítani</param>
+        private void RestoreToPreviousState(bool nemKellUtolso)
+        {
+            //Mivel az utolsó elemet (az utoljára kivett számot) nem kell visszaállítani, törlöm a lista utolsó elemét
+            if (nemKellUtolso)
+                util.RemovedCellsAndValuesBeforeRemoval.Remove(util.RemovedCellsAndValuesBeforeRemoval.Last().Key);
+
+            //Törlöm az aktuális cella értékét
+            //A törlendő cellák törlése
+            RemoveCellsAndRegenerateTablesForRestoration();
+
+            se.NumberOfEmptyCells = util.RemovedCellsAndValuesBeforeRemoval.Count;
         }
 
         /// <summary> A RemoveNumbersWithBackTrack eljárásban van szükség rá. Visszaállítja a feladatot az utolsó megoldható (röviden korábbi) állapotába.</summary>

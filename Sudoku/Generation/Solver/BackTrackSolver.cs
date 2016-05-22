@@ -27,14 +27,6 @@ namespace Sudoku.Generate
 
         #region Private
 
-        /// <summary>Checks if the n number can be put into the [i,j] cell</summary>
-        /// <returns>True if n can be placed.</returns>
-        private bool CanNBePutIntoCell(int i, int j, int n)
-        {
-            //If none of the houses contains n, then it can be placed.
-            return !se.Ctrl.HousesContainValue(i, j, n);
-        }
-
         /// <param name="p">Start position</param>
         private void Solve(int p)
         {
@@ -73,6 +65,14 @@ namespace Sudoku.Generate
                 p++;
             }
             return p;
+        }
+
+        /// <summary>Checks if the n number can be put into the [i,j] cell</summary>
+        /// <returns>True if n can be placed.</returns>
+        private bool CanNBePutIntoCell(int i, int j, int n)
+        {
+            //If none of the houses contains n, then it can be placed.
+            return !se.Ctrl.HousesContainValue(i, j, n);
         }
 
         #endregion

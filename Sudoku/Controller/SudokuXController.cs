@@ -6,7 +6,7 @@ namespace Sudoku.Controller
     {
         #region Constructor
 
-        public SudokuXController() : base()
+        public SudokuXController()
         {
             se.ExerciseType = SudokuType.SudokuX;
         }
@@ -38,21 +38,6 @@ namespace Sudoku.Controller
                 return false;
 
             return true;
-        }
-
-        public static bool CellIsInMainDiagonal(int row, int col)
-        {
-            return row == col;
-        }
-
-        public static bool CellIsInSideDiagonal(int row, int col)
-        {
-            return row + col == 8;
-        }
-
-        public static bool CellIsInAnyDiagonal(int row, int col)
-        {
-            return CellIsInMainDiagonal(row, col) || CellIsInSideDiagonal(row, col);
         }
 
         #endregion
@@ -100,6 +85,21 @@ namespace Sudoku.Controller
             }
 
             return false;
+        }
+
+        public static bool CellIsInAnyDiagonal(int row, int col)
+        {
+            return CellIsInMainDiagonal(row, col) || CellIsInSideDiagonal(row, col);
+        }
+
+        private static bool CellIsInMainDiagonal(int row, int col)
+        {
+            return row == col;
+        }
+
+        private static bool CellIsInSideDiagonal(int row, int col)
+        {
+            return row + col == 8;
         }
 
         #endregion

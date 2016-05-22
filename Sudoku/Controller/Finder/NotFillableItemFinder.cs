@@ -1,51 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using static Sudoku.Table.TableUtil;
+﻿using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller.Finder
 {
     class NotFillableItemFinder
     {
         SudokuExercise se = SudokuExercise.get;
-
-        public bool IsThereNotFillableRow(int num, ref bool van, ref bool teli)
-        {
-            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, true);
-        }
-
-        public bool IsThereNotFillableColumn(int num, ref bool van, ref bool teli)
-        {
-            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, false);
-        }
-
-        private bool IsThereNotFillableRowOrColumn(int t, ref bool van, ref bool teli, bool row)
-        {
-            //Végigmegyek a soron/oszlopon
-            for (int i = 0; i < 9; i++)
-            {
-                //Csak -1-esek vannak
-                teli = true;
-
-                //Végigmegyek az oszlopon/soron
-                for (int j = 0; j < 9; j++)
-                {
-                    //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a sor vizsgálatát
-                    if (row ? IsThereOccupiedCell(t, i, j, ref teli) : IsThereOccupiedCell(t, j, i, ref teli))
-                        break;
-                }
-
-                //van értéke van|teli lesz
-                van |= teli;
-
-                //Ha van olyan sor, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
-                if (van)
-                    return true;
-            }
-
-            return false;
-        }
 
         /// <summary>Megvizsgálja, hogy van-e olyan ház, ahol csak -1 értékek szerepelnek, a t szám viszont nem</summary>
         /// <param name="t">A vizsgálandó tábla indexe</param>
@@ -87,6 +46,43 @@ namespace Sudoku.Controller.Finder
                 if (van)
                     return true;
             }
+            return false;
+        }
+
+        public bool IsThereNotFillableRow(int num, ref bool van, ref bool teli)
+        {
+            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, true);
+        }
+
+        public bool IsThereNotFillableColumn(int num, ref bool van, ref bool teli)
+        {
+            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, false);
+        }
+
+        private bool IsThereNotFillableRowOrColumn(int t, ref bool van, ref bool teli, bool row)
+        {
+            //Végigmegyek a soron/oszlopon
+            for (int i = 0; i < 9; i++)
+            {
+                //Csak -1-esek vannak
+                teli = true;
+
+                //Végigmegyek az oszlopon/soron
+                for (int j = 0; j < 9; j++)
+                {
+                    //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a sor vizsgálatát
+                    if (row ? IsThereOccupiedCell(t, i, j, ref teli) : IsThereOccupiedCell(t, j, i, ref teli))
+                        break;
+                }
+
+                //van értéke van|teli lesz
+                van |= teli;
+
+                //Ha van olyan sor, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
+                if (van)
+                    return true;
+            }
+
             return false;
         }
 

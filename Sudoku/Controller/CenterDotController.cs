@@ -6,7 +6,7 @@ namespace Sudoku.Controller
     {
         #region Constructor
 
-        public CenterDotController() : base()
+        public CenterDotController()
         {
             se.ExerciseType = SudokuType.CenterDot;
         }
@@ -35,11 +35,6 @@ namespace Sudoku.Controller
                 return false;
 
             return true;
-        }
-
-        public static bool CellIsAtMiddleOfAnyBlock(int row, int col)
-        {
-            return row % 3 == 1 && col % 3 == 1;
         }
 
         #endregion
@@ -74,6 +69,11 @@ namespace Sudoku.Controller
             }
 
             return false;
+        }
+
+        public static bool CellIsAtMiddleOfAnyBlock(int row, int col)
+        {
+            return row % 3 == 1 && col % 3 == 1;
         }
 
         #endregion
