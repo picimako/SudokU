@@ -20,16 +20,16 @@ namespace Sudoku.Generate
                 se.SetControllerForCurrentExerciseType();
                 if (!se.IsExerciseKiller)
                 {
-                    if (!se.Ctrl.ReadSudoku(se.ExerciseFilePath))
+                    se.InitExercise();
+                    if (!ExerciseReader.ReadSudoku(se.ExerciseFilePath))
                         return false;
 
                     se.Ctrl.SolveReadExercise();
                 }
                 else
                 {
-                    se.InitExercise();
                     se.InitKillerExercise();
-                    if (!se.Killer.Ctrl.ReadKillerSudoku(se.ExerciseFilePath))
+                    if (!ExerciseReader.ReadKillerSudoku(se.ExerciseFilePath))
                         return false;
 
                     //All cells are empty

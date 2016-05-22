@@ -32,14 +32,6 @@ namespace Sudoku.Controller
             return cage.Key.Row == row && cage.Key.Col == col;
         }
 
-        /// <summary>Beolvassa a megadott fájlból a killer típusú feladatot</summary>
-        /// <param name="feladatFajl">A beolvasandó fájl</param>
-        /// <returns>Ha hiba volt, akkor false, ha minden rendben volt a beolvasás során, akkor true</returns>
-        public bool ReadKillerSudoku(string feladatFajl)
-        {
-            return ExerciseReader.ReadKillerSudoku(feladatFajl);
-        }
-
         /// <summary>A kitöltött feladványt megvizsgálja minden feltétel alapján, hogy jó-e vagy sem</summary>
         /// <param name="tomb">A vizsgálandó tömb, vagyis a megoldott feladat</param>
         /// <returns>Ha jó a megoldás, akkor true, egyébként false</returns>

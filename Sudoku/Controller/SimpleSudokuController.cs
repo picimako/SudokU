@@ -18,16 +18,6 @@ namespace Sudoku.Controller
 
         #endregion
 
-        /// <summary>Reads the exercise from the given file path.</summary>
-        /// <param name="filePath">Path of the file.</param>
-        /// <returns>False: there is no solvable exercise, or the reading was unsuccessful.
-        /// True: no error occured.</returns>
-        public bool ReadSudoku(string filePath)
-        {
-            se.InitExercise();
-            return ExerciseReader.ReadSudoku(filePath);
-        }
-
         /// <summary>Fills the number tables according to the values in the exercise.</summary>
         /// <returns>True if there is a solvable exercise, otherwise false.</returns>
         protected bool GenerateValuesInNumberTables()
