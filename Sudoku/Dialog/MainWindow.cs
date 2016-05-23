@@ -68,15 +68,15 @@ namespace Sudoku.Dialog
 
         private void BindEventHandlers()
         {
-            difficultyBar.ValueChanged += delegate(object sender, EventArgs e)
+            difficultyBar.ValueChanged += (sender, e) =>
             {
                 difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
             };
-            killerDifficultyBar.ValueChanged += delegate(object sender, EventArgs e)
+            killerDifficultyBar.ValueChanged += (sender, e) =>
             {
                 killerDifficultyLabel.Text = "Killer " + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
             };
-            killerBox.CheckedChanged += delegate(object sender, EventArgs e)
+            killerBox.CheckedChanged += (sender, e) =>
             {
                 /* Killer vagy nem Killer feladat a Killer Sudoku-hoz tartozó checkbox értéke alapján,
                 * illetve a killerhez tartozó csúszka látható lesz vagy eltűnik*/
