@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.IO;
 using Sudoku.Dialog;
 using Sudoku.Language;
+using Sudoku.Log;
 
 namespace Sudoku
 {
@@ -15,6 +16,8 @@ namespace Sudoku
             {
                 ConfigHandler.get.ReadConfiguration();
                 LocHandler.get.ReadLocalization();
+                Logger.Instance.SetLogFilePathForApplicationStartupPath(Application.StartupPath);
+                Logger.Instance.Open();
             }
             catch (IOException)
             {

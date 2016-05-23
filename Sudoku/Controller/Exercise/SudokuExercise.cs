@@ -86,7 +86,6 @@ namespace Sudoku.Controller
 
         public void InitKillerExercise()
         {
-            InitExercise();
             killerExercise = new KillerSudokuExercise();
         }
 

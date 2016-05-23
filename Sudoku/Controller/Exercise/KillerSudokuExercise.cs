@@ -63,6 +63,11 @@ namespace Sudoku.Controller
             }
         }
 
+        public bool IsCellInAnyCage(int row, int col)
+        {
+            return killerExercise[row, col].CageIndex != 0;
+        }
+
         #endregion
     }
 }

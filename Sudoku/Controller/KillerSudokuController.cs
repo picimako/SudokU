@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Sudoku.Generate;
 using Sudoku.Controller.Finder;
+using Sudoku.Log;
 using static Sudoku.Cells.CellHandler;
 
 namespace Sudoku.Controller
@@ -9,6 +10,7 @@ namespace Sudoku.Controller
     public class KillerSudokuController
     {
         SudokuExercise se = SudokuExercise.get;
+        Logger log = Logger.Instance;
 
         public KillerSudokuController()
         {
@@ -232,7 +234,7 @@ namespace Sudoku.Controller
             int p = 0;
 
             //Amíg nem lépek ki a tábláról és a vizsgált cella nem üres, átlépek a következő cellára
-            while (p < se.LAST_CELL_INDEX && se.Killer.Exercise[p / 9, p % 9].CageIndex != 0)
+            while (p < se.LAST_CELL_INDEX && se.Killer.IsCellInAnyCage(p / 9, p % 9))
                 p++;
 
             //Ha nem léptem ki a tábláról, akkor van üres cella, visszatérek az indexeivel
@@ -250,6 +252,7 @@ namespace Sudoku.Controller
 
             foreach (Cell neighbourCell in possibleNeighbourCells)
             {
+                log.LogComment(string.Format("Neighbourcell: {0}", neighbourCell));
                 int cageIndexOfNeighbourCell = se.Killer.Exercise[neighbourCell.Row, neighbourCell.Col].CageIndex;
                 //Ha a szomszéd cella ketrece kevesebb, mint 9 cellából áll, akkor ez a ketrec szóba jöhet
                 if (se.Killer.Cages[cageIndexOfNeighbourCell].Cells.Count < 9)
@@ -282,10 +285,12 @@ namespace Sudoku.Controller
         /// <returns>The list of possible neighbour cells.</returns>
         public List<Cell> FindPossibleNeighbourCells(Cell cell, int cageIndex, bool egyenlo)
         {
+            log.LogComment(string.Format("Finding possible neighbour cells for Cell: {0},{1}, cageIndex: {2}, egyenlo: {3}", cell.Row, cell.Col, cageIndex, egyenlo));
             List<Cell> possibleNeighbourCells = new List<Cell>();
 
             if (IsCellInFirstRow(cell))
             {
+                log.LogComment("Cell is in first row.");
                 iranyMegad(Direction.DOWN, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -295,6 +300,7 @@ namespace Sudoku.Controller
 
             if (IsCellInLastRow(cell))
             {
+                log.LogComment("Cell is in last row.");
                 iranyMegad(Direction.UP, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -304,6 +310,7 @@ namespace Sudoku.Controller
 
             if (IsCellInFirstColumn(cell))
             {
+                log.LogComment("Cell is in first column.");
                 iranyMegad(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 CheckVerticallyTwoDirections(cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -313,6 +320,7 @@ namespace Sudoku.Controller
 
             if (IsCellInLastColumn(cell))
             {
+                log.LogComment("Cell is in last column.");
                 iranyMegad(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 CheckVerticallyTwoDirections(cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -418,6 +426,7 @@ namespace Sudoku.Controller
         {
             int row = cell.Row, col = cell.Col;
 
+            log.LogComment(string.Format("Direction for Cell: {0},{1}, cageIndex: {2}, egyenlo: {3} in direction: {4}", cell.Row, cell.Col, cageIndex, egyenlo, direction));
             switch (direction)
             {
                 case Direction.LEFT:
@@ -437,12 +446,12 @@ namespace Sudoku.Controller
             if (egyenlo
                 /* Ha az [i, j] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
                  * A szomszéd szerepel-e már valamelyik ketrecben, és a szomszéd cella értéke benne van-e az [i,j] indexű cella ketrecében*/
-                ? se.Killer.Exercise[row, col].CageIndex == 0 && !ketrecTartalmazErtek(se.Solution[row, col], cageIndex, se.Solution)
+                ? !se.Killer.IsCellInAnyCage(row, col) && !ketrecTartalmazErtek(se.Solution[row, col], cageIndex, se.Solution)
 
                 /* Ha az [i,j] indexű cellát szeretném valamelyik szomszéd cella ketrecében elhelyezni.
                 * Ez akkor jöhet elő, ha az [i,j] indexű cella üresen marad, és a körülötte levő cellák már mind benne vannak egy ketrecben.
                 * Ha a szomszéd már benne van egy ketrecben, és a szomszéd cella ketrece nem tartalmazza az [i,j] indexű cella értékét*/
-                : se.Killer.Exercise[row, col].CageIndex != 0 && !ketrecTartalmazErtek(se.Solution[cell.Row, cell.Col], se.Killer.Exercise[row, col].CageIndex, se.Solution))
+                : se.Killer.IsCellInAnyCage(row, col) && !ketrecTartalmazErtek(se.Solution[cell.Row, cell.Col], se.Killer.Exercise[row, col].CageIndex, se.Solution))
                 possibleNeighbourCells.Add(new Cell(row, col));
         }
 

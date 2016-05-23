@@ -28,6 +28,7 @@ namespace Sudoku.Generate
                 }
                 else
                 {
+                    se.InitExercise();
                     se.InitKillerExercise();
                     if (!ExerciseReader.ReadKillerSudoku(se.ExerciseFilePath))
                         return false;
