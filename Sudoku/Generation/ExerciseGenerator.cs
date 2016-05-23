@@ -69,8 +69,7 @@ namespace Sudoku.Generate
                 } while (!GenerateKiller());
 
                 //Kitörlök minden értéket a feladatból, mert üres táblát kell megadni a feladatban
-                int[][,] tombok;
-                Arrays.Initialize(out tombok);
+                int[][,] tombok = Arrays.CreateInitializedArray();
                 se.Exercise = tombok;
 
                 //81 lesz az üres cellák száma, mert nem kell megadni egyetlen egy számot sem a feladatban

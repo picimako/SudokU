@@ -19,14 +19,14 @@
                 target[p / 9, p % 9] = source[p / 9, p % 9];
         }
 
-        /// <summary> Initializes the passed array parameter.</summary>
-        public static void Initialize(out int[][,] array)
+        public static int[][,] CreateInitializedArray()
         {
-            array = new int[10][,];
+            int[][,] array = new int[10][,];
             for (int num = 0; num < 10; num++)
             {
                 array[num] = new int[9, 9];
             }
+            return array;
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Sudoku.Controller
         public void InitExercise()
         {
             NumberOfEmptyCells = 0;
-            Arrays.Initialize(out exercise);
+            exercise = Arrays.CreateInitializedArray();
         }
 
         public void InitKillerExercise()

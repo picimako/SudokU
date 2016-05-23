@@ -65,7 +65,7 @@ namespace Sudoku.Generate
                     break;
             }
 
-            Arrays.Initialize(out tempTable);
+            tempTable = Arrays.CreateInitializedArray();
 
             int numberToFillIn = 0;
             while (++numberToFillIn <= 9)

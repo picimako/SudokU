@@ -144,7 +144,7 @@ namespace Sudoku.Dialog
             tableHandler.FillTableOnGUI();
 
             //Inicializálom az exerciseBackup tombot, melyben ezután lementem a feladatot, a feladat esetleges újrakezdéséhez
-            Arrays.Initialize(out exerciseBackup);
+            exerciseBackup = Arrays.CreateInitializedArray();
 
             //Elmentem a feladatot a hozzá tartozó tömbökkel és az üres cellák számával együtt
             Arrays.CopyJaggedThreeDimensionArray(exerciseBackup, se.Exercise);

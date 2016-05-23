@@ -87,9 +87,7 @@ namespace Sudoku.Generate
             int k, row = 0, col = 0, cellValue = 0, szamlalo, uresCellakSzama = 0;
 
             //Ebbe a tömbbe mentem el a feladatot ...
-            int[][,] tombokMentes;
-
-            Arrays.Initialize(out tombokMentes);
+            int[][,] tombokMentes = Arrays.CreateInitializedArray();
 
             //Annyiszor veszek ki 2 darab számot, amekkora nehézséget beállítottam
             for (int n = 1; n <= util.Difficulty; n++)

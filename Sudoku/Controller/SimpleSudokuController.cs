@@ -92,7 +92,7 @@ namespace Sudoku.Controller
             GenerateValuesInNumberTables();
 
             int[][,] exerciseInitialState;
-            Arrays.Initialize(out exerciseInitialState);
+            exerciseInitialState = Arrays.CreateInitializedArray();
             Arrays.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
             int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
 
