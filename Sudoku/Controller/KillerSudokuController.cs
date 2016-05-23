@@ -252,7 +252,6 @@ namespace Sudoku.Controller
 
             foreach (Cell neighbourCell in possibleNeighbourCells)
             {
-                log.LogComment(string.Format("Neighbourcell: {0}", neighbourCell));
                 int cageIndexOfNeighbourCell = se.Killer.Exercise[neighbourCell.Row, neighbourCell.Col].CageIndex;
                 //Ha a szomszéd cella ketrece kevesebb, mint 9 cellából áll, akkor ez a ketrec szóba jöhet
                 if (se.Killer.Cages[cageIndexOfNeighbourCell].Cells.Count < 9)
@@ -285,13 +284,12 @@ namespace Sudoku.Controller
         /// <returns>The list of possible neighbour cells.</returns>
         public List<Cell> FindPossibleNeighbourCells(Cell cell, int cageIndex, bool egyenlo)
         {
-            log.LogComment(string.Format("Finding possible neighbour cells for Cell: {0},{1}, cageIndex: {2}, egyenlo: {3}", cell.Row, cell.Col, cageIndex, egyenlo));
             List<Cell> possibleNeighbourCells = new List<Cell>();
 
             if (IsCellInFirstRow(cell))
             {
-                log.LogComment("Cell is in first row.");
-                iranyMegad(Direction.DOWN, cell, cageIndex, egyenlo, possibleNeighbourCells);
+                log.Info("Cell is in first row.");
+                CollectCell(Direction.DOWN, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo, possibleNeighbourCells);
 
@@ -300,8 +298,8 @@ namespace Sudoku.Controller
 
             if (IsCellInLastRow(cell))
             {
-                log.LogComment("Cell is in last row.");
-                iranyMegad(Direction.UP, cell, cageIndex, egyenlo, possibleNeighbourCells);
+                log.Info("Cell is in last row.");
+                CollectCell(Direction.UP, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo, possibleNeighbourCells);
 
@@ -310,8 +308,8 @@ namespace Sudoku.Controller
 
             if (IsCellInFirstColumn(cell))
             {
-                log.LogComment("Cell is in first column.");
-                iranyMegad(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
+                log.Info("Cell is in first column.");
+                CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 CheckVerticallyTwoDirections(cell, cageIndex, egyenlo, possibleNeighbourCells);
 
@@ -320,8 +318,8 @@ namespace Sudoku.Controller
 
             if (IsCellInLastColumn(cell))
             {
-                log.LogComment("Cell is in last column.");
-                iranyMegad(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
+                log.Info("Cell is in last column.");
+                CollectCell(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
                 CheckVerticallyTwoDirections(cell, cageIndex, egyenlo, possibleNeighbourCells);
 
@@ -422,11 +420,10 @@ namespace Sudoku.Controller
         /// <param name="cageIndex">Az [i,j] indexű cella ketrecszáma</param>
         /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
         /// <param name="possibleNeighbourCells">Ebben a listában tárolja el a lehetséges szomszédokat</param>
-        private void iranyMegad(Direction direction, Cell cell, int cageIndex, bool egyenlo, List<Cell> possibleNeighbourCells)
+        private void CollectCell(Direction direction, Cell cell, int cageIndex, bool egyenlo, List<Cell> possibleNeighbourCells)
         {
             int row = cell.Row, col = cell.Col;
 
-            log.LogComment(string.Format("Direction for Cell: {0},{1}, cageIndex: {2}, egyenlo: {3} in direction: {4}", cell.Row, cell.Col, cageIndex, egyenlo, direction));
             switch (direction)
             {
                 case Direction.LEFT:
@@ -457,16 +454,16 @@ namespace Sudoku.Controller
 
         private void CheckHorizontallyTwoSided(Cell cell, int cageIndex, bool egyenlo, List<Cell> possibleNeighbourCells)
         {
-            iranyMegad(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
+            CollectCell(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
-            iranyMegad(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
+            CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
         }
 
         private void CheckVerticallyTwoDirections(Cell cell, int cageIndex, bool egyenlo, List<Cell> possibleNeighbourCells)
         {
-            iranyMegad(Direction.UP, cell, cageIndex, egyenlo, possibleNeighbourCells);
+            CollectCell(Direction.UP, cell, cageIndex, egyenlo, possibleNeighbourCells);
 
-            iranyMegad(Direction.DOWN, cell, cageIndex, egyenlo, possibleNeighbourCells);
+            CollectCell(Direction.DOWN, cell, cageIndex, egyenlo, possibleNeighbourCells);
         }
 
         private void sarokEsBenneSorVizsgalat(Cell cell, int cageIndex, bool egyenlo, List<Cell> possibleNeighbourCells)
@@ -474,12 +471,12 @@ namespace Sudoku.Controller
             //i=0: Ha a bal felső sarokban van, i=8: Ha a bal alsó sarokban van
             if (IsCellInFirstColumn(cell))
             {
-                iranyMegad(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
+                CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
             }
             //i=0: Ha a jobb felső sarokban van, i=8: Ha a jobb alsó sarokban van
             else if (IsCellInLastColumn(cell))
             {
-                iranyMegad(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
+                CollectCell(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
             }
             //Ha az előző 2 kivételével valahol a sorban
             else

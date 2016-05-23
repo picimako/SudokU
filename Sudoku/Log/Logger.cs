@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Sudoku.Log
 {
@@ -33,7 +32,7 @@ namespace Sudoku.Log
             writer = new StreamWriter(logFilePath, false);
         }
 
-        public void LogComment(string comment)
+        public void Info(string comment)
         {
             writer.WriteLine(comment);
         }
