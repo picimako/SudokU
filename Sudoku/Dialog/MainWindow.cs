@@ -10,11 +10,10 @@ namespace Sudoku.Dialog
 {
     public partial class SudokuApp : Form
     {
-        //Ide mentem le a feladathoz tartozó táblákat a feladat esetleges újrakezdése miatt
-        private int[][,] exerciseBackup;
+        private int[][,] exerciseBackupForRestart;
 
         //a feladat újrakezdéséhez ebbe mentem az üres cellák számát a feladat kezdetekor
-        private int uresCellakSzama;
+        private int numberOfEmptyCells;
 
         private ExerciseResultVerifier resultVerifier;
         private MenuHandler menuHandler;
@@ -143,17 +142,16 @@ namespace Sudoku.Dialog
             
             tableHandler.FillTableOnGUI();
 
-            //Inicializálom az exerciseBackup tombot, melyben ezután lementem a feladatot, a feladat esetleges újrakezdéséhez
-            exerciseBackup = Arrays.CreateInitializedArray();
+            exerciseBackupForRestart = Arrays.CreateInitializedArray();
 
             //Elmentem a feladatot a hozzá tartozó tömbökkel és az üres cellák számával együtt
-            Arrays.CopyJaggedThreeDimensionArray(exerciseBackup, se.Exercise);
-            uresCellakSzama = se.NumberOfEmptyCells;
+            Arrays.CopyJaggedThreeDimensionArray(exerciseBackupForRestart, se.Exercise);
+            numberOfEmptyCells = se.NumberOfEmptyCells;
 
             SetButtonStates(true);
 
             //A beolvasás gomb, valamint a Megnyitás és Generálás menü elemei inaktívak lesznek
-            beolvasButton.Enabled = false;
+            readExerciseButton.Enabled = false;
             menuHandler.DisableOpenAndGenerateMenuItems();
 
             //Üres cellák számának címkéje látható
@@ -164,10 +162,10 @@ namespace Sudoku.Dialog
         private void RestartExerciseButton_Click(object sender, EventArgs e)
         {
             //Visszaállítom a feladat kezdeti értékeit, illetve az üres cellák számát
-            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseBackup);
-            se.NumberOfEmptyCells = uresCellakSzama;
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseBackupForRestart);
+            se.NumberOfEmptyCells = numberOfEmptyCells;
 
-            tableHandler.ReloadTableForRestart(exerciseBackup);
+            tableHandler.ReloadTableForRestart(exerciseBackupForRestart);
 
             //Az ellenőrzés gomb megint inaktív lesz, mivel újrakezdjük a feladatot és lesz üres cella
             verifyExerciseButton.Enabled = false;
@@ -231,7 +229,7 @@ namespace Sudoku.Dialog
             centerButton.Text = loc.Get("centerdot");
 
             generalButton.Text = loc.Get("generate");
-            beolvasButton.Text = loc.Get("open");
+            readExerciseButton.Text = loc.Get("open");
             restartExerciseButton.Text = loc.Get("restart");
 
             verifyExerciseButton.Text = loc.Get("check");
@@ -260,7 +258,7 @@ namespace Sudoku.Dialog
             SetButtonStates(false);
             verifyExerciseButton.Enabled = false;
             verifyExerciseLabel.Text = "";
-            beolvasButton.Enabled = true;
+            readExerciseButton.Enabled = true;
             exerciseTable.Controls.Clear();
             numberOfEmptyCellsLabel.Visible = false;
             menuHandler.EnableOpenAndGenerateMenuItems();

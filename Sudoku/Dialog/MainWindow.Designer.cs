@@ -35,7 +35,7 @@
             this.xButton = new System.Windows.Forms.RadioButton();
             this.sudButton = new System.Windows.Forms.RadioButton();
             this.exerciseTable = new System.Windows.Forms.TableLayoutPanel();
-            this.beolvasButton = new System.Windows.Forms.Button();
+            this.readExerciseButton = new System.Windows.Forms.Button();
             this.difficultyBar = new System.Windows.Forms.TrackBar();
             this.difficultyLabel = new System.Windows.Forms.Label();
             this.verifyExerciseButton = new System.Windows.Forms.Button();
@@ -138,12 +138,12 @@
             // 
             // beolvasButton
             // 
-            this.beolvasButton.Location = new System.Drawing.Point(86, 159);
-            this.beolvasButton.Name = "beolvasButton";
-            this.beolvasButton.Size = new System.Drawing.Size(77, 23);
-            this.beolvasButton.TabIndex = 12;
-            this.beolvasButton.UseVisualStyleBackColor = true;
-            this.beolvasButton.Click += new System.EventHandler(this.BeolvasButton_Click);
+            this.readExerciseButton.Location = new System.Drawing.Point(86, 159);
+            this.readExerciseButton.Name = "beolvasButton";
+            this.readExerciseButton.Size = new System.Drawing.Size(77, 23);
+            this.readExerciseButton.TabIndex = 12;
+            this.readExerciseButton.UseVisualStyleBackColor = true;
+            this.readExerciseButton.Click += new System.EventHandler(this.BeolvasButton_Click);
             // 
             // nehezsegSav
             // 
@@ -235,7 +235,7 @@
             this.Controls.Add(this.exerciseTable);
             this.Controls.Add(this.difficultyLabel);
             this.Controls.Add(this.difficultyBar);
-            this.Controls.Add(this.beolvasButton);
+            this.Controls.Add(this.readExerciseButton);
             this.Controls.Add(this.exerciseTypeGroup);
             this.Controls.Add(this.restartExerciseButton);
             this.Controls.Add(this.generalButton);
@@ -260,7 +260,7 @@
         private System.Windows.Forms.RadioButton sudButton;
         private System.Windows.Forms.RadioButton centerButton;
         private System.Windows.Forms.TableLayoutPanel exerciseTable;
-        private System.Windows.Forms.Button beolvasButton;
+        private System.Windows.Forms.Button readExerciseButton;
         private System.Windows.Forms.TrackBar difficultyBar;
         private System.Windows.Forms.Label difficultyLabel;
         private System.Windows.Forms.Button verifyExerciseButton;

@@ -35,7 +35,7 @@ namespace Sudoku.Generate
                     util.InitializeSolutionContainer();
 
                 //Törlöm a generálásnál használt szótárakat
-                util.InitializeDictionaries();
+                util.InitializeGeneration();
 
                 /* Controller osztály példányosítása, melynek megadom a feladat fajtáját
                  * Ezzel a feladat eddig generált értékeit (ha voltak), törli*/

@@ -66,7 +66,7 @@ namespace Sudoku.Generate
 
         #region Methods
 
-        public void InitializeDictionaries()
+        public void InitializeGeneration()
         {
             rectangularCells = new Dictionary<int, List<Cell>>();
             removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
