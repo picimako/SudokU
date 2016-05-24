@@ -11,9 +11,7 @@ namespace Sudoku.Dialog
     public partial class SudokuApp : Form
     {
         private int[][,] exerciseBackupForRestart;
-
-        //a feladat újrakezdéséhez ebbe mentem az üres cellák számát a feladat kezdetekor
-        private int numberOfEmptyCells;
+        private int numberOfEmptyCellsForRestart;
 
         private ExerciseResultVerifier resultVerifier;
         private MenuHandler menuHandler;
@@ -68,14 +66,8 @@ namespace Sudoku.Dialog
 
         private void BindEventHandlers()
         {
-            difficultyBar.ValueChanged += (sender, e) =>
-            {
-                difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
-            };
-            killerDifficultyBar.ValueChanged += (sender, e) =>
-            {
-                killerDifficultyLabel.Text = "Killer " + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
-            };
+            difficultyBar.ValueChanged += (sender, e) => { SetDifficultyLabelText(); };
+            killerDifficultyBar.ValueChanged += (sender, e) => { SetKillerDifficultyLabelText(); };
             killerBox.CheckedChanged += (sender, e) =>
             {
                 /* Killer vagy nem Killer feladat a Killer Sudoku-hoz tartozó checkbox értéke alapján,
@@ -146,37 +138,32 @@ namespace Sudoku.Dialog
 
             //Elmentem a feladatot a hozzá tartozó tömbökkel és az üres cellák számával együtt
             Arrays.CopyJaggedThreeDimensionArray(exerciseBackupForRestart, se.Exercise);
-            numberOfEmptyCells = se.NumberOfEmptyCells;
+            numberOfEmptyCellsForRestart = se.NumberOfEmptyCells;
 
             SetButtonStates(true);
 
-            //A beolvasás gomb, valamint a Megnyitás és Generálás menü elemei inaktívak lesznek
             readExerciseButton.Enabled = false;
             menuHandler.DisableOpenAndGenerateMenuItems();
 
-            //Üres cellák számának címkéje látható
             numberOfEmptyCellsLabel.Visible = true;
-            SetNumberOfEmptyCellsLabel();
+            SetNumberOfEmptyCellsLabelText();
         }
 
         private void RestartExerciseButton_Click(object sender, EventArgs e)
         {
             //Visszaállítom a feladat kezdeti értékeit, illetve az üres cellák számát
             Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseBackupForRestart);
-            se.NumberOfEmptyCells = numberOfEmptyCells;
+            se.NumberOfEmptyCells = numberOfEmptyCellsForRestart;
 
             tableHandler.ReloadTableForRestart(exerciseBackupForRestart);
 
             //Az ellenőrzés gomb megint inaktív lesz, mivel újrakezdjük a feladatot és lesz üres cella
-            verifyExerciseButton.Enabled = false;
+            SetVerifyExerciseLabelAndButtonToDefault();
 
-            //Az ellenőrzéshez tartozó címkének nem lesz szövege
-            verifyExerciseLabel.Text = "";
-
-            SetNumberOfEmptyCellsLabel();
+            SetNumberOfEmptyCellsLabelText();
         }
 
-        private void SetNumberOfEmptyCellsLabel()
+        private void SetNumberOfEmptyCellsLabelText()
         {
             numberOfEmptyCellsLabel.Text = loc.Get("numof_empty_cells") + ": " + se.NumberOfEmptyCells;
         }
@@ -221,9 +208,8 @@ namespace Sudoku.Dialog
 
         private void SetLabels()
         {
-            difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
-
-            killerDifficultyLabel.Text = "Killer " + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
+            SetDifficultyLabelText();
+            SetKillerDifficultyLabelText();
 
             exerciseTypeGroup.Text = loc.Get("types") + ":";
             centerButton.Text = loc.Get("centerdot");
@@ -236,8 +222,6 @@ namespace Sudoku.Dialog
 
             stopExerciseButton.Text = loc.Get("stop");
 
-            difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
-
             menuHandler.SetLabels();
 
             this.Text = "SudokU";
@@ -246,7 +230,16 @@ namespace Sudoku.Dialog
             killerBox.Text = "Killer Sudoku";
         }
 
-        //A 3 fajta ellenőrzés végrehajtására
+        private void SetDifficultyLabelText()
+        {
+            difficultyLabel.Text = loc.Get("difficulty") + ": " + difficultyBar.Value.ToString();
+        }
+
+        private void SetKillerDifficultyLabelText()
+        {
+            killerDifficultyLabel.Text = string.Format("Killer {0}: {1}" + loc.Get("difficulty").ToLower(), killerDifficultyBar.Value.ToString());
+        }
+
         private void VerifyButton_Click(object sender, EventArgs e)
         {
             resultVerifier = new ExerciseResultVerifier(verifyExerciseLabel, tableHandler.GUITable);
@@ -256,12 +249,17 @@ namespace Sudoku.Dialog
         private void ExerciseStopButton_Click(object sender, EventArgs e)
         {
             SetButtonStates(false);
-            verifyExerciseButton.Enabled = false;
-            verifyExerciseLabel.Text = "";
+            SetVerifyExerciseLabelAndButtonToDefault();
             readExerciseButton.Enabled = true;
             exerciseTable.Controls.Clear();
             numberOfEmptyCellsLabel.Visible = false;
             menuHandler.EnableOpenAndGenerateMenuItems();
+        }
+
+        private void SetVerifyExerciseLabelAndButtonToDefault()
+        {
+            verifyExerciseButton.Enabled = false;
+            verifyExerciseLabel.Text = "";
         }
 
         /// <summary>Beállítja a kezelőfelületen levő gombok állapotát</summary>
