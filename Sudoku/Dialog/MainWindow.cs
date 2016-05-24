@@ -237,7 +237,7 @@ namespace Sudoku.Dialog
 
         private void SetKillerDifficultyLabelText()
         {
-            killerDifficultyLabel.Text = string.Format("Killer {0}: {1}" + loc.Get("difficulty").ToLower(), killerDifficultyBar.Value.ToString());
+            killerDifficultyLabel.Text = "Killer" + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
         }
 
         private void VerifyButton_Click(object sender, EventArgs e)
