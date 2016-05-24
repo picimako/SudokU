@@ -68,13 +68,12 @@ namespace Sudoku.Generate
 
         public void InitializeGeneration()
         {
+            if (!se.IsExerciseKiller)
+            {
+                solution = Arrays.CreateInitializedArray();
+            }
             rectangularCells = new Dictionary<int, List<Cell>>();
             removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
-        }
-
-        public void InitializeSolutionContainer()
-        {
-            solution = Arrays.CreateInitializedArray();
         }
 
         /// <summary> Beírja r-t a megfelelő táblákba, és beállítja a foglalt cellákat </summary>

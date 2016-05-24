@@ -6,71 +6,60 @@ namespace Sudoku.Generate
 {
     class ExerciseGenerator
     {
+        private const int maxNumberOfEmptiedCells = 30;
         private SudokuExercise se = SudokuExercise.get;
-        private int maxNumberOfEmptiedCells = 30;
         private GeneratorUtil util;
         private NumberRemover remover;
-        private Random random;
+        private FullTableGenerator tableGenerator;
+        private Random random = new Random();
 
-        /// <param name="difficulty"> The difficulty of the simple exercise. </param>
-        /// <param name="killerDifficulty"> The difficulty of the optional Killer exercise. </param>
+        /// <param name="difficulty">The difficulty of the simple exercise.</param>
+        /// <param name="killerDifficulty">The difficulty of the optional Killer exercise.</param>
         public ExerciseGenerator(int difficulty, int killerDifficulty)
         {
             util = new GeneratorUtil(difficulty, killerDifficulty);
             remover = new NumberRemover(util);
-            random = new Random();
         }
 
-        /// <summary> Ez egy összefoglaló eljárás, ami meghívja a feladat generálásához szükséges függvényeket és eljárásokat. </summary>
-        /// <param name="megoldottFeladat"> Ebbe a tömbbe adja vissza a feladat megoldását</param>
-        /// <returns> A kitöltést kezelő osztály objektumát fogja visszadni. Ebben vannak a feladat értékei is tárolva. </returns>
+        /// <summary>Initalizes the generation and calls the necessary generation related logic.</summary>
         public void Generate()
         {
-            //true, ha a jó feladatot sikerült generálni, egyébként false
-            bool joFeladat;
+            bool correctFullTableGenerated;
 
             do
             {
-                if (!se.IsExerciseKiller)
-                    util.InitializeSolutionContainer();
-
-                //Törlöm a generálásnál használt szótárakat
                 util.InitializeGeneration();
 
-                /* Controller osztály példányosítása, melynek megadom a feladat fajtáját
-                 * Ezzel a feladat eddig generált értékeit (ha voltak), törli*/
+                //A feladat eddig generált értékeit (ha voltak), törli
                 se.SetControllerForCurrentExerciseType();
 
-                /* Létrehozok egy teljesen kitöltött sudoku feladatot.
+                /* Létrehozok egy teljesen kitöltött Sudoku feladatot.
                  * Ha ütközés jött létre a táblában, akkor a feladat generálásának újrakezdése.*/
-                FullTableGenerator tableGenerator = new FullTableGenerator(util);
-                if (!(joFeladat = tableGenerator.GenerateFullTableFromEmptyTable()))
+                tableGenerator = new FullTableGenerator(util);
+                correctFullTableGenerated = tableGenerator.GenerateFullTableFromEmptyTable();
+                if (!correctFullTableGenerated)
                     continue;
 
                 if (!se.IsExerciseKiller)
-                    //akkor veszek ki számot
                     remover.RemoveNumbersWithoutBackTrack();
 
                 /* Addig generál, míg:
-                 * nem Killer esetén: az üres cellák száma kisebb, mint 20
+                 * nem Killer esetén: az üres cellák száma kisebb, mint 30
                  * Killer esetén: amíg a feladat nem jól generált*/
-            } while (!se.IsExerciseKiller ? util.RemovedCellsAndValuesBeforeRemoval.Count < maxNumberOfEmptiedCells : !joFeladat);
+            } while (!se.IsExerciseKiller
+                   ? util.RemovedCellsAndValuesBeforeRemoval.Count < maxNumberOfEmptiedCells
+                   : !correctFullTableGenerated);
 
             if (se.IsExerciseKiller)
             {
                 do
                 {
                     se.InitKillerExercise();
-
                     se.Killer.Ctrl.CopySolutionToExercise(se.Exercise[0]);
-
-                    /* Legenerálok egy felosztást.
-                     * Ha van nem elhelyezhető cella, akkor új felosztást készítek*/
                 } while (!GenerateKiller());
 
                 //Kitörlök minden értéket a feladatból, mert üres táblát kell megadni a feladatban
-                int[][,] tombok = Arrays.CreateInitializedArray();
-                se.Exercise = tombok;
+                se.Exercise = Arrays.CreateInitializedArray(); ;
 
                 //81 lesz az üres cellák száma, mert nem kell megadni egyetlen egy számot sem a feladatban
                 se.NumberOfEmptyCells = se.LAST_CELL_INDEX;
@@ -79,10 +68,7 @@ namespace Sudoku.Generate
             {
                 if (util.Difficulty != 0)
                     remover.RemoveNumbersWithBackTrack(); //További számok kivétele nehezítés gyanánt
-            }
 
-            if (!se.IsExerciseKiller)
-            {
                 se.Solution = util.Solution[0];
             }
         }
@@ -97,15 +83,14 @@ namespace Sudoku.Generate
             List<Cell> neighbourCells = new List<Cell>();
             //Egy egyedül maradt cella lehetséges szomszéd ketreceinek tárolására
             List<int> neighbourCages = new List<int>();
-            //Az aktuálisan feldolgozandó cella indexeit tárolja
             Cell currentCell = new Cell(0, 0);
 
             do
             {
                 numberOfCellsPutInCurrentCage = 0;
 
-                /* Az aktuális ketrec mérete (benne levő cellák száma) a [2, killerNehezseg + 3) halmazból egy szám
-                 * killerNehezseg + 3 - 1 az a szám, amekkora legnagyobb méretű ketreceket megengedek
+                /* Az aktuális ketrec mérete (benne levő cellák száma) a [2, KillerDifficulty + 3) halmazból egy szám.
+                 * KillerDifficulty + 3 - 1 az a szám, amekkora legnagyobb méretű ketreceket megengedek.
                  * Persze ettől függetlenül létrejöhetnek olyan ketrecek, amelyek ennél több cellából állnak, mert általában van olyan cella,
                  * ami önmaga alkotna egy ketrecet, de ekkor hozzá kell venni egy szomszéd cella ketrecéhez.*/
                 currentCageSize = random.Next(2, util.KillerDifficulty + 3);
@@ -127,14 +112,15 @@ namespace Sudoku.Generate
                     }
                     else
                     {
-                        /* Ha pedig nincs lehetséges szomszédja, akkor ezt a cellát belle kell raknom valamelyik olyan szomszéd ketrecébe, ahol 9-nél
+                        /* Ha pedig nincs lehetséges szomszédja, akkor ezt a cellát bele kell raknom valamelyik olyan szomszéd ketrecébe, ahol 9-nél
                          * kevesebb elem van, és az aktuális cella értéke még nem szerepel abban a ketrecben.
                          * Ha az aktuális ketrecben meg nincs cella*/
                         if (numberOfCellsPutInCurrentCage == 0)
                         {
+                            neighbourCages = se.Killer.Ctrl.FindPossibleNeighbourCages(currentCell);
                             //Ha nincs lehetséges választható szomszéd ketrec, 
-                            if ((neighbourCages = se.Killer.Ctrl.FindPossibleNeighbourCages(currentCell)).Count == 0)
-                                return false; //visszatérek false-szal, és a felosztás készítése elölről kezdődik
+                            if (neighbourCages.Count == 0)
+                                return false; //A felosztás készítése elölről kezdődik
 
                             /* Ha van választható szomszéd ketrec, akkor választok közülük
                              * Az aktuális (egyedül maradt) cellát elhelyezem a kiválasztott szomszéd ketrecben*/
@@ -150,7 +136,7 @@ namespace Sudoku.Generate
                     //Addig megy, amíg a ketrec elemszámának megfelelő cellát el nem helyezek a ketrecben
                 } while (++numberOfCellsPutInCurrentCage < currentCageSize);
                 cageIndex++;
-                /* Megkeresem a legelső 0 ketrecértékű cellát, és a megtalált cella indexeit kapja értékül aktCella.
+                /* Megkeresem a legelső 0 ketrecértékű cellát, és a megtalált cella indexeit kapja értékül currentCell.
                  * Ha az indexek értéke -1, akkor teli van a tábla, tehát kész a felosztás.*/
             } while ((currentCell = se.Killer.Ctrl.FindFirstEmptyCell()).Row != -1);
 

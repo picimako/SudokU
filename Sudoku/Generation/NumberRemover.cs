@@ -12,7 +12,7 @@ namespace Sudoku.Generate
 
         private const int MAX_NUMBER_OF_REMEMBERED_REMOVED_CELL_INDECES = 6;
         private SudokuExercise se = SudokuExercise.get;
-        private Random random;
+        private Random random = new Random();
         private GeneratorUtil util;
 
         #endregion
@@ -22,7 +22,6 @@ namespace Sudoku.Generate
         public NumberRemover(GeneratorUtil util)
         {
             this.util = util;
-            random = new Random();
         }
 
         #endregion

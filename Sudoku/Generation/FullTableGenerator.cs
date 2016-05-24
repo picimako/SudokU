@@ -34,7 +34,8 @@ namespace Sudoku.Generate
 
         #region Public
 
-        /// <summary> Generates a fully solved excercise of proper sudoku type. </summary>
+        /// <summary>Generates a fully solved excercise of the set Sudoku type.</summary>
+        /// <returns>False if there were incompatible numbers generated.</returns>
         public bool GenerateFullTableFromEmptyTable()
         {
             //In case of Sudoku-X it contains the value of the cell in the middle of the table

@@ -17,14 +17,14 @@ namespace Sudoku.Controller
             se.Solution = new int[9, 9];
         }
 
-        public void CopySolutionToExercise(int[,] megoldasTomb)
+        public void CopySolutionToExercise(int[,] solution)
         {
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
                     //se.Killer.Exercise[i, j].ertek = megoldasTomb[i, j];
-                    se.Solution[i, j] = megoldasTomb[i, j];
+                    se.Solution[i, j] = solution[i, j];
                 }
             }
         }
