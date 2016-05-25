@@ -13,12 +13,13 @@
 
         #region Properties
 
-        //For table indexing
         public int Row { get { return i; } set { i = value; } }
         public int Col { get { return j; } set { j = value; } }
 
         public int CageIndex { get { return i; } set { i = value; } }
         //public int Value { get { return j; } set { j = value; } }
+
+        public static Cell OUT_OF_RANGE { get { return new Cell(-1, -1); } }
 
         #endregion
 
@@ -30,6 +31,11 @@
         {
             this.i = i;
             this.j = j;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return (obj as Cell).Row == this.Row && (obj as Cell).Col == this.Col;
         }
 
         #endregion

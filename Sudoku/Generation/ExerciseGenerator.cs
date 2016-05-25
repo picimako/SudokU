@@ -99,8 +99,7 @@ namespace Sudoku.Generate
 
                 do
                 {
-                    /* Lekérem az aktuális cella minden szabad szomszédját.
-                     * (ami még nem szerepel egyik ketrecben sem és a ketrec nem tartalmazza az aktuális cella értékét.*/
+                    // Amelyik cella még nem szerepel egyik ketrecben sem és a ketrec nem tartalmazza az aktuális cella értékét.
                     neighbourCells = se.Killer.Ctrl.FindPossibleNeighbourCells(currentCell, cageIndex, true);
                     if (neighbourCells.Count != 0)
                     {
@@ -138,7 +137,7 @@ namespace Sudoku.Generate
                 cageIndex++;
                 /* Megkeresem a legelső 0 ketrecértékű cellát, és a megtalált cella indexeit kapja értékül currentCell.
                  * Ha az indexek értéke -1, akkor teli van a tábla, tehát kész a felosztás.*/
-            } while ((currentCell = se.Killer.Ctrl.FindFirstEmptyCell()).Row != -1);
+            } while (!(currentCell = se.Killer.Ctrl.FindFirstEmptyCell()).Equals(Cell.OUT_OF_RANGE));
 
             return true;
         }

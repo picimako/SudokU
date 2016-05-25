@@ -238,7 +238,7 @@ namespace Sudoku.Controller
                 p++;
 
             //Ha nem léptem ki a tábláról, akkor van üres cella, visszatérek az indexeivel
-            return p < se.LAST_CELL_INDEX ? new Cell(p / 9, p % 9) : new Cell(-1, -1);
+            return p < se.LAST_CELL_INDEX ? new Cell(p / 9, p % 9) : Cell.OUT_OF_RANGE;
         }
 
         /// <summary>Összegyűjti azokat a ketrecszámokat, amely ketrecek az [i,j] cella szomszédja(i) és az [i,j] cella értéke még nem szerepel
