@@ -1,7 +1,8 @@
-﻿namespace Sudoku
+﻿using Sudoku.Controller.Finder;
+
+namespace Sudoku
 {
     //TODO: move this to the Cells namespace
-    //TODO: create a CellPositionComparator and add it to this class. Could be used in KillerSudokuController.GetSumOfNumbersAndIndicatorCages()
     public class Cell
     {
         #region Members
@@ -78,6 +79,27 @@
         {
             this.Row = cell.Row;
             this.Col = cell.Col;
+        }
+
+        public Cell WithAlteredIndecesByDirection(Direction direction)
+        {
+            int row = this.Row, col = this.Col;
+            switch (direction)
+            {
+                case Direction.LEFT:
+                    --col;
+                    break;
+                case Direction.RIGHT:
+                    ++col;
+                    break;
+                case Direction.UP:
+                    --row;
+                    break;
+                case Direction.DOWN:
+                    ++row;
+                    break;
+            }
+            return new Cell(row, col);
         }
 
         public override bool Equals(object obj)

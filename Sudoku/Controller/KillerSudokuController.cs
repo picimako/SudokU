@@ -340,10 +340,10 @@ namespace Sudoku.Controller
             if (se.IsExerciseGenerated)
                 CalculateSumOfNumbersInAllCages();
 
-            //Változó a ketrec azon cellájának tárolására, ahova majd írni kell (megjelenítéskor) a ketrec összegét
+            //This is the cell where the sum of numbers will be displayed for each cage
             Cell upperLeftCornerCellOfCage;
 
-            Dictionary<Cell, int> sarokEsOsszeg = new Dictionary<Cell, int>();
+            Dictionary<Cell, int> cornerCellsWithSums = new Dictionary<Cell, int>();
 
             foreach (KeyValuePair<int, Cage> cage in se.Killer.Cages)
             {
@@ -351,12 +351,10 @@ namespace Sudoku.Controller
                 upperLeftCornerCellOfCage = GetMostUpperCellInCage(cage, upperLeftCornerCellOfCage);
                 upperLeftCornerCellOfCage = GetMostLeftCellInCage(cage, upperLeftCornerCellOfCage);
 
-                //Elmentem a ketrec bal felső celláját és a ketrecben levő számok összegét
-                sarokEsOsszeg.Add(upperLeftCornerCellOfCage, se.Killer.Cages[cage.Key].SumOfNumbers);
+                cornerCellsWithSums.Add(upperLeftCornerCellOfCage, se.Killer.Cages[cage.Key].SumOfNumbers);
             }
 
-            //Visszadom a kiszámolt értékeket
-            return sarokEsOsszeg;
+            return cornerCellsWithSums;
         }
 
         private Cell GetMostUpperCellInCage(KeyValuePair<int, Cage> cage, Cell upperLeftCornerCellOfCage)
@@ -404,7 +402,6 @@ namespace Sudoku.Controller
         {
             foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
             {
-                //Foglalt cellák beállítása
                 if (se.Solution[cell.Row, cell.Col] == se.EMPTY)
                     se.Solution[cell.Row, cell.Col] = se.OCCUPIED;
             }
@@ -419,23 +416,8 @@ namespace Sudoku.Controller
         /// <param name="possibleNeighbourCells">Ebben a listában tárolja el a lehetséges szomszédokat</param>
         private void CollectCell(Direction direction, Cell cell, int cageIndex, bool egyenlo, List<Cell> possibleNeighbourCells)
         {
-            int row = cell.Row, col = cell.Col;
-
-            switch (direction)
-            {
-                case Direction.LEFT:
-                    --col;
-                    break;
-                case Direction.RIGHT:
-                    ++col;
-                    break;
-                case Direction.UP:
-                    --row;
-                    break;
-                case Direction.DOWN:
-                    ++row;
-                    break;
-            }
+            Cell alteredCell = cell.WithAlteredIndecesByDirection(direction);
+            int row = alteredCell.Row, col = alteredCell.Col;
 
             if (egyenlo
                 /* Ha az [i, j] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
