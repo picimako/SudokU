@@ -260,7 +260,7 @@ namespace Sudoku.Dialog
                 se.Ctrl.MakeHousesOccupied(valueOfChangedCell, row, col);
 
                 if (se.IsExerciseKiller)
-                    se.Killer.Ctrl.ketrecKitolt(se.Killer.Exercise[row, col].CageIndex);
+                    se.Killer.Ctrl.FillInCage(se.Killer.Exercise[row, col].CageIndex);
 
                 //If the cell was empty, then decrementing the number of empty cells
                 if (previousCellValue == se.EMPTY)
@@ -280,7 +280,7 @@ namespace Sudoku.Dialog
                     }
                     else
                     {
-                        if (se.Ctrl.HousesContainValue(row, col, valueOfChangedCell) || se.Killer.Ctrl.HouseContainsValue(row, col, valueOfChangedCell, se.Exercise[0]))
+                        if (se.Ctrl.HousesContainValue(row, col, valueOfChangedCell) || se.Killer.Ctrl.NeighbourCellFinder.IsCageContainValue(se.Killer.Exercise[row, col].CageIndex, valueOfChangedCell, se.Exercise[0]))
                             SetIncorrectCellBackground(changedCell);
                         else
                             SetOriginalKillerCellBackgroundColor(changedCell);

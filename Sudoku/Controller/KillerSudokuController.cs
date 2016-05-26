@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using Sudoku.Generate;
-using Sudoku.Controller.Finder;
+using Sudoku.Controller.Finder.Killer;
 using Sudoku.Log;
 
 namespace Sudoku.Controller
@@ -9,8 +9,11 @@ namespace Sudoku.Controller
     public class KillerSudokuController
     {
         private SudokuExercise se = SudokuExercise.get;
+        private KillerSudokuExercise killer = SudokuExercise.get.Killer;
         private Logger log = Logger.Instance;
-        private List<Cell> possibleNeighbourCells;
+        private PossibleNeighbourCellsFinder finder = new PossibleNeighbourCellsFinder();
+
+        public PossibleNeighbourCellsFinder NeighbourCellFinder { get { return finder; } }
 
         public KillerSudokuController()
         {
@@ -214,19 +217,6 @@ namespace Sudoku.Controller
             return sumOfCellValuesInCage <= se.Killer.Cages[cageIndex].SumOfNumbers;
         }
 
-        /// <summary>Megvizsgálja, hogy a megadott érték benne van-e a megadott (cageIndex számú) ketrecben</summary>
-        /// <param name="value">A keresendő érték</param>
-        /// <param name="cageIndex">A vizsgálandó ketrec száma</param>
-        /// <param name="tomb">A vizsgálandó tömb: feladat vagy megoldás tömbje</param>
-        /// <returns>Ha benne van az érték, akkor true, egyébként false</returns>
-        private bool ketrecTartalmazErtek(int value, int cageIndex, int[,] tomb)
-        {
-            List<Cell> cellsOfValueFoundInCage = se.Killer.Cages[cageIndex].Cells
-                .Where(cell => tomb[cell.Row, cell.Col] == value)
-                .ToList();
-            return cellsOfValueFoundInCage.Count > 0;
-        }
-
         /// <summary>Megkeresi a legelső olyan üres cellát, ami még nem lett egyik ketrecben se elhelyezve</summary>
         /// <returns>Ha talált cellát, akkor a cella indexeivel tér vissza, egyébként pedig a (-1,-1) számpárral</returns>
         public Cell FindFirstEmptyCell()
@@ -247,7 +237,7 @@ namespace Sudoku.Controller
         /// <returns>The list of possible neighbour cages.</returns>
         public List<int> FindPossibleNeighbourCages(Cell cell)
         {
-            List<Cell> possibleNeighbourCells = FindPossibleNeighbourCells(cell, -1, false);
+            List<Cell> possibleNeighbourCells = finder.FindPossibleNeighbourCells(cell, -1, false);
             List<int> possibleCageIndeces = new List<int>();
 
             foreach (Cell neighbourCell in possibleNeighbourCells)
@@ -275,63 +265,6 @@ namespace Sudoku.Controller
 
             //Hozzáadom a ketrechez a cellát
             se.Killer.Cages[cageIndex].Cells.Add(new Cell(cell.Row, cell.Col));
-        }
-
-        /// <summary>A megadott cella elhelyezkedésétől függően megkeresi a cella lehetséges szomszédait</summary>
-        /// <param name="cell">A viszonyítást képző cella</param>
-        /// <param name="cageIndex">A vizsgálandó ketrec száma</param>
-        /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
-        /// <returns>The list of possible neighbour cells.</returns>
-        public List<Cell> FindPossibleNeighbourCells(Cell cell, int cageIndex, bool egyenlo)
-        {
-            possibleNeighbourCells = new List<Cell>();
-
-            if (cell.IsInFirstRow())
-            {
-                log.Info("Cell is in first row.");
-                CollectCell(Direction.DOWN, cell, cageIndex, egyenlo);
-
-                sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo);
-
-                return possibleNeighbourCells;
-            }
-
-            if (cell.IsInLastRow())
-            {
-                log.Info("Cell is in last row.");
-                CollectCell(Direction.UP, cell, cageIndex, egyenlo);
-
-                sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo);
-
-                return possibleNeighbourCells;
-            }
-
-            if (cell.IsInFirstColumn())
-            {
-                log.Info("Cell is in first column.");
-                CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo);
-
-                CheckVerticallyTwoDirections(cell, cageIndex, egyenlo);
-
-                return possibleNeighbourCells;
-            }
-
-            if (cell.IsInLastColumn())
-            {
-                log.Info("Cell is in last column.");
-                CollectCell(Direction.LEFT, cell, cageIndex, egyenlo);
-
-                CheckVerticallyTwoDirections(cell, cageIndex, egyenlo);
-
-                return possibleNeighbourCells;
-            }
-
-            /* Ha a cella indexei egyik előző esetnek sem felelnek meg, akkor mind a 4 szomszédot megvizsgálhatom*/
-            CheckHorizontallyTwoSided(cell, cageIndex, egyenlo);
-
-            CheckVerticallyTwoDirections(cell, cageIndex, egyenlo);
-
-            return possibleNeighbourCells;
         }
 
         /// <summary>Összegyűjti a ketrecekben levő számok összegét, és minden ketrecnek azt a celláját,
@@ -385,82 +318,14 @@ namespace Sudoku.Controller
             return mostLeftCell;
         }
 
-        /// <summary>Meghívja az egyes házakhoz tartozó érték-tartalmazást vizsgáló függvényeket 
-        /// és azok visszaadott értékei szerint ad vissza értéket.</summary>
-        /// <param name="row">A vizsgálandó cella sorindexe.</param>
-        /// <param name="col">A vizsgálandó cella oszlopindexe.</param>
-        /// <param name="value">A keresendő érték.</param>
-        /// <param name="tomb"></param>
-        /// <returns>Ha egyik ház sem tartalmazza ertek-et, akkor false, egyébként true</returns>
-        public bool HouseContainsValue(int row, int col, int value, int[,] tomb)
-        {
-            return !ketrecTartalmazErtek(value, se.Killer.Exercise[row, col].CageIndex, tomb);
-        }
-
         /// <summary>A megadott cageIndex ketrec cellái közül állítja foglaltra azokat, melyek még nem voltak azok</summary>
         /// <param name="cageIndex">A kitöltött cella ketrecszáma.</param>
-        public void ketrecKitolt(int cageIndex)
+        public void FillInCage(int cageIndex)
         {
             foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
             {
                 if (se.Solution[cell.Row, cell.Col] == se.EMPTY)
                     se.Solution[cell.Row, cell.Col] = se.OCCUPIED;
-            }
-        }
-
-        /// <summary>Megvizsgálja az [i,j] indexű cella 4 szomszéd celláját, 
-        /// hogy melyik szomszéd cella értéke van benne az [i,j] indexű cella ketrecében</summary>
-        /// <param name="direction">The direction to search towards</param>
-        /// <param name="cell">A viszonyítást képező cella</param>
-        /// <param name="cageIndex">Az [i,j] indexű cella ketrecszáma</param>
-        /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
-        private void CollectCell(Direction direction, Cell cell, int cageIndex, bool egyenlo)
-        {
-            Cell alteredCell = cell.WithAlteredIndecesByDirection(direction);
-            int row = alteredCell.Row, col = alteredCell.Col;
-
-            if (egyenlo
-                /* Ha az [i, j] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
-                 * A szomszéd szerepel-e már valamelyik ketrecben, és a szomszéd cella értéke benne van-e az [i,j] indexű cella ketrecében*/
-                ? !se.Killer.IsCellInAnyCage(row, col) && !ketrecTartalmazErtek(se.Solution[row, col], cageIndex, se.Solution)
-
-                /* Ha az [i,j] indexű cellát szeretném valamelyik szomszéd cella ketrecében elhelyezni.
-                * Ez akkor jöhet elő, ha az [i,j] indexű cella üresen marad, és a körülötte levő cellák már mind benne vannak egy ketrecben.
-                * Ha a szomszéd már benne van egy ketrecben, és a szomszéd cella ketrece nem tartalmazza az [i,j] indexű cella értékét*/
-                : se.Killer.IsCellInAnyCage(row, col) && !ketrecTartalmazErtek(se.Solution[cell.Row, cell.Col], se.Killer.Exercise[row, col].CageIndex, se.Solution))
-                possibleNeighbourCells.Add(new Cell(row, col));
-        }
-
-        private void CheckHorizontallyTwoSided(Cell cell, int cageIndex, bool egyenlo)
-        {
-            CollectCell(Direction.LEFT, cell, cageIndex, egyenlo);
-
-            CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo);
-        }
-
-        private void CheckVerticallyTwoDirections(Cell cell, int cageIndex, bool egyenlo)
-        {
-            CollectCell(Direction.UP, cell, cageIndex, egyenlo);
-
-            CollectCell(Direction.DOWN, cell, cageIndex, egyenlo);
-        }
-
-        private void sarokEsBenneSorVizsgalat(Cell cell, int cageIndex, bool egyenlo)
-        {
-            //i=0: Ha a bal felső sarokban van, i=8: Ha a bal alsó sarokban van
-            if (cell.IsInFirstColumn())
-            {
-                CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo);
-            }
-            //i=0: Ha a jobb felső sarokban van, i=8: Ha a jobb alsó sarokban van
-            else if (cell.IsInLastColumn())
-            {
-                CollectCell(Direction.LEFT, cell, cageIndex, egyenlo);
-            }
-            //Ha az előző 2 kivételével valahol a sorban
-            else
-            {
-                CheckHorizontallyTwoSided(cell, cageIndex, egyenlo);
             }
         }
 

@@ -100,7 +100,7 @@ namespace Sudoku.Generate
                 do
                 {
                     // Amelyik cella még nem szerepel egyik ketrecben sem és a ketrec nem tartalmazza az aktuális cella értékét.
-                    neighbourCells = se.Killer.Ctrl.FindPossibleNeighbourCells(currentCell, cageIndex, true);
+                    neighbourCells = se.Killer.Ctrl.NeighbourCellFinder.FindPossibleNeighbourCells(currentCell, cageIndex, true);
                     if (neighbourCells.Count != 0)
                     {
                         //Ha van lehetséges szomszéd, akkor véletlenszerűen választok egyet közülük

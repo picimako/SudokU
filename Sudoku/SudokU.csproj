@@ -73,6 +73,7 @@
     <Compile Include="Cells\CellHandler.cs" />
     <Compile Include="Controller\Finder\Direction.cs" />
     <Compile Include="Controller\Finder\EmptyCellFinder.cs" />
+    <Compile Include="Controller\Finder\Killer\PossibleNeighbourCellsFinder.cs" />
     <Compile Include="Controller\Finder\NotFillableItemFinder.cs" />
     <Compile Include="Dialog\SelectExerciseDialogFactory.cs" />
     <Compile Include="Dialog\Table\Finder\NearestEditableGUICellFinder.cs" />
