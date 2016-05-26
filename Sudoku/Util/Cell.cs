@@ -33,6 +33,53 @@
             this.j = j;
         }
 
+        public bool IsInFirstRow()
+        {
+            return this.Row == 0;
+        }
+
+        public bool IsInLastRow()
+        {
+            return this.Row == 8;
+        }
+
+        public bool IsInFirstColumn()
+        {
+            return this.Col == 0;
+        }
+
+        public bool IsInLastColumn()
+        {
+            return this.Col == 8;
+        }
+
+        public bool IsInSameRowAs(Cell cell)
+        {
+            return this.Row == cell.Row;
+        }
+
+        /// <summary>
+        /// Not right above, just in a higher row in the table.
+        /// </summary>
+        public bool IsAbove(Cell cell)
+        {
+            return this.Row < cell.Row;
+        }
+
+        /// <summary>
+        /// Not right to the left but somewhere to the left of cell.
+        /// </summary>
+        public bool IsAtLeftOf(Cell cell)
+        {
+            return this.Col < cell.Col;
+        }
+
+        public void CopyIndecesOf(Cell cell)
+        {
+            this.Row = cell.Row;
+            this.Col = cell.Col;
+        }
+
         public override bool Equals(object obj)
         {
             return (obj as Cell).Row == this.Row && (obj as Cell).Col == this.Col;

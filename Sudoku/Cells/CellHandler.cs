@@ -12,25 +12,5 @@ namespace Sudoku.Cells
             return (se.ExerciseType == SudokuType.SudokuX && SudokuXController.CellIsInAnyDiagonal(row, col))
                 || (se.ExerciseType == SudokuType.CenterDot && CenterDotController.CellIsAtMiddleOfAnyBlock(row, col));
         }
-
-        public static bool IsCellInFirstRow(Cell cell)
-        {
-            return cell.Row == 0;
-        }
-
-        public static bool IsCellInLastRow(Cell cell)
-        {
-            return cell.Row == 8;
-        }
-
-        public static bool IsCellInFirstColumn(Cell cell)
-        {
-            return cell.Col == 0;
-        }
-
-        public static bool IsCellInLastColumn(Cell cell)
-        {
-            return cell.Col == 8;
-        }
     }
 }

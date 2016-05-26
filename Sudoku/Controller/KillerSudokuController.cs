@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Sudoku.Generate;
 using Sudoku.Controller.Finder;
 using Sudoku.Log;
-using static Sudoku.Cells.CellHandler;
 
 namespace Sudoku.Controller
 {
@@ -286,7 +285,7 @@ namespace Sudoku.Controller
         {
             List<Cell> possibleNeighbourCells = new List<Cell>();
 
-            if (IsCellInFirstRow(cell))
+            if (cell.IsInFirstRow())
             {
                 log.Info("Cell is in first row.");
                 CollectCell(Direction.DOWN, cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -296,7 +295,7 @@ namespace Sudoku.Controller
                 return possibleNeighbourCells;
             }
 
-            if (IsCellInLastRow(cell))
+            if (cell.IsInLastRow())
             {
                 log.Info("Cell is in last row.");
                 CollectCell(Direction.UP, cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -306,7 +305,7 @@ namespace Sudoku.Controller
                 return possibleNeighbourCells;
             }
 
-            if (IsCellInFirstColumn(cell))
+            if (cell.IsInFirstColumn())
             {
                 log.Info("Cell is in first column.");
                 CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -316,7 +315,7 @@ namespace Sudoku.Controller
                 return possibleNeighbourCells;
             }
 
-            if (IsCellInLastColumn(cell))
+            if (cell.IsInLastColumn())
             {
                 log.Info("Cell is in last column.");
                 CollectCell(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
@@ -338,48 +337,19 @@ namespace Sudoku.Controller
         /// amelybe a megjelenítéskor a ketrecben levő értékek összegét kell írni</summary>
         public Dictionary<Cell, int> GetSumOfNumbersAndIndicatorCages()
         {
-            //Csak akkor kell kiszámolni a ketrecösszegeket, ha a feladat generált. Beolvasáskor az összegek beolvasásre kerülnek.
             if (se.IsExerciseGenerated)
                 CalculateSumOfNumbersInAllCages();
 
             //Változó a ketrec azon cellájának tárolására, ahova majd írni kell (megjelenítéskor) a ketrec összegét
             Cell upperLeftCornerCellOfCage;
 
-            //Szótár a visszaadandó értékek tárolására
             Dictionary<Cell, int> sarokEsOsszeg = new Dictionary<Cell, int>();
 
             foreach (KeyValuePair<int, Cage> cage in se.Killer.Cages)
             {
                 upperLeftCornerCellOfCage = new Cell(9, 9);
-
-                /* Kiszámolom a ketrecben levő értékek összegét 
-                 * és meghatározom azt a cellát (pontosabban a cella sorindexét) a ketrecben, ami a legfelül helyezkedik el*/
-                foreach (Cell cell in cage.Value.Cells)
-                {
-                    /* Ha találok olyan cellát, ami még feljebb van az eddigi legfelül lévőnél,
-                     * akkor ez az új cella lesz a legfelül levő*/
-                    if (cell.Row < upperLeftCornerCellOfCage.Row)
-                    {
-                        upperLeftCornerCellOfCage.Row = cell.Row;
-                        upperLeftCornerCellOfCage.Col = cell.Col;
-                    }
-                }
-
-                //A legfelül levő cellák közül megkeresem azt a cellát, ami a legbalrább helyezkedik el
-                foreach (Cell cell in cage.Value.Cells)
-                {
-                    //Ha a cella a legfelül levők között van
-                    if (cell.Row == upperLeftCornerCellOfCage.Row)
-                    {
-                        /* Ha találok olyan cellát, ami még balrább van az eddigi legbalrább lévőnél,
-                         * akkor ez az új cella lesz a legbalrább levő*/
-                        if (cell.Col < upperLeftCornerCellOfCage.Col)
-                        {
-                            upperLeftCornerCellOfCage.Col = cell.Col;
-                            upperLeftCornerCellOfCage.Row = cell.Row;
-                        }
-                    }
-                }
+                upperLeftCornerCellOfCage = GetMostUpperCellInCage(cage, upperLeftCornerCellOfCage);
+                upperLeftCornerCellOfCage = GetMostLeftCellInCage(cage, upperLeftCornerCellOfCage);
 
                 //Elmentem a ketrec bal felső celláját és a ketrecben levő számok összegét
                 sarokEsOsszeg.Add(upperLeftCornerCellOfCage, se.Killer.Cages[cage.Key].SumOfNumbers);
@@ -387,6 +357,33 @@ namespace Sudoku.Controller
 
             //Visszadom a kiszámolt értékeket
             return sarokEsOsszeg;
+        }
+
+        private Cell GetMostUpperCellInCage(KeyValuePair<int, Cage> cage, Cell upperLeftCornerCellOfCage)
+        {
+            Cell mostUpperCell = upperLeftCornerCellOfCage;
+            foreach (Cell cell in cage.Value.Cells)
+            {
+                if (cell.IsAbove(mostUpperCell))
+                {
+                    mostUpperCell.CopyIndecesOf(cell);
+                }
+            }
+            return mostUpperCell;
+        }
+
+        private Cell GetMostLeftCellInCage(KeyValuePair<int, Cage> cage, Cell upperLeftCornerCellOfCage)
+        {
+            Cell mostLeftCell = upperLeftCornerCellOfCage;
+            foreach (Cell cell in cage.Value.Cells)
+            {
+                //Ha a cella a legfelül levők között van
+                if (cell.IsInSameRowAs(mostLeftCell) && cell.IsAtLeftOf(mostLeftCell))
+                {
+                    mostLeftCell.CopyIndecesOf(cell);
+                }
+            }
+            return mostLeftCell;
         }
 
         /// <summary>Meghívja az egyes házakhoz tartozó érték-tartalmazást vizsgáló függvényeket 
@@ -469,12 +466,12 @@ namespace Sudoku.Controller
         private void sarokEsBenneSorVizsgalat(Cell cell, int cageIndex, bool egyenlo, List<Cell> possibleNeighbourCells)
         {
             //i=0: Ha a bal felső sarokban van, i=8: Ha a bal alsó sarokban van
-            if (IsCellInFirstColumn(cell))
+            if (cell.IsInFirstColumn())
             {
                 CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo, possibleNeighbourCells);
             }
             //i=0: Ha a jobb felső sarokban van, i=8: Ha a jobb alsó sarokban van
-            else if (IsCellInLastColumn(cell))
+            else if (cell.IsInLastColumn())
             {
                 CollectCell(Direction.LEFT, cell, cageIndex, egyenlo, possibleNeighbourCells);
             }
