@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using Sudoku.Generate;
 using Sudoku.Controller.Finder.Killer;
 using Sudoku.Log;
 
@@ -9,7 +8,6 @@ namespace Sudoku.Controller
     public class KillerSudokuController
     {
         private SudokuExercise se = SudokuExercise.get;
-        private KillerSudokuExercise killer = SudokuExercise.get.Killer;
         private Logger log = Logger.Instance;
         private PossibleNeighbourCellsFinder finder = new PossibleNeighbourCellsFinder();
 
@@ -35,186 +33,6 @@ namespace Sudoku.Controller
         public bool IsCellAtTopLeftOfCage(KeyValuePair<Cell, int> cage, int row, int col)
         {
             return cage.Key.Row == row && cage.Key.Col == col;
-        }
-
-        /// <summary>A kitöltött feladványt megvizsgálja minden feltétel alapján, hogy jó-e vagy sem</summary>
-        /// <param name="tomb">A vizsgálandó tömb, vagyis a megoldott feladat</param>
-        /// <returns>Ha jó a megoldás, akkor true, egyébként false</returns>
-        public bool IsKillerSolutionCorrect()
-        {
-            /*Amit ellenőrizni kell:
-             * sorok
-             * oszlopok
-             * blokkok
-             * x esetén az x, center esetén a középső cellák
-             * ketrecek
-             * ketrecösszegek*/
-
-            //Lista, amely az aktuális házban levő számokat tárolja
-            List<int> haz = new List<int>();
-
-            //Végigmegyek minden SORon
-            //TODO: check whether this should be "if (!sorEredmenyJo(haz))"
-            if (sorEredmenyJo(haz))
-                return false;
-
-            //Végigmegyek minden OSZLOPon
-            //TODO: check whether this should be "if (!sorEredmenyJo(haz))"
-            if (oszlopEredmenyJo(haz))
-                return false;
-
-            //Végigmegyek minden BLOKKon
-            for (int bl = 0; bl < 9; bl++)
-            {
-                //Minden blokk vizsgálata elején törlöm haz értékeit
-                haz.Clear();
-
-                //Végigmegyek a blokk elemein
-                for (int i = bl - (bl % 3); i <= (bl - (bl % 3)) + 2; i++)
-                {
-                    for (int j = (bl % 3) * 3; j <= ((bl % 3) * 3) + 2; j++)
-                    {
-                        //Ha haz még nem tartalmazza az aktuális értéket, akkor hozzáadom
-                        if (hazTartalmazErtek(haz, se.Exercise[0][i, j]))
-                            //Ha már tartalmazza, akkor nem jó a megoldás
-                            return false;
-                    }
-                }
-            }
-
-            //Sudoku-X esetén az átlók
-            if (se.ExerciseType == SudokuType.SudokuX)
-            {
-                //Az átló vizsgálata elején törlöm haz értékeit
-                haz.Clear();
-
-                //Végigmegyek a főátlón
-                for (int r = 0; r < 9; r++)
-                {
-                    //Ha haz még nem tartalmazza az aktuális értéket, akkor hozzáadom
-                    if (hazTartalmazErtek(haz, se.Exercise[0][r, r]))
-                        //Ha már tartalmazza, akkor nem jó a megoldás
-                        return false;
-                }
-
-                //Az átló vizsgálata elején törlöm haz értékeit
-                haz.Clear();
-
-                //Végigmegyek a mellékátlón
-                for (int r = 8; r >= 0; r--)
-                {
-                    //Ha haz még nem tartalmazza az aktuális értéket, akkor hozzáadom
-                    if (hazTartalmazErtek(haz, se.Exercise[0][r, 8 - r]))
-                        //Ha már tartalmazza, akkor nem jó a megoldás
-                        return false;
-                }
-            }
-
-            //Középpont Sudoku esetén a középső cellák
-            if (se.ExerciseType == SudokuType.CenterDot)
-            {
-                //A vizsgálat elején törlöm haz értékeit
-                haz.Clear();
-
-                //Végigmegyek a blokok középső celláin
-                for (int r = 1; r <= 7; r += 3)
-                {
-                    for (int p = 1; p <= 7; p += 3)
-                    {
-                        //Ha haz még nem tartalmazza az aktuális értéket, akkor hozzáadom
-                        if (hazTartalmazErtek(haz, se.Exercise[0][r, p]))
-                            //Ha már tartalmazza, akkor nem jó a megoldás
-                            return false;
-                    }
-                }
-            }
-
-            //Végigmegyek minden KETRECen
-            foreach (KeyValuePair<int, Cage> cage in se.Killer.Cages)
-            {
-                foreach (Cell cell in cage.Value.Cells)
-                {
-                    //Minden ketrec vizsgálata elején törlöm haz értékeit
-                    haz.Clear();
-
-                    //Ha haz még nem tartalmazza az aktuális értéket, akkor hozzáadom
-                    if (hazTartalmazErtek(haz, se.Exercise[0][cell.Row, cell.Col]))
-                        //Ha már tartalmazza, akkor nem jó a megoldás
-                        return false;
-                }
-            }
-
-            foreach (KeyValuePair<int, Cage> cage in se.Killer.Cages)
-            {
-                if (!ketrecOsszegJo(cage.Key, cage.Value.Cells))
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>Megvizsgálja, hogy haz tartalmazza-e tomb adott [i, j] helyen levő értékét. Ha nem, akkor hozzáadja.</summary>
-        /// <param name="haz">A vizsgálandó ház</param>
-        /// <param name="cellValue">A vizsgálandó érték</param>
-        /// <returns>Ha a ház nem tartalmazza az adott értéket, akkor false, egyébként true.</returns>
-        private bool hazTartalmazErtek(List<int> haz, int cellValue)
-        {
-            if (!haz.Contains(cellValue))
-            {
-                haz.Add(cellValue);
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool sorEredmenyJo(List<int> haz)
-        {
-            return sorOszlopEredmenyJo(haz, true);
-        }
-
-        private bool oszlopEredmenyJo(List<int> haz)
-        {
-            return sorOszlopEredmenyJo(haz, false);
-        }
-
-        /// <summary>Megvizsgálja az eredményt, hogy a sorok vagy oszlopok jól vannak-e kitöltve.</summary>
-        /// <param name="haz">Az aktuálisan vizsgálandó sor vagy oszlop.</param>
-        /// <param name="tomb">A feladat megoldása.</param>
-        /// <param name="sor">Azt mondja meg, hogy sort vagy oszlopot kell vizsgálni.</param>
-        private bool sorOszlopEredmenyJo(List<int> haz, bool sor)
-        {
-            for (int i = 0; i < 9; i++)
-            {
-                //Minden sor/oszlop vizsgálata elején törlöm haz értékeit
-                haz.Clear();
-
-                //Végigmegyek a sor/oszlop elemein
-                for (int j = 0; j < 9; j++)
-                {
-                    //Ha haz még nem tartalmazza az aktuális értéket, akkor hozzáadom
-                    if (sor ? hazTartalmazErtek(haz, se.Exercise[0][i, j]) : hazTartalmazErtek(haz, se.Exercise[0][j, i]))
-                        //Ha már tartalmazza, akkor nem jó a megoldás
-                        return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>Megvizsgálja, hogy a cageIndex ketrecbe eddig beírt számok összeg nagyobb-e a tényleges összegnél</summary>
-        /// <param name="cageIndex">A vizsgálandó ketrec száma</param>
-        /// <param name="tomb">A feladat aktuális állapotát tartalmazó tömb</param>
-        /// <returns>Ha a számok aktuális összege nagyobb, mint a tényleges összeg, akkor false-szal térek vissza, egyébként true-val</returns>
-        public bool IsCurrentSumOfNumbersBiggerThanRealSum(int cageIndex)
-        {
-            return ketrecOsszegJo(cageIndex, se.Killer.Cages[cageIndex].Cells);
-        }
-
-        public bool ketrecOsszegJo(int cageIndex, List<Cell> cellsInCage)
-        {
-            int sumOfCellValuesInCage = cellsInCage.Sum(cell => se.Exercise[0][cell.Row, cell.Col]);
-            return sumOfCellValuesInCage <= se.Killer.Cages[cageIndex].SumOfNumbers;
         }
 
         /// <summary>Megkeresi a legelső olyan üres cellát, ami még nem lett egyik ketrecben se elhelyezve</summary>
@@ -336,7 +154,6 @@ namespace Sudoku.Controller
             {
                 int sumOfNumbersInCage = cage.Value.Cells.Sum(cell => se.Solution[cell.Row, cell.Col]);
 
-                //Elmentem az adott ketrecszámot és a hozzá tartozó összeget
                 se.Killer.Cages[cage.Key].SumOfNumbers = sumOfNumbersInCage;
             }
         }

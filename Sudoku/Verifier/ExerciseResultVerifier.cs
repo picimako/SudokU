@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Sudoku.Controller;
 using Sudoku.Language;
 using Sudoku.Util;
-
 
 namespace Sudoku.Verifier
 {
@@ -18,6 +16,7 @@ namespace Sudoku.Verifier
 
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
+        private KillerExerciseResultVerifier killerVerifier = new KillerExerciseResultVerifier();
         private Label checkLabel;
         private TextBox[,] activeTable;
         private int currentCellValue;
@@ -38,7 +37,7 @@ namespace Sudoku.Verifier
         {
             if (se.IsExerciseKiller && !se.IsExerciseGenerated)
             {
-                if (se.Killer.Ctrl.IsKillerSolutionCorrect())
+                if (killerVerifier.IsKillerSolutionCorrect())
                     PrintSolutionIsGood();
                 else
                     PrintSolutionIsWrong();

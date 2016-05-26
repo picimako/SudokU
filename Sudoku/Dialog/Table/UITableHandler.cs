@@ -8,6 +8,7 @@ using Sudoku.Language;
 using Sudoku.Util;
 using static Sudoku.Cells.CellHandler;
 using static Sudoku.Verifier.ExerciseResultVerifier;
+using static Sudoku.Verifier.KillerExerciseResultVerifier;
 
 namespace Sudoku.Dialog
 {
@@ -236,7 +237,7 @@ namespace Sudoku.Dialog
                 if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
                 {
                     int cageIndex = se.Killer.Exercise[row, col].CageIndex;
-                    if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
+                    if (SumOfNumbersIsCorrectInCage(cageIndex, se.Killer.Cages[cageIndex].Cells))
                     {
                         foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
                             FontUtil.SetTextboxFont(changedCell, guiTable[cell.Row, cell.Col], FontStyle.Regular);
@@ -289,7 +290,7 @@ namespace Sudoku.Dialog
                 if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
                 {
                     int cageIndex = se.Killer.Exercise[row, col].CageIndex;
-                    if (se.Killer.Ctrl.IsCurrentSumOfNumbersBiggerThanRealSum(cageIndex))
+                    if (SumOfNumbersIsCorrectInCage(cageIndex, se.Killer.Cages[cageIndex].Cells))
                     {
                         foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
                             FontUtil.SetTextboxFont(changedCell, guiTable[cell.Row, cell.Col], FontStyle.Bold);
