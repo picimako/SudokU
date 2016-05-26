@@ -24,7 +24,7 @@ namespace Sudoku.Dialog
         private NearestEditableGUICellFinder cellFinder;
 
         private Button verifyExerciseButton;
-        private Color[] colors = new ColorListFactory().GetColors();
+        private Color[] colors = Colors.GetColors();
         private Label numberOfEmptyCellsLabel;
         private TableLayoutPanel exerciseTable;
         /*The previous value of the cell. To be able to change the number tables, I need to know the value of the cell before

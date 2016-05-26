@@ -2,9 +2,9 @@
 
 namespace Sudoku.Util
 {
-    class ColorListFactory
+    class Colors
     {
-        public Color[] GetColors()
+        public static Color[] GetColors()
         {
             return new Color[] {new Color(), Color.LightCoral, Color.LightCyan, Color.LightGoldenrodYellow,
                 Color.LightGreen, Color.LightPink, Color.LightSalmon, Color.LightSeaGreen,
