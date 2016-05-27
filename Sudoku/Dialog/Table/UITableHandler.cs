@@ -143,8 +143,8 @@ namespace Sudoku.Dialog
                     guiTable[row, col].GotFocus += delegate(object sender, EventArgs e)
                     {
                         //Storing the indeces of the TextBox in focus
-                        int _i = GetSenderTag(sender).Row;
-                        int _j = GetSenderTag(sender).Col;
+                        int _i = AsCell(sender).Row;
+                        int _j = AsCell(sender).Col;
                         Int32.TryParse(guiTable[_i, _j].Text, out previousCellValue);
                     };
 
@@ -158,7 +158,7 @@ namespace Sudoku.Dialog
 
         public void CreateTableOnGUI()
         {
-            //Making the table not visible to speed up the drawing
+            //Hiding the table to speed up drawing
             exerciseTable.Visible = false;
 
             //No rows and columns in the table initially
@@ -186,35 +186,18 @@ namespace Sudoku.Dialog
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            //The indeces of the cell that has changed
-            int row = GetSenderTag(sender).Row;
-            int col = GetSenderTag(sender).Col;
+            //The TextBox cell that has changed
+            Cell changedCell = new Cell(AsCell(sender).Row, AsCell(sender).Col);
+            Cell cellToFocusOn = cellFinder.FindNearestEditableCellComparedTo(changedCell, e.KeyCode);
 
-            switch (e.KeyCode)
-            {
-                case Keys.Left:
-                    col = cellFinder.FindNearestEditableCellLeft(row, col);
-                    break;
-                case Keys.Right:
-                    col = cellFinder.FindNearestEditableCellRight(row, col);
-                    break;
-                case Keys.Up:
-                    row = cellFinder.FindNearestEditableCellUp(row, col);
-                    break;
-                case Keys.Down:
-                    row = cellFinder.FindNearestEditableCellDown(row, col);
-                    break;
-            }
-
-            //Setting the focus to the desired cell
-            guiTable[row, col].Focus();
+            guiTable[cellToFocusOn.Row, cellToFocusOn.Col].Focus();
         }
 
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
             //Indeces of the changed TextBox cell
-            int row = GetSenderTag(sender).Row;
-            int col = GetSenderTag(sender).Col;
+            int row = AsCell(sender).Row;
+            int col = AsCell(sender).Col;
             TextBox changedCell = guiTable[row, col];
 
             //If the cell is empty, the value got removed from it
@@ -339,7 +322,7 @@ namespace Sudoku.Dialog
             cell.TextChanged += new EventHandler(this.TextBox_TextChanged);
         }
 
-        private Cell GetSenderTag(object sender)
+        private Cell AsCell(object sender)
         {
             return ((TextBox)sender).Tag as Cell;
         }
