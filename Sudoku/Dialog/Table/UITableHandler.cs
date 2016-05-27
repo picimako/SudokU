@@ -123,7 +123,7 @@ namespace Sudoku.Dialog
                     //Maximum 1 character allowed as value
                     guiTable[row, col].MaxLength = 1;
 
-                    //Setting the cell indeces in the Tag property for later usage
+                    //Setting a new cell with its indeces in the Tag property for later usage
                     guiTable[row, col].Tag = new Cell(row, col);
 
                     if (!se.IsExerciseKiller)
@@ -134,18 +134,15 @@ namespace Sudoku.Dialog
                             //It is not allowed to edit the cells that contain the predefined values
                             guiTable[row, col].Enabled = false;
                         }
-                        SetOriginalCellBackgroundColor(guiTable[row, col]);
                     }
-                    else
-                        SetOriginalKillerCellBackgroundColor(guiTable[row, col]);
+                    SetOriginalCellBackgroundColor(guiTable[row, col]);
 
                     guiTable[row, col].TextChanged += new EventHandler(TextBox_TextChanged);
-                    guiTable[row, col].GotFocus += delegate(object sender, EventArgs e)
+                    guiTable[row, col].GotFocus += (sender, e) =>
                     {
-                        //Storing the indeces of the TextBox in focus
-                        int _i = AsCell(sender).Row;
-                        int _j = AsCell(sender).Col;
-                        Int32.TryParse(guiTable[_i, _j].Text, out previousCellValue);
+                        int rowInFocus = AsCell(sender).Row;
+                        int colInFocus = AsCell(sender).Col;
+                        Int32.TryParse(guiTable[rowInFocus, colInFocus].Text, out previousCellValue);
                     };
 
                     guiTable[row, col].KeyDown += new KeyEventHandler(TextBox_KeyDown);
@@ -186,7 +183,6 @@ namespace Sudoku.Dialog
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            //The TextBox cell that has changed
             Cell changedCell = new Cell(AsCell(sender).Row, AsCell(sender).Col);
             Cell cellToFocusOn = cellFinder.FindNearestEditableCellComparedTo(changedCell, e.KeyCode);
 
@@ -195,7 +191,6 @@ namespace Sudoku.Dialog
 
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
-            //Indeces of the changed TextBox cell
             int row = AsCell(sender).Row;
             int col = AsCell(sender).Col;
             TextBox changedCell = guiTable[row, col];
@@ -211,11 +206,7 @@ namespace Sudoku.Dialog
 
                 verifyExerciseButton.Enabled = false;
 
-                //Setting the original background color
-                if (se.IsExerciseKiller)
-                    SetOriginalKillerCellBackgroundColor(changedCell);
-                else
-                    SetOriginalCellBackgroundColor(changedCell);
+                SetOriginalCellBackgroundColor(changedCell);
 
                 if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
                 {
@@ -246,11 +237,9 @@ namespace Sudoku.Dialog
                 if (se.IsExerciseKiller)
                     se.Killer.Ctrl.FillInCage(se.Killer.Exercise[row, col].CageIndex);
 
-                //If the cell was empty, then decrementing the number of empty cells
                 if (previousCellValue == se.EMPTY)
                     se.NumberOfEmptyCells--;
 
-                //If there is no more empty cell, then the exercise can be verified
                 if (se.IsExerciseFull())
                     verifyExerciseButton.Enabled = true;
 
@@ -290,8 +279,15 @@ namespace Sudoku.Dialog
 
         private void SetOriginalCellBackgroundColor(TextBox cell)
         {
-            Cell aCell = cell.Tag as Cell;
-            cell.BackColor = IsCellSpecial(aCell.Row, aCell.Col) ? Color.LightBlue : Color.White;
+            if (!se.IsExerciseKiller)
+            {
+                Cell aCell = cell.Tag as Cell;
+                cell.BackColor = IsCellSpecial(aCell.Row, aCell.Col) ? Color.LightBlue : Color.White;
+            }
+            else
+            {
+                SetOriginalKillerCellBackgroundColor(cell);
+            }
         }
 
         private void SetOriginalKillerCellBackgroundColor(TextBox cell)
@@ -309,9 +305,9 @@ namespace Sudoku.Dialog
             cell.BackColor = Color.Red;
         }
 
+        /// <summary>Zero, text and special characters are not allowed to type into the cells.</summary>
         private bool IsInvalidValueSet(TextBox cell, out int value)
         {
-            //Zero, text and special characters are not allowed to type into the cells
             return !Int32.TryParse(cell.Text, out value) || cell.Text.Equals("0");
         }
 
