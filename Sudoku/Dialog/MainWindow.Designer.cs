@@ -59,10 +59,10 @@
             this.generalButton.UseVisualStyleBackColor = true;
             this.generalButton.Click += new System.EventHandler(this.GeneralButton_Click);
             // 
-            // ujraButton
+            // restartExerciseButton
             // 
             this.restartExerciseButton.Location = new System.Drawing.Point(500, 144);
-            this.restartExerciseButton.Name = "ujraButton";
+            this.restartExerciseButton.Name = "restartExerciseButton";
             this.restartExerciseButton.Size = new System.Drawing.Size(112, 39);
             this.restartExerciseButton.TabIndex = 4;
             this.restartExerciseButton.UseVisualStyleBackColor = true;
@@ -108,7 +108,7 @@
             this.sudButton.TabStop = true;
             this.sudButton.UseVisualStyleBackColor = true;
             // 
-            // table
+            // exerciseTable
             // 
             this.exerciseTable.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Inset;
             this.exerciseTable.ColumnCount = 1;
@@ -122,7 +122,7 @@
             this.exerciseTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.exerciseTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.exerciseTable.Location = new System.Drawing.Point(183, 42);
-            this.exerciseTable.Name = "table";
+            this.exerciseTable.Name = "exerciseTable";
             this.exerciseTable.RowCount = 1;
             this.exerciseTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.exerciseTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 278F));
@@ -136,53 +136,53 @@
             this.exerciseTable.Size = new System.Drawing.Size(280, 280);
             this.exerciseTable.TabIndex = 0;
             // 
-            // beolvasButton
+            // readExerciseButton
             // 
             this.readExerciseButton.Location = new System.Drawing.Point(86, 159);
-            this.readExerciseButton.Name = "beolvasButton";
+            this.readExerciseButton.Name = "readExerciseButton";
             this.readExerciseButton.Size = new System.Drawing.Size(77, 23);
             this.readExerciseButton.TabIndex = 12;
             this.readExerciseButton.UseVisualStyleBackColor = true;
             this.readExerciseButton.Click += new System.EventHandler(this.BeolvasButton_Click);
             // 
-            // nehezsegSav
+            // difficultyBar
             // 
             this.difficultyBar.Location = new System.Drawing.Point(35, 206);
-            this.difficultyBar.Name = "nehezsegSav";
+            this.difficultyBar.Name = "difficultyBar";
             this.difficultyBar.Size = new System.Drawing.Size(98, 45);
             this.difficultyBar.TabIndex = 13;
             // 
-            // nehezsegLabel
+            // difficultyLabel
             // 
             this.difficultyLabel.AutoSize = true;
             this.difficultyLabel.Location = new System.Drawing.Point(51, 238);
-            this.difficultyLabel.Name = "nehezsegLabel";
+            this.difficultyLabel.Name = "difficultyLabel";
             this.difficultyLabel.Size = new System.Drawing.Size(0, 13);
             this.difficultyLabel.TabIndex = 14;
             // 
-            // ellenorizButton
+            // verifyExerciseButton
             // 
             this.verifyExerciseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.verifyExerciseButton.Location = new System.Drawing.Point(500, 42);
-            this.verifyExerciseButton.Name = "ellenorizButton";
+            this.verifyExerciseButton.Name = "verifyExerciseButton";
             this.verifyExerciseButton.Size = new System.Drawing.Size(112, 23);
             this.verifyExerciseButton.TabIndex = 19;
             this.verifyExerciseButton.UseVisualStyleBackColor = true;
             this.verifyExerciseButton.Click += new System.EventHandler(this.VerifyButton_Click);
             // 
-            // ellenorzesLabel
+            // verifyExerciseLabel
             // 
             this.verifyExerciseLabel.AutoSize = true;
             this.verifyExerciseLabel.Location = new System.Drawing.Point(509, 68);
-            this.verifyExerciseLabel.Name = "ellenorzesLabel";
+            this.verifyExerciseLabel.Name = "verifyExerciseLabel";
             this.verifyExerciseLabel.Size = new System.Drawing.Size(0, 13);
             this.verifyExerciseLabel.TabIndex = 20;
             this.verifyExerciseLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // feladatStopButton
+            // stopExerciseButton
             // 
             this.stopExerciseButton.Location = new System.Drawing.Point(500, 189);
-            this.stopExerciseButton.Name = "feladatStopButton";
+            this.stopExerciseButton.Name = "stopExerciseButton";
             this.stopExerciseButton.Size = new System.Drawing.Size(112, 36);
             this.stopExerciseButton.TabIndex = 22;
             this.stopExerciseButton.UseVisualStyleBackColor = true;
@@ -197,26 +197,26 @@
             this.killerBox.TabIndex = 23;
             this.killerBox.UseVisualStyleBackColor = true;
             // 
-            // uCSzLabel
+            // numberOfEmptyCellsLabel
             // 
             this.numberOfEmptyCellsLabel.AutoSize = true;
             this.numberOfEmptyCellsLabel.Location = new System.Drawing.Point(497, 247);
-            this.numberOfEmptyCellsLabel.Name = "uCSzLabel";
+            this.numberOfEmptyCellsLabel.Name = "numberOfEmptyCellsLabel";
             this.numberOfEmptyCellsLabel.Size = new System.Drawing.Size(0, 13);
             this.numberOfEmptyCellsLabel.TabIndex = 24;
             // 
-            // killerSav
+            // killerDifficultyBar
             // 
             this.killerDifficultyBar.Location = new System.Drawing.Point(35, 273);
-            this.killerDifficultyBar.Name = "killerSav";
+            this.killerDifficultyBar.Name = "killerDifficultyBar";
             this.killerDifficultyBar.Size = new System.Drawing.Size(98, 45);
             this.killerDifficultyBar.TabIndex = 25;
             // 
-            // killerNehezsegLabel
+            // killerDifficultyLabel
             // 
             this.killerDifficultyLabel.AutoSize = true;
             this.killerDifficultyLabel.Location = new System.Drawing.Point(41, 305);
-            this.killerDifficultyLabel.Name = "killerNehezsegLabel";
+            this.killerDifficultyLabel.Name = "killerDifficultyLabel";
             this.killerDifficultyLabel.Size = new System.Drawing.Size(0, 13);
             this.killerDifficultyLabel.TabIndex = 26;
             // 
@@ -241,6 +241,7 @@
             this.Controls.Add(this.generalButton);
             this.Name = "SudokuApp";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SudokuApp_FormClosing);
             this.Load += new System.EventHandler(this.SudokuApp_Load);
             this.exerciseTypeGroup.ResumeLayout(false);
             this.exerciseTypeGroup.PerformLayout();

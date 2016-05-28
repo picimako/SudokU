@@ -3,8 +3,9 @@ using System.Windows.Forms;
 using System.IO;
 using Sudoku.Generate;
 using Sudoku.Controller;
-using Sudoku.Verifier;
 using Sudoku.Language;
+using Sudoku.Log;
+using Sudoku.Verifier;
 
 namespace Sudoku.Dialog
 {
@@ -19,6 +20,7 @@ namespace Sudoku.Dialog
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
+        private Logger log = Logger.Instance;
 
         public SudokuApp()
         {
@@ -274,6 +276,11 @@ namespace Sudoku.Dialog
 
             //Nehézségsáv engedélyezése vagy tiltása
             difficultyBar.Enabled = killerBox.Checked || state ? false : true;
+        }
+
+        private void SudokuApp_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            log.Close("Closing the application.");
         }
     }
 }
