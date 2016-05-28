@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Localization xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Item id="file_menu"                      value="File"/>
+  <Item id="options_menu"                   value="Settings"/>
+  <Item id="about_menu"                     value="About"/>
+  <Item id="open_default_folder"            value="Default folder when opening Sudoku exercise"/>
+  <Item id="browse"                         value="Browse..."/>
+  <Item id="exit_app"                       value="Exit"/>
+  <Item id="types"                          value="Types"/>
+  <Item id="generate"                       value="Generate"/>
+  <Item id="open"                           value="Open"/>
+  <Item id="restart"                        value="Restart exercise"/>
+  <Item id="centerdot"                      value="Center Dot"/>
+  <Item id="difficulty"                     value="Difficulty"/>
+  <Item id="cancel"                         value="Cancel"/>
+  <Item id="language"                       value="Language"/>
+  <Item id="helpRed"                        value="Cell's backround turns into red if the given number is contained by one of the cell's houses."/>
+  <Item id="cageSum"                        value="Signs if the sum of the numbers in a cage is greater than the real sum. (Bold numbers)"/>
+  <Item id="check"                          value="Check"/>
+  <Item id="check_type"                     value="When checking the solution"/>
+  <Item id="show_wrong"                     value="Show the wrong cells. (Italic numbers)"/>
+  <Item id="show_wrong_number"              value="Show the number of wrong cells."/>
+  <Item id="show_wrong_number_label"        value="Number of wrong cells"/>
+  <Item id="good_wrong_solution"            value="Show just the solution is good or wrong."/>
+  <Item id="good_wrong_solution_label"      value="The solution is"/>
+  <Item id="good"                           value="good."/>
+  <Item id="wrong"                          value="wrong."/>
+  <Item id="stop"                           value="Stop exercise"/>
+  <Item id="no_config_file"                 value="Configuration file cannot be found."/>
+  <Item id="no_language_folder"             value="Language folder cannot be found."/>
+  <Item id="no_language_file"               value="Selected language file cannot be found."/>
+  <Item id="exercise_not_solvable"          value="The exercise is not solvable using the criterias of the selected type of Sudoku!"/>
+  <Item id="exercise_not_solvable_caption"  value="The exercise is not solvable"/>
+  <Item id="no_file_caption"                value="Missing file"/>
+  <Item id="no_folder_caption"              value="Missing folder"/>
+  <Item id="failed_read_file_caption"       value="Failed to read the file"/>
+  <Item id="failed_read_file"               value="Failed to read the file. Maybe the given exercise is wrong."/>
+  <Item id="select_file"                    value="Select file"/>
+  <Item id="text_files"                     value="Text files"/>
+  <Item id="numof_empty_cells"              value="Number of empty cells"/>
+</Localization>

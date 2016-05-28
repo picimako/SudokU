@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Localization xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Item id="file_menu"                      value="Fájl"/>
+  <Item id="options_menu"                   value="Beállítások"/>
+  <Item id="about_menu"                     value="Névjegy"/>
+  <Item id="open_default_folder"            value="Ezen könyvtár megnyitása feladat beolvasásakor"/>
+  <Item id="browse"                         value="Tallózás..."/>
+  <Item id="exit_app"                       value="Kilépés"/>
+  <Item id="types"                          value="Típusok"/>
+  <Item id="generate"                       value="Generálás"/>
+  <Item id="open"                           value="Megnyitás"/>
+  <Item id="restart"                        value="Feladat újrakezdése"/>
+  <Item id="centerdot"                      value="Középpont"/>
+  <Item id="difficulty"                     value="Nehézség"/>
+  <Item id="cancel"                         value="Mégse"/>
+  <Item id="language"                       value="Nyelv (Language)"/>
+  <Item id="helpRed"                        value="A cella pirossá válik, ha a beírt szám már szerepel a cellát tartalmazó valamelyik házban."/>
+  <Item id="cageSum"                        value="Jelzés, ha valamelyik ketrecben levő számok összege nagyobb a tényleges összegnél. (Félkövér számok)"/>
+  <Item id="check"                          value="Ellenőrzés"/>
+  <Item id="check_type"                     value="Ellenőrzéskor"/>
+  <Item id="show_wrong"                     value="Csak a hibás értékű cellákat jelezze. (Dőlt számok)"/>
+  <Item id="show_wrong_number"              value="Hibás értékű cellák számának kiírása."/>
+  <Item id="show_wrong_number_label"        value="Hibás cellák száma"/>
+  <Item id="good_wrong_solution"            value="Jelezze, hogy jó vagy rossz a megoldás."/>
+  <Item id="good_wrong_solution_label"      value="A megoldás"/>
+  <Item id="good"                           value="jó."/>
+  <Item id="wrong"                          value="rossz."/>
+  <Item id="stop"                           value="Feladat befejezése"/>
+  <Item id="no_config_file"                 value="A konfigurációs fájl nem található."/>
+  <Item id="no_language_folder"             value="A nyelvi fájlokat tartalmazó könyvtár nem található."/>
+  <Item id="no_language_file"               value="A beállított nyelvi fájl nem található."/>
+  <Item id="exercise_not_solvable"          value="A feladat nem oldható meg a beállított típus kritériumai alapján!"/>
+  <Item id="exercise_not_solvable_caption"  value="Nem megoldható feladat"/>
+  <Item id="no_file_caption"                value="Hiányzó fájl"/>
+  <Item id="no_folder_caption"              value="Hiányzó könyvtár"/>
+  <Item id="failed_read_file_caption"       value="A feladat beolvasása sikertelen"/>
+  <Item id="failed_read_file"               value="A feladat beolvasása sikertelen. Lehet, hogy hibás a feladvány."/>
+  <Item id="select_file"                    value="Feladat választása"/>
+  <Item id="text_files"                     value="Szöveges fájlok"/>
+  <Item id="numof_empty_cells"              value="Üres cellák száma"/>
+</Localization>

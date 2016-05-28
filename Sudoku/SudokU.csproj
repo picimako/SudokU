@@ -179,6 +179,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration\Resources\" />
+    <Folder Include="Resources\Config\" />
+    <Folder Include="Resources\Localization\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

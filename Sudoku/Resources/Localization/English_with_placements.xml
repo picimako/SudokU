@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Localization xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Item placement="Menu"                id="file_menu"                      value="File"/>
+  <Item placement="Menu|SettingsForm"   id="options_menu"                   value="Settings"/>
+  <Item placement="Menu"                id="about_menu"                     value="About"/>
+  <Item placement="SettingsForm"        id="open_default_folder"            value="Default folder when opening Sudoku exercise"/>
+  <Item placement="SettingsForm"        id="browse"                         value="Browse..."/>
+  <Item placement="Menu"                id="exit_app"                       value="Exit"/>
+  <Item placement="MainWindow"          id="types"                          value="Types"/>
+  <Item placement="Menu|MainWindow"     id="generate"                       value="Generate"/>
+  <Item placement="Menu|MainWindow"     id="open"                           value="Open"/>
+  <Item placement="MainWindow"          id="restart"                        value="Restart exercise"/>
+  <Item placement="Menu|MainWindow"     id="centerdot"                      value="Center Dot"/>
+  <Item id="difficulty"                     value="Difficulty"/>
+  <Item placement="SettingsForm"        id="cancel"                         value="Cancel"/>
+  <Item placement="SettingsForm"        id="language"                       value="Language"/>
+  <Item placement="SettingsForm"        id="helpRed"                        value="Cell's backround turns into red if the given number is contained by one of the cell's houses."/>
+  <Item placement="SettingsForm"        id="cageSum"                        value="Signs if the sum of the numbers in a cage is greater than the real sum. (Bold numbers)"/>
+  <Item placement="MainWindow"          id="check"                          value="Check"/>
+  <Item placement="SettingsForm"        id="check_type"                     value="When checking the solution"/>
+  <Item placement="SettingsForm"        id="show_wrong"                     value="Show the wrong cells. (Italic numbers)"/>
+  <Item placement="SettingsForm"        id="show_wrong_number"              value="Show the number of wrong cells."/>
+  <Item placement="MainWindow"          id="show_wrong_number_label"        value="Number of wrong cells"/>
+  <Item placement="SettingsForm"        id="good_wrong_solution"            value="Show just the solution is good or wrong."/>
+  <Item placement="MainWindow"          id="good_wrong_solution_label"      value="The solution is"/>
+  <Item placement="MainWindow"          id="good"                           value="good."/>
+  <Item placement="MainWindow"          id="wrong"                          value="wrong."/>
+  <Item placement="MainWindow"          id="stop"                           value="Stop exercise"/>
+  <Item placement="StartupException"    id="no_config_file"                 value="Configuration file cannot be found."/>
+  <Item placement="StartupException"    id="no_language_folder"             value="Language folder cannot be found."/>
+  <Item placement="StartupException"    id="no_language_file"               value="Selected language file cannot be found."/>
+  <Item placement="SolveExerciseProblem" id="exercise_not_solvable"         value="The exercise is not solvable using the criterias of the selected type of Sudoku!"/>
+  <Item placement="SolveExerciseProblem" id="exercise_not_solvable_caption" value="The exercise is not solvable"/>
+  <Item placement="StartupException"    id="no_file_caption"                value="Missing file"/>
+  <Item placement="StartupException"    id="no_folder_caption"              value="Missing folder"/>
+  <Item placement="FileReadProblem"     id="failed_read_file_caption"       value="Failed to read the file"/>
+  <Item placement="FileReadProblem"     id="failed_read_file"               value="Failed to read the file. Maybe the given exercise is wrong."/>
+  <Item placement="BrowseExcerciseDialog" id="select_file"                  value="Select file"/>
+  <Item placement="BrowseExcerciseDialog" id="text_files"                   value="Text files"/>
+  <Item placement="MainWindow"          id="numof_empty_cells"              value="Number of empty cells"/>
+</Localization>
