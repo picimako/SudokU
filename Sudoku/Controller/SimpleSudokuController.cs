@@ -1,4 +1,5 @@
 ﻿using Sudoku.Generate;
+using Sudoku.Cells;
 using Sudoku.Controller.Finder;
 using static Sudoku.Table.TableUtil;
 

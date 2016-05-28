@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sudoku.Cells;
 using Sudoku.Controller;
 using Sudoku.Controller.Finder;
 

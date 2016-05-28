@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Cells;
 using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller.Finder

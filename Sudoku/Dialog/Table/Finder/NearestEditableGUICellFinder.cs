@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using Sudoku.Cells;
 
 namespace Sudoku.Dialog.Table.Finder
 {

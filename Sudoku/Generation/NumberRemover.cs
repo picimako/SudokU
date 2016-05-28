@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sudoku.Cells;
 using Sudoku.Controller;
 using static Sudoku.Table.TableUtil;
 

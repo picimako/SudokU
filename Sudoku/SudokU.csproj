@@ -156,7 +156,7 @@
     <Compile Include="Generation\ExerciseGenerator.cs" />
     <Compile Include="Controller\Exercise\SudokuExercise.cs" />
     <Compile Include="Controller\SudokuXController.cs" />
-    <Compile Include="Util\Cell.cs" />
+    <Compile Include="Cells\Cell.cs" />
     <Compile Include="IO\ExerciseReader.cs" />
     <Compile Include="Util\Arrays.cs" />
   </ItemGroup>

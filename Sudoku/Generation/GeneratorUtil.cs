@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Sudoku.Cells;
 using Sudoku.Controller;
 
 namespace Sudoku.Generate

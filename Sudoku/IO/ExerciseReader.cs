@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Sudoku.Cells;
 using Sudoku.Controller;
 
 namespace Sudoku

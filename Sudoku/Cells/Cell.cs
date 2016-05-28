@@ -1,8 +1,7 @@
 ﻿using Sudoku.Controller.Finder;
 
-namespace Sudoku
+namespace Sudoku.Cells
 {
-    //TODO: move this to the Cells namespace
     public class Cell
     {
         #region Members

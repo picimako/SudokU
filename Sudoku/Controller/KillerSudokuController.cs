@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
+using Sudoku.Cells;
 using Sudoku.Controller.Finder.Killer;
 using Sudoku.Log;
 
