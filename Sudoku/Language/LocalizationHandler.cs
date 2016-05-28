@@ -12,6 +12,7 @@ namespace Sudoku.Language
 
         private static LocHandler HANDLER;
         private Dictionary<string, string> localization;
+        private string localizationFolder;
 
         #endregion
 
@@ -40,6 +41,11 @@ namespace Sudoku.Language
 
         #region Private
 
+        public string LocalizationFolder
+        {
+            get { return localizationFolder; }
+        }
+
         private void InitLocalization()
         {
             localization = new Dictionary<string, string>();
@@ -55,7 +61,8 @@ namespace Sudoku.Language
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(Environment.CurrentDirectory + "/Resources/Localization/" + ConfigHandler.get.GetConfig("alapNyelv") + ".xml");
+                localizationFolder = Environment.CurrentDirectory + "/Resources/Localization/";
+                xmlDoc.Load(localizationFolder + ConfigHandler.get.GetConfig("alapNyelv") + ".xml");
                 XmlNode root = xmlDoc.DocumentElement;
                 XmlNodeList nodeList = root.ChildNodes;
                 foreach (XmlNode node in nodeList)
@@ -65,7 +72,6 @@ namespace Sudoku.Language
             }
             catch (DirectoryNotFoundException)
             {
-                //TODO: megoldani valahogy, hogy lokalizált hibaüzenetet írjak ki
                 MessageBox.Show("Language folder cannot be found.", "Missing folder", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw new IOException();
             }

@@ -11,6 +11,7 @@ namespace Sudoku
         #region Members
 
         private static ConfigHandler HANDLER;
+        private string CONFIG_FILE_RELATIVE_PATH = "/Resources/Config/config.xml";
         private Dictionary<string, string> configuration;
         private XmlDocument xmlDoc;
         private bool exerciseInProgress;
@@ -57,7 +58,7 @@ namespace Sudoku
             xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load(Environment.CurrentDirectory + "/Resources/Config/config.xml");
+                xmlDoc.Load(Environment.CurrentDirectory + CONFIG_FILE_RELATIVE_PATH);
                 XmlNode root = xmlDoc.DocumentElement;
                 XmlNodeList nodeList = root.ChildNodes;
                 foreach (XmlNode node in nodeList)
@@ -67,7 +68,6 @@ namespace Sudoku
             }
             catch (FileNotFoundException)
             {
-                //TODO: localize error messages
                 MessageBox.Show("Configuration file cannot be found.", "Missing file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw new IOException();
             }
@@ -87,7 +87,7 @@ namespace Sudoku
 
         public void SaveConfiguration()
         {
-            xmlDoc.Save("config.xml");
+            xmlDoc.Save(Environment.CurrentDirectory + CONFIG_FILE_RELATIVE_PATH);
         }
 
         #endregion
