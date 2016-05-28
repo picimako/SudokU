@@ -37,6 +37,12 @@ namespace Sudoku.Log
             writer.WriteLine(comment);
         }
 
+        public void Close(string message)
+        {
+            Info(message);
+            Close();
+        }
+
         public void Close()
         {
             writer.Close();

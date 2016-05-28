@@ -24,14 +24,12 @@ namespace Sudoku
             }
             catch (IOException)
             {
-                Logger.Instance.Info("Error happened during loading resources.");
-                Logger.Instance.Close();
+                Logger.Instance.Close("Error happened during loading resources.");
                 return;
             }
             catch (ArgumentNullException)
             {
-                Logger.Instance.Info("The requested system environment variable (SUDOKU_PATH) is not set.");
-                Logger.Instance.Close();
+                Logger.Instance.Close("The requested system environment variable (SUDOKU_PATH) is not set.");
                 return;
             }
 

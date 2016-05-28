@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Sudoku.Log;
 using Sudoku.Generate;
 using Sudoku.Language;
 
@@ -14,6 +15,7 @@ namespace Sudoku.Dialog
         private Dictionary<SudokuCreationType, EventHandler> eventHandlers;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
+        private Logger log = Logger.Instance;
         private ToolStripMenuItem fileMenu;
         private ToolStripMenuItem generateSubMenu;
         private ToolStripMenuItem openSubMenu;
@@ -69,7 +71,11 @@ namespace Sudoku.Dialog
             menu.Items.Add(fileMenu);
             CreateGenerateSubMenu(fileMenu);
             CreateOpenSubMenu(fileMenu);
-            fileMenu.DropDownItems.Add(CreateMenuItem("exit_app", "exit_app", (sender, e) => { Application.Exit(); }));
+            fileMenu.DropDownItems.Add(CreateMenuItem("exit_app", "exit_app", (sender, e) =>
+            {
+                log.Close("Closing the application.");
+                Application.Exit();
+            }));
         }
 
         private void CreateGenerateSubMenu(ToolStripMenuItem fileMenu)
@@ -111,6 +117,7 @@ namespace Sudoku.Dialog
             new SettingsForm().ShowDialog();
             if (conf.GetConfig("alapNyelv") != languageBeforeSettingsDialogOpened)
                 SetLabels();
+            //TODO: update labels of MainWindow starting from this point
         }
 
         #endregion
