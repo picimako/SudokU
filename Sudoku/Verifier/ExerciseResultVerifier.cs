@@ -50,42 +50,57 @@ namespace Sudoku.Verifier
 
             if (Boolean.Parse(conf.GetConfig("rosszakMutat")))
             {
-                bool isSolutionCorrect = true;
-                for (int p = 0; p < se.LAST_CELL_INDEX; p++)
-                {
-                    if (!IsFieldEmpty(p) && !IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
-                    {
-                        FontUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Italic);
-                        isSolutionCorrect = false;
-                    }
-                    else
-                        FontUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Regular);
-                }
-                if (isSolutionCorrect)
-                    PrintSolutionIsGood();
+                VerifyShowIncorrectNumbers();
             }
             else if (Boolean.Parse(conf.GetConfig("hanyRosszMutat")))
             {
-                int numberOfIncorrectCells = 0;
-                for (int p = 0; p < se.LAST_CELL_INDEX; p++)
-                {
-                    if (!IsFieldEmpty(p) && !IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
-                        numberOfIncorrectCells++;
-                }
-                checkLabel.Text = loc.Get("show_wrong_number_label") + ": " + numberOfIncorrectCells;
+                VerifyShowNumberOfIncorrectNumbers();
             }
             else if (Boolean.Parse(conf.GetConfig("joVagyRosszMutat")))
             {
-                for (int p = 0; p < se.LAST_CELL_INDEX; p++)
-                {
-                    if (!IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
-                    {
-                        PrintSolutionIsWrong();
-                        return;
-                    }
-                }
-                PrintSolutionIsGood();
+                VerifyShowWhetherSolutionIsCorrect();
             }
+        }
+
+        private void VerifyShowIncorrectNumbers()
+        {
+            bool isSolutionCorrect = true;
+            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            {
+                if (!IsFieldEmpty(p) && !IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
+                {
+                    FontUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Italic);
+                    isSolutionCorrect = false;
+                }
+                else
+                    FontUtil.SetTextboxFont(activeTable[p / 9, p % 9], FontStyle.Regular);
+            }
+            if (isSolutionCorrect)
+                PrintSolutionIsGood();
+        }
+
+        private void VerifyShowNumberOfIncorrectNumbers()
+        {
+            int numberOfIncorrectCells = 0;
+            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            {
+                if (!IsFieldEmpty(p) && !IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
+                    numberOfIncorrectCells++;
+            }
+            checkLabel.Text = loc.Get("show_wrong_number_label") + ": " + numberOfIncorrectCells;
+        }
+
+        private void VerifyShowWhetherSolutionIsCorrect()
+        {
+            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            {
+                if (!IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
+                {
+                    PrintSolutionIsWrong();
+                    return;
+                }
+            }
+            PrintSolutionIsGood();
         }
 
         #endregion
