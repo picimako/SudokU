@@ -4,9 +4,7 @@ namespace Sudoku.Generate
 {
     class SudokuControllerFactory
     {
-        /// <summary>A megadott típusú feladathoz tartozó Sudoku osztálypéldányt ad vissza</summary>
-        /// <param name="exerciseType">A feladat típusa</param>
-        /// <param name="killer">Megadja, hogy a feladat Killer-e vagy sem</param>
+        /// <summary>Creates a SudokuController based on the given exercise type.</summary>
         public SimpleSudokuController CreateController(SudokuType exerciseType)
         {
             SimpleSudokuController controller = null;

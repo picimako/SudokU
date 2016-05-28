@@ -11,6 +11,10 @@ namespace Sudoku.Dialog.Table.Finder
             this.guiTable = guiTable;
         }
 
+        /// <summary> Finds the nearest editable cell on the UI.</summary>
+        /// <param name="cell">The cell the search is done correlated to.</param>
+        /// <param name="keyCode">The direction it searches towards.</param>
+        /// <returns></returns>
         public Cell FindNearestEditableCellComparedTo(Cell cell, Keys keyCode)
         {
             int row = cell.Row, col = cell.Col;
