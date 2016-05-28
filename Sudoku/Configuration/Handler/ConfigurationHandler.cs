@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using System.Xml;
 using System.IO;
 using System.Windows.Forms;
@@ -56,7 +57,7 @@ namespace Sudoku
             xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load("config.xml");
+                xmlDoc.Load(Environment.CurrentDirectory + "/Resources/Config/config.xml");
                 XmlNode root = xmlDoc.DocumentElement;
                 XmlNodeList nodeList = root.ChildNodes;
                 foreach (XmlNode node in nodeList)

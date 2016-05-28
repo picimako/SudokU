@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Windows.Forms;
@@ -54,7 +55,7 @@ namespace Sudoku.Language
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                xmlDoc.Load("Languages/" + ConfigHandler.get.GetConfig("alapNyelv") + ".xml");
+                xmlDoc.Load(Environment.CurrentDirectory + "/Resources/Localization/" + ConfigHandler.get.GetConfig("alapNyelv") + ".xml");
                 XmlNode root = xmlDoc.DocumentElement;
                 XmlNodeList nodeList = root.ChildNodes;
                 foreach (XmlNode node in nodeList)
