@@ -38,7 +38,6 @@ namespace Sudoku.Dialog
             se.ExerciseType = SudokuType.SimpleSudoku;
             conf.ExerciseInProgress = false;
 
-            SetLabels();
             SetButtonDefaultStates();
             SetDifficultyBarDefaultStatesAndValues();
             SetSudokuTypeButtonTags();
@@ -82,6 +81,7 @@ namespace Sudoku.Dialog
             sudButton.CheckedChanged += new EventHandler(SetExerciseType);
             xButton.CheckedChanged += new EventHandler(SetExerciseType);
             centerButton.CheckedChanged += new EventHandler(SetExerciseType);
+            this.Activated += (sender, e) => { SetLabels(); };
         }
 
         private void SetExerciseType(object sender, EventArgs e)
@@ -239,7 +239,7 @@ namespace Sudoku.Dialog
 
         private void SetKillerDifficultyLabelText()
         {
-            killerDifficultyLabel.Text = "Killer" + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
+            killerDifficultyLabel.Text = "Killer " + loc.Get("difficulty").ToLower() + ": " + killerDifficultyBar.Value.ToString();
         }
 
         private void VerifyButton_Click(object sender, EventArgs e)

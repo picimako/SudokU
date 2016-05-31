@@ -68,6 +68,7 @@ namespace Sudoku.Dialog
         private void CreateFileMenu()
         {
             fileMenu = new ToolStripMenuItem(loc.Get("file_menu"));
+            fileMenu.Tag = "file_menu";
             menu.Items.Add(fileMenu);
             CreateGenerateSubMenu(fileMenu);
             CreateOpenSubMenu(fileMenu);

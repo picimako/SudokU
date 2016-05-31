@@ -11,6 +11,7 @@ namespace Sudoku.Dialog
 
         private bool settingsChanged;
         private ConfigHandler conf = ConfigHandler.get;
+        private LocHandler loc = LocHandler.get;
 
         #endregion
 
@@ -19,9 +20,8 @@ namespace Sudoku.Dialog
         public SettingsForm()
         {
             InitializeComponent();
-            //Az ablakot nem lehet átméretezni
+            //Cannot resize the dialog
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            //Nem változott egy beállítás sem
             settingsChanged = false;
         }
 
@@ -29,13 +29,21 @@ namespace Sudoku.Dialog
 
         #region Methods
 
+        private void SettingsForm_Load(object sender, EventArgs e)
+        {
+            SetLanguages();
+            SetFormControlDefaultValues();
+            SetLabels();
+            BindEventHandlers();
+        }
+
         #region SetDefaultValues
 
         private void SetLanguages()
         {
-            if (!Directory.Exists("Languages"))
+            if (!Directory.Exists(loc.LocalizationFolder))
             {
-                //TODO: create localization for this message
+                //TODO: Move this to localization file. Don't have it hardcoded.
                 languageDropdown.DataSource = new string[1] { "No language files." };
                 return;
             }
@@ -47,29 +55,22 @@ namespace Sudoku.Dialog
 
         private void CreateValidLanguageDropdown()
         {
-            //A Languages mappából beolvasom az .xml kiterjesztésű fájlok neveit kiterjesztéssel együtt (a nyelvi fájlok .xml kiterjesztésűek)
-            string[] availableLanguages = Directory.GetFiles("Languages", "*.xml");
+            string[] availableLanguages = Directory.GetFiles(loc.LocalizationFolder, "*.xml");
 
-            //Minden fájlnév végéről levágom a kiterjesztést
             for (int i = 0; i < availableLanguages.Length; i++)
             {
                 availableLanguages[i] = Path.GetFileNameWithoutExtension(availableLanguages[i]);
             }
 
-            //A lenyíló lista nyelvek elemeit fogja megjeleníteni
             languageDropdown.DataSource = availableLanguages;
-
-            //Beállítom, hogy az aktuálisan beállított nyelv legyen kijelölve a listában
             languageDropdown.SelectedItem = conf.GetConfig("alapNyelv");
         }
 
         private void SetFormControlDefaultValues()
         {
-            //CheckBox-ok beállítása
             sameNumberAlreadyInHouseHintBox.Checked = Boolean.Parse(conf.GetConfig("helpRed"));
             sumOfNumbersBiggerInCageHintBox.Checked = Boolean.Parse(conf.GetConfig("cageSum"));
 
-            //Rádiógombok beállítása
             showWrongCellsRadio.Checked = Boolean.Parse(conf.GetConfig("rosszakMutat"));
             showNumberOfWrongCellsRadio.Checked = Boolean.Parse(conf.GetConfig("hanyRosszMutat"));
             showExerciseCorrectnessRadio.Checked = Boolean.Parse(conf.GetConfig("joVagyRosszMutat"));
@@ -82,28 +83,15 @@ namespace Sudoku.Dialog
 
         #region EventHandlers
 
-        //Az ablak betöltődésekor fog lefutni
-        private void SettingsForm_Load(object sender, EventArgs e)
-        {
-            SetLanguages();
-            SetFormControlDefaultValues();
-            SetLabels();
-            BindEventHandlers();
-        }
-
         private void BindEventHandlers()
         {
-            cancelButton.Click += delegate(object sender, EventArgs e) { this.Close(); };
+            cancelButton.Click += (sender, e) => { this.Close(); };
             okButton.Click += new EventHandler(OkButton_Click);
-            browseButton.Click += delegate(object sender, EventArgs e)
+            browseButton.Click += (sender, e) =>
             {
-                //Létrehozok egy mappaválasztó dialógusablakot
-                FolderBrowserDialog fbd = new FolderBrowserDialog();
-
-                //Ha kiválasztottam a mappát és ok-t nyomtam,
-                if (fbd.ShowDialog() == DialogResult.OK)
-                    //akkor a kijelölt mappának az útvonala lesz az útvonalat tároló TextBox értéke
-                    filePathBox.Text = fbd.SelectedPath;
+                FolderBrowserDialog dialog = new FolderBrowserDialog();
+                if (dialog.ShowDialog() == DialogResult.OK)
+                    filePathBox.Text = dialog.SelectedPath;
             };
 
             filePathBox.TextChanged += new EventHandler(TakeActionForSettingsChanged);
@@ -114,7 +102,6 @@ namespace Sudoku.Dialog
             showExerciseCorrectnessRadio.CheckedChanged += new EventHandler(TakeActionForSettingsChanged);
         }
 
-        /// <summary>Ha még nem változott egyik beállítás sem, akkor megváltoztatja</summary>
         private void TakeActionForSettingsChanged(object sender, EventArgs e)
         {
             if (!settingsChanged)
@@ -137,13 +124,13 @@ namespace Sudoku.Dialog
             {
                 try
                 {
+                    conf.SetAttributeValue("alapNyelv", SelectedLanguage());
                     LocHandler.get.ReadLocalization();
                 }
                 catch (IOException)
                 {
                     return;
                 }
-                conf.SetAttributeValue("alapNyelv", (string)languageDropdown.SelectedItem);
             }
 
             conf.SaveConfiguration();
@@ -152,7 +139,12 @@ namespace Sudoku.Dialog
 
         private bool SelectedLanguageChanged()
         {
-            return !((string)languageDropdown.SelectedItem).Equals(conf.GetConfig("alapNyelv"));
+            return !SelectedLanguage().Equals(conf.GetConfig("alapNyelv"));
+        }
+
+        private string SelectedLanguage()
+        {
+            return (string)languageDropdown.SelectedItem;
         }
 
         #endregion
@@ -161,7 +153,6 @@ namespace Sudoku.Dialog
 
         private void SetLabels()
         {
-            LocHandler loc = LocHandler.get;
             this.Text = loc.Get("options_menu");
 
             filePathBox.Text = conf.GetConfig("alapFajlUtvonal");
