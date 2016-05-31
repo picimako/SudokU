@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using Sudoku.Configuration;
 using Sudoku.Language;
+using static Sudoku.Configuration.ConfigurationKeys;
 
 namespace Sudoku.Dialog
 {
@@ -63,17 +65,17 @@ namespace Sudoku.Dialog
             }
 
             languageDropdown.DataSource = availableLanguages;
-            languageDropdown.SelectedItem = conf.GetConfig("alapNyelv");
+            languageDropdown.SelectedItem = conf.Get(LANGUAGE);
         }
 
         private void SetFormControlDefaultValues()
         {
-            sameNumberAlreadyInHouseHintBox.Checked = Boolean.Parse(conf.GetConfig("helpRed"));
-            sumOfNumbersBiggerInCageHintBox.Checked = Boolean.Parse(conf.GetConfig("cageSum"));
+            sameNumberAlreadyInHouseHintBox.Checked = Boolean.Parse(conf.Get(CELL_RED_BACKGROUND_ENABLED));
+            sumOfNumbersBiggerInCageHintBox.Checked = Boolean.Parse(conf.Get(SUM_OF_NUMBERS_BIGGER_IN_CAGE_CHECK_ENABLED));
 
-            showWrongCellsRadio.Checked = Boolean.Parse(conf.GetConfig("rosszakMutat"));
-            showNumberOfWrongCellsRadio.Checked = Boolean.Parse(conf.GetConfig("hanyRosszMutat"));
-            showExerciseCorrectnessRadio.Checked = Boolean.Parse(conf.GetConfig("joVagyRosszMutat"));
+            showWrongCellsRadio.Checked = Boolean.Parse(conf.Get(SHOW_INCORRECT_CELLS_ENABLED));
+            showNumberOfWrongCellsRadio.Checked = Boolean.Parse(conf.Get(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED));
+            showExerciseCorrectnessRadio.Checked = Boolean.Parse(conf.Get(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED));
 
             //A segítség és óra CheckBox, valamint az ellenőrzés csoportja vanFeladat értéke szerint kapnak értéket
             sameNumberAlreadyInHouseHintBox.Enabled = sumOfNumbersBiggerInCageHintBox.Enabled = ellenorzesGroup.Enabled = !conf.ExerciseInProgress;
@@ -112,19 +114,19 @@ namespace Sudoku.Dialog
         {
             if (settingsChanged)
             {
-                conf.SetAttributeValue("alapFajlUtvonal", filePathBox.Text);
-                conf.SetAttributeValue("helpRed", sameNumberAlreadyInHouseHintBox.Checked.ToString());
-                conf.SetAttributeValue("rosszakMutat", showWrongCellsRadio.Checked.ToString());
-                conf.SetAttributeValue("hanyRosszMutat", showNumberOfWrongCellsRadio.Checked.ToString());
-                conf.SetAttributeValue("joVagyRosszMutat", showExerciseCorrectnessRadio.Checked.ToString());
-                conf.SetAttributeValue("cageSum", sumOfNumbersBiggerInCageHintBox.Checked.ToString());
+                conf.SetAttributeValue(DEFAULT_FILE_PATH, filePathBox.Text);
+                conf.SetAttributeValue(CELL_RED_BACKGROUND_ENABLED, sameNumberAlreadyInHouseHintBox.Checked.ToString());
+                conf.SetAttributeValue(SHOW_INCORRECT_CELLS_ENABLED, showWrongCellsRadio.Checked.ToString());
+                conf.SetAttributeValue(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED, showNumberOfWrongCellsRadio.Checked.ToString());
+                conf.SetAttributeValue(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED, showExerciseCorrectnessRadio.Checked.ToString());
+                conf.SetAttributeValue(SUM_OF_NUMBERS_BIGGER_IN_CAGE_CHECK_ENABLED, sumOfNumbersBiggerInCageHintBox.Checked.ToString());
             }
 
             if (SelectedLanguageChanged())
             {
                 try
                 {
-                    conf.SetAttributeValue("alapNyelv", SelectedLanguage());
+                    conf.SetAttributeValue(LANGUAGE, SelectedLanguage());
                     LocHandler.get.ReadLocalization();
                 }
                 catch (IOException)
@@ -139,7 +141,7 @@ namespace Sudoku.Dialog
 
         private bool SelectedLanguageChanged()
         {
-            return !SelectedLanguage().Equals(conf.GetConfig("alapNyelv"));
+            return !SelectedLanguage().Equals(conf.Get(LANGUAGE));
         }
 
         private string SelectedLanguage()
@@ -155,7 +157,7 @@ namespace Sudoku.Dialog
         {
             this.Text = loc.Get("options_menu");
 
-            filePathBox.Text = conf.GetConfig("alapFajlUtvonal");
+            filePathBox.Text = conf.Get(DEFAULT_FILE_PATH);
 
             utvonalLabel.Text = loc.Get("open_default_folder") + ":";
             browseButton.Text = loc.Get("browse");

@@ -2,9 +2,11 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Sudoku.Configuration;
 using Sudoku.Controller;
 using Sudoku.Language;
 using Sudoku.Util;
+using static Sudoku.Configuration.ConfigurationKeys;
 
 namespace Sudoku.Verifier
 {
@@ -48,15 +50,15 @@ namespace Sudoku.Verifier
                 return;
             }            
 
-            if (Boolean.Parse(conf.GetConfig("rosszakMutat")))
+            if (Boolean.Parse(conf.Get(SHOW_INCORRECT_CELLS_ENABLED)))
             {
                 VerifyShowIncorrectNumbers();
             }
-            else if (Boolean.Parse(conf.GetConfig("hanyRosszMutat")))
+            else if (Boolean.Parse(conf.Get(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED)))
             {
                 VerifyShowNumberOfIncorrectNumbers();
             }
-            else if (Boolean.Parse(conf.GetConfig("joVagyRosszMutat")))
+            else if (Boolean.Parse(conf.Get(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED)))
             {
                 VerifyShowWhetherSolutionIsCorrect();
             }
@@ -144,13 +146,13 @@ namespace Sudoku.Verifier
         /// <summary>Returns whether checking the "sum of numbers are bigger than the expected sum of numbers in a cage" is enabled</summary>
         public static bool ToCheckSumOfNumbersBiggerInCage()
         {
-            return Boolean.Parse(conf.GetConfig("cageSum"));
+            return Boolean.Parse(conf.Get(SUM_OF_NUMBERS_BIGGER_IN_CAGE_CHECK_ENABLED));
         }
 
         /// <summary>Returns whether checking the "typed number is already in the changed house" is enabled.</summary>
         public static bool ToCheckSameNumberAlreadyInHouse()
         {
-            return Boolean.Parse(conf.GetConfig("helpRed"));
+            return Boolean.Parse(conf.Get(CELL_RED_BACKGROUND_ENABLED));
         }
 
         #endregion

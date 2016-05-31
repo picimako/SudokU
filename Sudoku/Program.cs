@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO;
+using Sudoku.Configuration;
 using Sudoku.Dialog;
 using Sudoku.Language;
 using Sudoku.Log;

@@ -4,7 +4,7 @@ using System.Xml;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Sudoku
+namespace Sudoku.Configuration
 {
     public class ConfigHandler
     {
@@ -73,15 +73,15 @@ namespace Sudoku
             }
         }
 
-        public string GetConfig(string name)
+        public string Get(ConfigurationKeys config)
         {
-            return configuration[name];
+            return configuration[config.Name()];
         }
 
-        public void SetAttributeValue(string name, string value)
+        public void SetAttributeValue(ConfigurationKeys config, string value)
         {
-            configuration[name] = value;
-            XmlNode node = xmlDoc.SelectSingleNode("/Configuration/Item[@name='" + name + "']");
+            configuration[config.Name()] = value;
+            XmlNode node = xmlDoc.SelectSingleNode("/Configuration/Item[@name='" + config.Name() + "']");
             node.Attributes["value"].Value = value;
         }
 

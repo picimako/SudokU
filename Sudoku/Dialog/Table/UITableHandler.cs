@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using Sudoku.Cells;
+using Sudoku.Configuration;
 using Sudoku.Dialog.Table.Finder;
 using Sudoku.Controller;
 using Sudoku.Language;

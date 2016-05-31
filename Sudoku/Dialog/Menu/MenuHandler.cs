@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Sudoku.Configuration;
 using Sudoku.Log;
 using Sudoku.Generate;
 using Sudoku.Language;
+using static Sudoku.Configuration.ConfigurationKeys;
 
 namespace Sudoku.Dialog
 {
@@ -114,9 +116,9 @@ namespace Sudoku.Dialog
         
         private void SettingsMenuItem_Click(object sender, EventArgs e)
         {
-            string languageBeforeSettingsDialogOpened = conf.GetConfig("alapNyelv");
+            string languageBeforeSettingsDialogOpened = conf.Get(LANGUAGE);
             new SettingsForm().ShowDialog();
-            if (conf.GetConfig("alapNyelv") != languageBeforeSettingsDialogOpened)
+            if (conf.Get(LANGUAGE) != languageBeforeSettingsDialogOpened)
                 SetLabels();
             //TODO: update labels of MainWindow starting from this point
         }

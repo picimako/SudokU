@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
-  <Item name="alapFajlUtvonal" value="C:\SudokU" />
-  <Item name="alapNyelv" value="Magyar" />
-  <Item name="helpRed" value="True" />
-  <Item name="rosszakMutat" value="False" />
-  <Item name="hanyRosszMutat" value="True" />
-  <Item name="joVagyRosszMutat" value="False" />
-  <Item name="cageSum" value="True" />
+  <Item name="DefaultFilePath" value="C:\SudokU" />
+  <Item name="Language" value="Magyar" />
+  <Item name="CellRedBackgroundEnabled" value="True" />
+  <Item name="ShowIncorrectCellsEnabled" value="False" />
+  <Item name="ShowNumberOfIncorrectCellsEnabled" value="False" />
+  <Item name="ShowWhetherSolutionIsCorrect" value="True" />
+  <Item name="SumOfNumbersBiggerInCageCheckEnabled" value="True" />
 </Configuration>

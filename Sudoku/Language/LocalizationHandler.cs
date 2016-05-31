@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Windows.Forms;
+using Sudoku.Configuration;
+using static Sudoku.Configuration.ConfigurationKeys;
 
 namespace Sudoku.Language
 {
@@ -62,7 +64,7 @@ namespace Sudoku.Language
             try
             {
                 localizationFolder = Environment.CurrentDirectory + "/Resources/Localization/";
-                xmlDoc.Load(localizationFolder + ConfigHandler.get.GetConfig("alapNyelv") + ".xml");
+                xmlDoc.Load(localizationFolder + ConfigHandler.get.Get(LANGUAGE) + ".xml");
                 XmlNode root = xmlDoc.DocumentElement;
                 XmlNodeList nodeList = root.ChildNodes;
                 foreach (XmlNode node in nodeList)

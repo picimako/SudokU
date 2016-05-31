@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO;
+using Sudoku.Configuration;
 using Sudoku.Generate;
 using Sudoku.Controller;
 using Sudoku.Language;
 using Sudoku.Log;
 using Sudoku.Verifier;
+using static Sudoku.Configuration.ConfigurationKeys;
+using static Sudoku.Verifier.ExerciseResultVerifier;
 
 namespace Sudoku.Dialog
 {
@@ -121,13 +124,13 @@ namespace Sudoku.Dialog
             //Ha a Killer Sudoku feladat fájlból lesz beolvasva, akkor csak a feladat jó voltát lehet ellenőrizni
             if (se.IsExerciseKiller && !se.IsExerciseGenerated)
             {
-                conf.SetAttributeValue("rosszakMutat", "false");
-                conf.SetAttributeValue("hanyRosszMutat", "false");
-                conf.SetAttributeValue("joVagyRosszMutat", "true");
+                conf.SetAttributeValue(SHOW_INCORRECT_CELLS_ENABLED, "false");
+                conf.SetAttributeValue(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED, "false");
+                conf.SetAttributeValue(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED, "true");
             }
 
             //Ha fájlból olvastattam be feladatot, és a megoldása tartalmaz 0 értéke(ke)t, akkor a feladat nem megoldható a kiválasztott típus alapján
-            if (!se.IsExerciseGenerated && (se.IsExerciseKiller ? false : !ExerciseResultVerifier.IsExerciseCorrect(se.Solution)))
+            if (!se.IsExerciseGenerated && (se.IsExerciseKiller ? false : !IsExerciseCorrect(se.Solution)))
             {
                 MessageBox.Show(loc.Get("exercise_not_solvable"), loc.Get("exercise_not_solvable_caption"), 
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
