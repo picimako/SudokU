@@ -6,96 +6,90 @@ namespace Sudoku.Controller.Finder
     {
         SudokuExercise se = SudokuExercise.get;
 
+        //True if all the houses examined so far contain only occupied cells
+        //TODO: this may not needed
+        private bool isThereFullHouseAmongAll;
+        //True if the currently examined house contains only occupied cells
+        private bool isCurrentHouseFull;
+
         /// <summary>Megvizsgálja, hogy van-e olyan ház, ahol csak -1 értékek szerepelnek, a t szám viszont nem</summary>
-        /// <param name="t">A vizsgálandó tábla indexe</param>
+        /// <param name="t">The index of the table to be examined</param>
         /// <returns>Ha van egyetlen egy olyan ház is, ahol a vizsgálat igaz értéket ad, akkor true, egyébként false</returns>
         public bool IsThereNotFillableHouseForNumber(int t)
         {
-            /* van: az eddig vizsgált összes cella teliségét tárolja
-             * teli: true az éppen vizsgált ház csak -1-es értéket tartalmaz, egyébként false*/
-            bool van = false, teli = false;
+            isThereFullHouseAmongAll = false;
+            isCurrentHouseFull = false;
 
-            return IsThereNotFillableRow(t, ref van, ref teli) || IsThereNotFillableColumn(t, ref van, ref teli)
-                || IsThereNotFillableBlock(t, ref van, ref teli);
+            return IsThereNotFillable(HouseType.ROW, t)
+                || IsThereNotFillable(HouseType.COLUMN, t)
+                || IsThereNotFillableBlock(t);
         }
 
-        private bool IsThereNotFillableBlock(int num, ref bool van, ref bool teli)
+        private bool IsThereNotFillable(HouseType houseType, int t)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                isCurrentHouseFull = true;
+
+                for (int j = 0; j < 9; j++)
+                {
+                    if (houseType == HouseType.ROW
+                        ? IsThereNotOccupiedCell(t, i, j)
+                        : IsThereNotOccupiedCell(t, j, i))
+                        break;
+                }
+
+                isThereFullHouseAmongAll |= isCurrentHouseFull;
+
+                if (isThereFullHouseAmongAll)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool IsThereNotFillableBlock(int num)
         {
             for (int bl = 0; bl < 9; bl++)
             {
-                //Csak -1-esek vannak
-                teli = true;
+                isCurrentHouseFull = true;
 
                 for (int row = StartRowOfBlockByBlockIndex(bl); row <= EndRowOfBlockByBlockIndex(bl); row++)
                 {
                     for (int col = StartColOfBlockByBlockIndex(bl); col <= EndColOfBlockByBlockIndex(bl); col++)
                     {
-                        //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a blokk vizsgálatát
-                        if (IsThereOccupiedCell(num, row, col, ref teli))
+                        if (IsThereNotOccupiedCell(num, row, col))
                             break;
                     }
 
-                    if (!teli)
+                    if (!isCurrentHouseFull)
                         break;
                 }
 
-                //van értéke van|teli lesz
-                van |= teli;
+                isThereFullHouseAmongAll |= isCurrentHouseFull;
 
-                //Ha van olyan blokk, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
-                if (van)
+                if (isThereFullHouseAmongAll)
                     return true;
             }
             return false;
         }
 
-        public bool IsThereNotFillableRow(int num, ref bool van, ref bool teli)
+        /// <summary>Returns whether the given cell is not occupied.</summary>
+        private bool IsThereNotOccupiedCell(int num, int row, int col)
         {
-            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, true);
-        }
-
-        public bool IsThereNotFillableColumn(int num, ref bool van, ref bool teli)
-        {
-            return IsThereNotFillableRowOrColumn(num, ref van, ref teli, false);
-        }
-
-        private bool IsThereNotFillableRowOrColumn(int t, ref bool van, ref bool teli, bool row)
-        {
-            //Végigmegyek a soron/oszlopon
-            for (int i = 0; i < 9; i++)
-            {
-                //Csak -1-esek vannak
-                teli = true;
-
-                //Végigmegyek az oszlopon/soron
-                for (int j = 0; j < 9; j++)
-                {
-                    //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem a sor vizsgálatát
-                    if (row ? IsThereOccupiedCell(t, i, j, ref teli) : IsThereOccupiedCell(t, j, i, ref teli))
-                        break;
-                }
-
-                //van értéke van|teli lesz
-                van |= teli;
-
-                //Ha van olyan sor, ami csak -1-eseket tartalmaz, akkor visszatérek true-val
-                if (van)
-                    return true;
-            }
-
-            return false;
-        }
-
-        private bool IsThereOccupiedCell(int num, int row, int col, ref bool teli)
-        {
-            //Ha nem csak -1-es van, akkor teli értéke false lesz, és befejezem az oszlop vizsgálatát
             if (se.Exercise[num][row, col] != se.OCCUPIED)
             {
-                teli = false;
+                isCurrentHouseFull = false;
                 return true;
             }
 
             return false;
+        }
+
+        private enum HouseType
+        {
+            ROW,
+            COLUMN
         }
     }
 }
