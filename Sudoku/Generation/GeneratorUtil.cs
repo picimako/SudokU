@@ -77,6 +77,11 @@ namespace Sudoku.Generate
             removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
         }
 
+        public void SetValueOfFilledCell(int numToFill, Cell cell, bool kellSzamtombKitolt)
+        {
+            SetValueOfFilledCell(numToFill, cell.Row, cell.Col, kellSzamtombKitolt);
+        }
+
         /// <summary> Beírja r-t a megfelelő táblákba, és beállítja a foglalt cellákat </summary>
         /// <param name="numToFill"> A beírandó szám </param>
         /// <param name="row"> A kitöltött cella sorindexe </param>

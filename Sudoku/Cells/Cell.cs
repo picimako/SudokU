@@ -58,6 +58,11 @@ namespace Sudoku.Cells
             return this.Row == cell.Row;
         }
 
+        public bool IsInSameColumnAs(Cell cell)
+        {
+            return this.Col == cell.Col;
+        }
+
         /// <summary>
         /// Not right above, just in a higher row in the table.
         /// </summary>

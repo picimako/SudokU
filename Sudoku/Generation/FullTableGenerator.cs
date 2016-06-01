@@ -14,6 +14,7 @@ namespace Sudoku.Generate
         /// The maximum number of retries to fill in a number
         /// </summary>
         private const int MAX_NUMBER_OF_WRONG_GENERATIONS = 3;
+        private List<int> sudokuNumbers;
         private SudokuExercise se = SudokuExercise.get;
         private GeneratorUtil util;
         private NotFillableItemFinder itemFinder = new NotFillableItemFinder();
@@ -46,34 +47,23 @@ namespace Sudoku.Generate
             int[][,] tempTable;
 
             //For filling the first house in the table
-            List<int> sudokuNumbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            sudokuNumbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             //1. Azokat az indexeket fogja tárolni, melyek olyan blokkokhoz tartoznak amelyekben a blokkok közül a legkevesebb üres cella található
             List<Cell> cellsInTheMostlyFilledBlock = null;
             // For storing cell indeces whiches placement is rectangular (it will be 4 cells)
             List<Cell> rectangularCells = null;
 
             se.InitExercise();
-            switch (se.ExerciseType)
-            {
-                case SudokuType.SimpleSudoku:
-                    GenerateFirstBlock(sudokuNumbers);
-                    break;
-                case SudokuType.SudokuX:
-                    if (!GenerateDiagonals(sudokuNumbers, out cellAtMiddleOfTable))
-                        return false;
-                    break;
-                case SudokuType.CenterDot:
-                    GenerateCenterDots(sudokuNumbers);
-                    break;
-            }
+            if (!GenerateFirstInstancesOfNumbers(out cellAtMiddleOfTable))
+                return false;
 
             tempTable = Arrays.CreateInitializedArray();
 
             int numberToFillIn = 0;
             while (++numberToFillIn <= 9)
             {
-                for (int instanceOfCurrentNumber = NextInstanceOfNumber(cellAtMiddleOfTable, numberToFillIn);
-                    instanceOfCurrentNumber <= 9; instanceOfCurrentNumber++)
+                int nextInstanceOfNumber = NextInstanceOfNumber(cellAtMiddleOfTable, numberToFillIn);
+                for (int instanceOfCurrentNumber = nextInstanceOfNumber; instanceOfCurrentNumber <= 9; instanceOfCurrentNumber++)
                 {
                     // Saving the current state of the generated exercise for possible restoration later
                     Arrays.CopyJaggedThreeDimensionArray(tempTable, se.Exercise);
@@ -100,18 +90,19 @@ namespace Sudoku.Generate
                         do
                         {
                             //Lekérem az előbb leírtaknak megfelelő cellák indexeit. Ha 1-nél több ilyen cella van (minimum 2 lesz vagy pedig egy sem)
-                            if ((cellsInTheMostlyFilledBlock = emptyCellFinder.FindXNumberOfEmptyCellsInBlocks(numberToFillIn, hanyCella)).Count > 1)
+                            cellsInTheMostlyFilledBlock = emptyCellFinder.FindXNumberOfEmptyCellsInBlocks(numberToFillIn, hanyCella);
+                            if (cellsInTheMostlyFilledBlock.Count > 1)
                             {
                                 index = random.Next(0, cellsInTheMostlyFilledBlock.Count);
 
                                 //És oda írom be a számot
-                                util.SetValueOfFilledCell(numberToFillIn, cellsInTheMostlyFilledBlock[index].Row, cellsInTheMostlyFilledBlock[index].Col, true);
+                                util.SetValueOfFilledCell(numberToFillIn, cellsInTheMostlyFilledBlock[index], true);
 
                                 /* Ha a cella, ahova épp beírtam egy számot olyan, hogy szerepel egy előző tábla 4 üresen maradt cellája között,
                                  * akkor annak a táblának a kitöltését be kell fejezni.
                                  * Ha viszont nincs mivel megvizsgálni, akkor felesleges meghívni magát az eljárást is*/
                                 if (util.RectangularCells.Count > 0)
-                                    egyezesKereses(cellsInTheMostlyFilledBlock[index].Row, cellsInTheMostlyFilledBlock[index].Col);
+                                    egyezesKereses(cellsInTheMostlyFilledBlock[index]);
 
                                 break;
                             }
@@ -151,24 +142,23 @@ namespace Sudoku.Generate
 
         #region Private
 
-        private int NextInstanceOfNumber(int cellAtMiddleOfTable, int numberToFillIn)
+        private bool GenerateFirstInstancesOfNumbers(out int cellAtMiddleOfTable)
         {
-            /* Ha a feladat Sudoku-X típusú és a beírandó szám nem egyezik a tábla középső cellájába írt értékkel, akkor az r számból a 3.
-             * példányt kezdem beírni a tömbbe, egyébként pedig a másodikat.*/
-            return (se.ExerciseType == SudokuType.SudokuX && cellAtMiddleOfTable != numberToFillIn) ? 3 : 2;
-        }
-
-        /// <summary>
-        /// Decides if the provided cells are placed as rectangular, based on the method parameters.
-        /// Example for 4 rectangular cells with x,y cell indeces: [1, 0], [1, 4], [5, 0], [5, 4]
-        /// </summary>
-        private bool AreCellsPlacedAsRectangle(ref List<Cell> rectangularCells, int numberToFillIn)
-        {
-            return (rectangularCells = emptyCellFinder.FindEmptyCellsInNumberTable(numberToFillIn)).Count == 4
-                && (rectangularCells[0].Row == rectangularCells[1].Row
-                        && rectangularCells[2].Row == rectangularCells[3].Row
-                        && rectangularCells[0].Col == rectangularCells[2].Col
-                        && rectangularCells[1].Col == rectangularCells[3].Col);
+            cellAtMiddleOfTable = -1;
+            switch (se.ExerciseType)
+            {
+                case SudokuType.SimpleSudoku:
+                    GenerateFirstBlock(sudokuNumbers);
+                    break;
+                case SudokuType.SudokuX:
+                    if (!GenerateDiagonals(sudokuNumbers, out cellAtMiddleOfTable))
+                        return false;
+                    break;
+                case SudokuType.CenterDot:
+                    GenerateCenterDots(sudokuNumbers);
+                    break;
+            }
+            return true;
         }
 
         private void GenerateFirstBlock(List<int> sudokuNumbers)
@@ -253,6 +243,29 @@ namespace Sudoku.Generate
             }
         }
 
+        /// <summary>
+        /// Ha a feladat Sudoku-X típusú és a beírandó szám nem egyezik a tábla középső cellájába írt értékkel, akkor az r számból a 3.
+        /// példányt kezdem beírni a tömbbe, egyébként pedig a másodikat.
+        /// </summary>
+        private int NextInstanceOfNumber(int cellAtMiddleOfTable, int numberToFillIn)
+        {
+            return (se.ExerciseType == SudokuType.SudokuX && cellAtMiddleOfTable != numberToFillIn) ? 3 : 2;
+        }
+
+        /// <summary>
+        /// Decides if the provided cells are placed as rectangular, based on the method parameters.
+        /// Example for 4 rectangular cells with x,y cell indeces: [1, 0], [1, 4], [5, 0], [5, 4]
+        /// </summary>
+        private bool AreCellsPlacedAsRectangle(ref List<Cell> rectangularCells, int numberToFillIn)
+        {
+            rectangularCells = emptyCellFinder.FindEmptyCellsInNumberTable(numberToFillIn);
+            return (rectangularCells.Count == 4
+                && (rectangularCells[0].IsInSameRowAs(rectangularCells[1])
+                && rectangularCells[2].IsInSameRowAs(rectangularCells[3])
+                && rectangularCells[0].IsInSameColumnAs(rectangularCells[2])
+                && rectangularCells[1].IsInSameColumnAs(rectangularCells[3])));
+        }
+
         private int GetRandomNumberFromRemainingNumbers(List<int> numbers)
         {
             return new Random().Next(0, numbers.Count);
@@ -264,28 +277,28 @@ namespace Sudoku.Generate
         private void kozosCellaKeres(int r)
         {
             //Végigmegyek a szótár elemein
-            foreach (KeyValuePair<int, List<Cell>> _4cella in util.RectangularCells)
+            foreach (KeyValuePair<int, List<Cell>> _4cells in util.RectangularCells)
             {
                 //Ha nem ugyanazt a 4 cellát akarom vizsgálni
-                if (util.RectangularCells[r] != _4cella.Value)
+                if (util.RectangularCells[r] != _4cells.Value)
                 {
                     //Végigmegyek az r indexű tömbhöz tartozó 4 cellán (az épp félbehagyott tábla)
                     for (int i = 0; i < util.RectangularCells[r].Count; i++)
                     {
                         //Végiglépkedek az aktuálisan vizsgált 4 cellán
-                        for (int j = 0; j < _4cella.Value.Count; j++)
+                        for (int j = 0; j < _4cells.Value.Count; j++)
                         {
                             //Ha találtam olyan cellát, amely mindkét vizsgált táblában közös
-                            if (util.RectangularCells[r][i].Row == _4cella.Value[j].Row && util.RectangularCells[r][i].Col == _4cella.Value[j].Col)
+                            if (util.RectangularCells[r][i].IsInSameRowAs(_4cells.Value[j]) && util.RectangularCells[r][i].IsInSameColumnAs(_4cells.Value[j]))
                             {
                                 //Beírom az aktuálisan vizsgált tábla egyik elemét
-                                util.SetValueOfFilledCell(_4cella.Key, _4cella.Value[j].Row, _4cella.Value[j].Col, true);
+                                util.SetValueOfFilledCell(_4cells.Key, _4cells.Value[j], true);
 
                                 //Beírom az aktuálisan vizsgált tábla egyik elemét
-                                util.SetValueOfFilledCell(_4cella.Key, _4cella.Value[3 - j].Row, _4cella.Value[3 - j].Col, false);
+                                util.SetValueOfFilledCell(_4cells.Key, _4cells.Value[3 - j], false);
 
-                                //Törlöm a vizsgált 4 cellát listaindexek-ből
-                                util.RectangularCells.Remove(_4cella.Key);
+                                //Törlöm a vizsgált 4 cellát RectangularCells-ből
+                                util.RectangularCells.Remove(_4cells.Key);
 
                                 //Beírom a maradék 2 számot az r táblába
                                 FilledInOnlyEmptyCellInHouse(r, true);
@@ -340,8 +353,8 @@ namespace Sudoku.Generate
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
                 else if (emptyCellFinder.FindOnlyEmptyCellInBlock(r, out emptyCell, blockIndex: k))
                 {
-                    util.SetValueOfFilledCell(r, emptyCell.Row, emptyCell.Col, kellSzamTombKitolt);
-                    egyezesKereses(emptyCell.Row, emptyCell.Col);
+                    util.SetValueOfFilledCell(r, emptyCell, kellSzamTombKitolt);
+                    egyezesKereses(emptyCell);
                     return true;
                 }
             }
@@ -349,8 +362,15 @@ namespace Sudoku.Generate
             return false;
         }
 
-        /// <summary> Megkeresi, hogy az a cella, ahova beírta a soron levő számot, szerepel-e valamelyik előző tábla üresen maradt 4 cellája között.
-        /// Ha igen, akkor a megtalált tábla kitöltését befejezi. </summary>
+        private void egyezesKereses(Cell cell)
+        {
+            egyezesKereses(cell.Row, cell.Col);
+        }
+
+        /// <summary>
+        /// Megkeresi, hogy az a cella, ahova beírta a soron levő számot, szerepel-e valamelyik előző tábla üresen maradt 4 cellája között.
+        /// Ha igen, akkor a megtalált tábla kitöltését befejezi.
+        /// </summary>
         /// <param name="row">A cella sorindexe</param>
         /// <param name="col">A cella oszlopindexe</param>
         private void egyezesKereses(int row, int col)
