@@ -41,7 +41,7 @@ namespace Sudoku.Generate
         public bool GenerateFullTableFromEmptyTable()
         {
             //In case of Sudoku-X it contains the value of the cell in the middle of the table
-            int cellAtMiddleOfTable = -1;
+            int valueOfCellAtMiddleOfTable = -1;
             //The current number of tries to fill in a number with different combinations
             int currentTryToFillInNumber = 0;
             int[][,] tempTable;
@@ -54,7 +54,7 @@ namespace Sudoku.Generate
             List<Cell> rectangularCells = null;
 
             se.InitExercise();
-            if (!GenerateFirstInstancesOfNumbers(out cellAtMiddleOfTable))
+            if (!GenerateFirstInstancesOfNumbers(out valueOfCellAtMiddleOfTable))
                 return false;
 
             tempTable = Arrays.CreateInitializedArray();
@@ -62,7 +62,7 @@ namespace Sudoku.Generate
             int numberToFillIn = 0;
             while (++numberToFillIn <= 9)
             {
-                int nextInstanceOfNumber = NextInstanceOfNumber(cellAtMiddleOfTable, numberToFillIn);
+                int nextInstanceOfNumber = NextInstanceOfNumber(valueOfCellAtMiddleOfTable, numberToFillIn);
                 for (int instanceOfCurrentNumber = nextInstanceOfNumber; instanceOfCurrentNumber <= 9; instanceOfCurrentNumber++)
                 {
                     // Saving the current state of the generated exercise for possible restoration later
@@ -142,61 +142,56 @@ namespace Sudoku.Generate
 
         #region Private
 
-        private bool GenerateFirstInstancesOfNumbers(out int cellAtMiddleOfTable)
+        private bool GenerateFirstInstancesOfNumbers(out int valueOfCellAtMiddleOfTable)
         {
-            cellAtMiddleOfTable = -1;
+            valueOfCellAtMiddleOfTable = -1;
             switch (se.ExerciseType)
             {
                 case SudokuType.SimpleSudoku:
-                    GenerateFirstBlock(sudokuNumbers);
+                    GenerateFirstBlock();
                     break;
                 case SudokuType.SudokuX:
-                    if (!GenerateDiagonals(sudokuNumbers, out cellAtMiddleOfTable))
+                    if (!GenerateDiagonals(out valueOfCellAtMiddleOfTable))
                         return false;
                     break;
                 case SudokuType.CenterDot:
-                    GenerateCenterDots(sudokuNumbers);
+                    GenerateCenterDots();
                     break;
             }
             return true;
         }
 
-        private void GenerateFirstBlock(List<int> sudokuNumbers)
+        private void GenerateFirstBlock()
         {
             /* Legelőször feltöltöm a bal felső blokkot számokkal; a számtáblákat is a beírt számoknak megfelelően töltöm ki.
              * p a blokk aktuális celláját jelenti*/
             for (int p = 0; p < 9; p++)
             {
-                int index = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
-
-                util.SetValueOfFilledCell(sudokuNumbers[index], p / 3, p % 3, true);
-
-                //Beírtam a számot, ezért kitörlöm a listából
-                sudokuNumbers.Remove(sudokuNumbers[index]);
+                GenerateValueToFillAndFillInCell(p / 3, p % 3);
             }
         }
 
-        private bool GenerateDiagonals(List<int> sudokuNumbers, out int cellAtMiddleOfTableParam)
+        private bool GenerateDiagonals(out int valueOfCellAtMiddleOfTableParam)
         {
             int r;
-            int cellAtMiddleOfTable = -1;
+            int valueOfCellAtMiddleOfTable = -1;
+            //Main diagonal
             for (int index = 0; index < 9; index++)
             {
                 r = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
 
                 //Ha a tábla középső cellájába írtam be egy számot, akkor elmentem a beírt számot
                 if (index == 4)
-                    cellAtMiddleOfTable = sudokuNumbers[r];
+                    valueOfCellAtMiddleOfTable = sudokuNumbers[r];
 
-                //Beállítom az értékeket
                 util.SetValueOfFilledCell(sudokuNumbers[r], index, index, true);
 
                 //Beírtam a számot, ezért kitörlöm a listából
                 sudokuNumbers.Remove(sudokuNumbers[r]);
             }
 
-            //Végigmegyek a mellékátlón
-            for (r = 1; r <= 9; r += (r == cellAtMiddleOfTable - 1) ? 2 : 1)
+            //Side diagonal
+            for (r = 1; r <= 9; r += GetIncrementValue(r, valueOfCellAtMiddleOfTable))
             {
                 //Az r szám tömbjének mellékátlójában összegyűjtöm azokat a cellákat, amelyek üresek, és elmentem őket sudokuNumbers-be
                 for (int i = 8; i >= 0; i--)
@@ -208,39 +203,48 @@ namespace Sudoku.Generate
                 //Ha nincs üres cella, akkor kilépek
                 if (sudokuNumbers.Count == 0)
                 {
-                    cellAtMiddleOfTableParam = cellAtMiddleOfTable;
+                    valueOfCellAtMiddleOfTableParam = valueOfCellAtMiddleOfTable;
                     return false;
                 }
 
                 //Ha van üres cella, akkor választok egyet közülük
                 int index = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
 
-                //Beállítom a megfelelő értékeket
                 util.SetValueOfFilledCell(r, sudokuNumbers[index], 8 - sudokuNumbers[index], true);
 
                 //Törlöm a listát, mert ezután a következő számtömb mellékátlójának vizsgálatához kell
                 sudokuNumbers.Clear();
             }
-            cellAtMiddleOfTableParam = cellAtMiddleOfTable;
+            valueOfCellAtMiddleOfTableParam = valueOfCellAtMiddleOfTable;
             return true;
         }
 
-        private void GenerateCenterDots(List<int> sudokuNumbers)
+        private int GetIncrementValue(int r, int valueOfCellAtMiddleOfTable)
+        {
+            return r == valueOfCellAtMiddleOfTable - 1 ? 2 : 1;
+        }
+
+        private void GenerateCenterDots()
         {
             //Végigmegyek a blokkok középső celláján
             for (int row = 1; row <= 7; row += 3)
             {
                 for (int col = 1; col <= 7; col += 3)
                 {
-                    //Generálok egy számot, ez lesz beírva a blokk aktuális cellájába
-                    int index = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
-
-                    util.SetValueOfFilledCell(sudokuNumbers[index], row, col, true);
-
-                    //Beírtam a számot, ezért kitörlöm a listából
-                    sudokuNumbers.Remove(sudokuNumbers[index]);
+                    GenerateValueToFillAndFillInCell(row, col);
                 }
             }
+        }
+
+        private void GenerateValueToFillAndFillInCell(int row, int col)
+        {
+            //Generálok egy számot, ez lesz beírva a blokk aktuális cellájába
+            int index = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
+
+            util.SetValueOfFilledCell(sudokuNumbers[index], row, col, true);
+
+            //Beírtam a számot, ezért kitörlöm a listából
+            sudokuNumbers.Remove(sudokuNumbers[index]);
         }
 
         /// <summary>
@@ -322,36 +326,35 @@ namespace Sudoku.Generate
         /// <returns> Ha talált egyedüli üres cellát egy házban, akkor true-val, egyébként false-szal. </returns>
         private bool FilledInOnlyEmptyCellInHouse(int r, bool kellSzamTombKitolt)
         {
-            //Oszlopban és sorban való kereséshez
             int row, col;
 
             Cell emptyCell = new Cell();
 
             //Végigmegyek az összes házon
-            for (int k = 0; k < 9; k++)
+            for (int h = 0; h < 9; h++)
             {
                 /* tombok[r] k indexű során megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű sorban melyik indexű elem az üres
                  * egyébként pedig -1-et*/
-                if ((col = emptyCellFinder.FindOnlyEmptyCellInRow(r, row: k)) > 0)
+                if ((col = emptyCellFinder.FindOnlyEmptyCellInRow(r, row: h)) > 0)
                 {
                     //beírom a megfelelő tömbökbe az r számot, és minden számtömbben beállítom a foglalt cellákat
-                    util.SetValueOfFilledCell(r, k, col, kellSzamTombKitolt);
+                    util.SetValueOfFilledCell(r, h, col, kellSzamTombKitolt);
                     /* megnézem, hogy a az az indexű cella, ahova most beírtam r-t, szerepel-e egy olyan tömbben, amiben még van 4 üres cella
                      * ha van ilyen, akkor elvégzi a megfelelő lépéseket*/
-                    egyezesKereses(k, col);
+                    egyezesKereses(h, col);
                     return true;
                 }
                 /* tombok[r] k indexű oszlopán megy végig. Ha talál egyedüli üres cellát, akkor visszaadja, hogy a k indexű oszlopban melyik indexű elem
                  * az üres, egyébként pedig -1-et*/
-                else if ((row = emptyCellFinder.FindOnlyEmptyCellInColumn(r, col: k)) > 0)
+                else if ((row = emptyCellFinder.FindOnlyEmptyCellInColumn(r, col: h)) > 0)
                 {
-                    util.SetValueOfFilledCell(r, row, k, kellSzamTombKitolt);
-                    egyezesKereses(row, k);
+                    util.SetValueOfFilledCell(r, row, h, kellSzamTombKitolt);
+                    egyezesKereses(row, h);
                     return true;
                 }
                 /* tombok[r] k index-szel jelzett blokkján megy végig, és emptyCell-be belerakja a megtalált üres cella indexeit
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
-                else if (emptyCellFinder.FindOnlyEmptyCellInBlock(r, out emptyCell, blockIndex: k))
+                else if (emptyCellFinder.FindOnlyEmptyCellInBlock(r, out emptyCell, blockIndex: h))
                 {
                     util.SetValueOfFilledCell(r, emptyCell, kellSzamTombKitolt);
                     egyezesKereses(emptyCell);
