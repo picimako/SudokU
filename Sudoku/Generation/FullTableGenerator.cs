@@ -48,9 +48,9 @@ namespace Sudoku.Generate
 
             //For filling the first house in the table
             sudokuNumbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            //1. Azokat az indexeket fogja tárolni, melyek olyan blokkokhoz tartoznak amelyekben a blokkok közül a legkevesebb üres cella található
+            //Stores cells which belong to blocks containing the least empty cells among the blocks
             List<Cell> cellsInTheMostlyFilledBlock = null;
-            // For storing cell indeces whiches placement is rectangular (it will be 4 cells)
+            //For storing cell indeces whiches placement is rectangular (it will be 4 cells)
             List<Cell> rectangularCells = null;
 
             se.InitExercise();
@@ -65,7 +65,7 @@ namespace Sudoku.Generate
                 int nextInstanceOfNumber = NextInstanceOfNumber(valueOfCellAtMiddleOfTable, numberToFillIn);
                 for (int instanceOfCurrentNumber = nextInstanceOfNumber; instanceOfCurrentNumber <= 9; instanceOfCurrentNumber++)
                 {
-                    // Saving the current state of the generated exercise for possible restoration later
+                    //Saving the current state of the generated exercise for possible restoration later
                     Arrays.CopyJaggedThreeDimensionArray(tempTable, se.Exercise);
                     if (numberToFillIn < 9 && AreCellsPlacedAsRectangle(ref rectangularCells, numberToFillIn))
                     {
@@ -75,7 +75,7 @@ namespace Sudoku.Generate
                          * közül valamelyik indexei egyeznek-e a most üresen maradtak közül valamelyikével.*/
                         kozosCellaKeres(numberToFillIn);
 
-                        // Moving to the next number to fill
+                        //Moving to the next number to fill
                         break;
                     }
 
@@ -107,13 +107,13 @@ namespace Sudoku.Generate
                                 break;
                             }
 
-                        //Ha nem találtam cellákat, akkor növelem a blokkban keresendő cellák minimum számát
-                        } while (++hanyCella <= (10 - numberToFillIn)); //10-numberToFillIn üres cella lehet maximálisan egy blokkban
+                         //If there was no cell found, increase the minimum number of cells to search for in blocks
+                        } while (++hanyCella <= (10 - numberToFillIn)); //10-numberToFillIn empty cells can be at most in a block
                     }
 
                     if (itemFinder.IsThereNotFillableHouseForNumber(numberToFillIn))
                     {
-                        // Restoring the exercise to the state when the filling of the current number started
+                        //Restoring the exercise to the state when the filling of the current number started
                         Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tempTable);
 
                         numberToFillIn--;
@@ -132,7 +132,7 @@ namespace Sudoku.Generate
             }
 
             if (!se.IsExerciseKiller)
-                //Elmentem a megoldott táblát
+                //Saving the solved table
                 Arrays.CopyJaggedThreeDimensionArray(util.Solution, se.Exercise);
 
             return true;
@@ -161,16 +161,23 @@ namespace Sudoku.Generate
             return true;
         }
 
+        /// <summary>
+        /// Filling the upper left block with numbers 1 to 9.
+        /// The number tables are filled in accordingly.
+        /// </summary>
         private void GenerateFirstBlock()
         {
-            /* Legelőször feltöltöm a bal felső blokkot számokkal; a számtáblákat is a beírt számoknak megfelelően töltöm ki.
-             * p a blokk aktuális celláját jelenti*/
             for (int p = 0; p < 9; p++)
             {
                 GenerateValueToFillAndFillInCell(p / 3, p % 3);
             }
         }
 
+        /// <summary>
+        /// Filling in the main, then the side diagonal with numbers 1 to 9.
+        /// </summary>
+        /// <param name="valueOfCellAtMiddleOfTableParam"></param>
+        /// <returns>True if the generation was successful. False if the filling of the side diagoanl failed.</returns>
         private bool GenerateDiagonals(out int valueOfCellAtMiddleOfTableParam)
         {
             int r;
@@ -180,13 +187,13 @@ namespace Sudoku.Generate
             {
                 r = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
 
-                //Ha a tábla középső cellájába írtam be egy számot, akkor elmentem a beírt számot
+                //If the filled in cell is at the middle of the table, save the filled in number
                 if (index == 4)
                     valueOfCellAtMiddleOfTable = sudokuNumbers[r];
 
                 util.SetValueOfFilledCell(sudokuNumbers[r], index, index, true);
 
-                //Beírtam a számot, ezért kitörlöm a listából
+                //Filled in the number, so removing from the list
                 sudokuNumbers.Remove(sudokuNumbers[r]);
             }
 
@@ -200,19 +207,19 @@ namespace Sudoku.Generate
                         sudokuNumbers.Add(i);
                 }
 
-                //Ha nincs üres cella, akkor kilépek
+                //If there is no empty cell, then exit method
                 if (sudokuNumbers.Count == 0)
                 {
                     valueOfCellAtMiddleOfTableParam = valueOfCellAtMiddleOfTable;
                     return false;
                 }
 
-                //Ha van üres cella, akkor választok egyet közülük
+                //If there is empty cell, choose one from them
                 int index = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
 
                 util.SetValueOfFilledCell(r, sudokuNumbers[index], 8 - sudokuNumbers[index], true);
 
-                //Törlöm a listát, mert ezután a következő számtömb mellékátlójának vizsgálatához kell
+                //Clear list so that it is needed for the examination of the side diagonal of the next number table
                 sudokuNumbers.Clear();
             }
             valueOfCellAtMiddleOfTableParam = valueOfCellAtMiddleOfTable;
@@ -224,9 +231,11 @@ namespace Sudoku.Generate
             return r == valueOfCellAtMiddleOfTable - 1 ? 2 : 1;
         }
 
+        /// <summary>
+        /// Filling in the middle cells of each block with numbers 1 to 9.
+        /// </summary>
         private void GenerateCenterDots()
         {
-            //Végigmegyek a blokkok középső celláján
             for (int row = 1; row <= 7; row += 3)
             {
                 for (int col = 1; col <= 7; col += 3)
@@ -277,7 +286,7 @@ namespace Sudoku.Generate
 
         /// <summary> Az utoljára elmentett 4 cella indexeit megvizsgálja minden elmentett cella indexével, és ha talál egyezést,
         /// akkor kitölti a szükséges cellákat.</summary>
-        /// <param name="r">A generálásnál éppen soron levő szám</param>
+        /// <param name="r">The current number during the generation</param>
         private void kozosCellaKeres(int r)
         {
             //Végigmegyek a szótár elemein
