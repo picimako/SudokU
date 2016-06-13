@@ -15,14 +15,14 @@ namespace Sudoku
         /// <returns>False if there is no exercise to solve or reading was unsuccessful.</returns>
         public static bool ReadSudoku(string filePath)
         {
+            string line;
+            int indexOfRowRead = 0;
+            string[] numbers;
+
             using (StreamReader reader = new StreamReader(filePath))
             {
                 try
                 {
-                    string line;
-                    int indexOfRowRead = 0;
-                    string[] numbers;
-
                     while ((line = reader.ReadLine()) != null)
                     {
                         numbers = line.Split(' ');
@@ -50,24 +50,20 @@ namespace Sudoku
         /// <returns>False if there was any problem with the exercise or the reading was unsuccessful.</returns>
         public static bool ReadKillerSudoku(string filePath)
         {
+            string line;
+            int indexOfRowToRead = 0;
+            int numberOfCages;
+            int sumOfNumbersInCage;
+            string[] numbers;
+
             using (StreamReader reader = new StreamReader(filePath))
             {
                 try
                 {
-                    string line;
-                    int indexOfRowToRead = 0;
-                    int numberOfCages;
-                    int sumOfNumbersInCage;
-                    string[] numbers;
-
-                    //Beolvasom, hogy mennyi ketrecem van
                     Int32.TryParse(reader.ReadLine(), out numberOfCages);
-                    //Ennyi ketrecösszeget olvasok be
                     for (int cage = 1; cage <= numberOfCages; cage++)
                     {
-                        //A ketrecben levő számok összegét beolvasom, és számmá alakítom
                         Int32.TryParse(reader.ReadLine(), out sumOfNumbersInCage);
-                        //Elmentem az aktuális ketrecszám, ketrecösszeg párost
                         se.Killer.Cages.Add(cage, new Cage(sumOfNumbersInCage));
                     }
 
@@ -79,8 +75,8 @@ namespace Sudoku
                         numbers = line.Split(' ');
                         for (int j = 0; j < 9; j++)
                         {
-                            /* Ha a konvertálás nem sikerült, akkor hibás a felosztás vagy 0 értékű a ketrec,
-                             * akkor nem jó a feladat, visszatérek false-szal.*/
+                            /* If the conversion can't happen, then the killer layout is incorrect or the cage has 0 value,
+                             * then the exercise is incorrect.*/
                             int currentCageNumber = -1;
                             if (!(Int32.TryParse(numbers[j], out currentCageNumber)) || currentCageNumber == 0)
                                 return false;
