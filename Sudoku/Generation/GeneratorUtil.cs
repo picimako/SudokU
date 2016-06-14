@@ -73,11 +73,13 @@ namespace Sudoku.Generate
             removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
         }
 
+        //TODO: investigate moving this to SimpleSudokuController
         public void SetValueOfFilledCell(int numToFill, Cell cell, bool kellSzamtombKitolt)
         {
             SetValueOfFilledCell(numToFill, cell.Row, cell.Col, kellSzamtombKitolt);
         }
 
+        //TODO: investigate moving this to SimpleSudokuController
         /// <summary> Fills in r into the proper tables and sets the occupied cells.</summary>
         /// <param name="numToFill">The number to fill in.</param>
         /// <param name="row">The row index of the filled in cell.</param>
