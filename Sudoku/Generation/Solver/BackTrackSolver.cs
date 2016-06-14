@@ -47,7 +47,9 @@ namespace Sudoku.Generate
 
                     //If n can be placed, then proceeding to the next cell
                     if (CanNBePutIntoCell(p / 9, p % 9, n))
+                    {
                         Solve(p + 1);
+                    }
                 }
 
                 se.Exercise[0][p / 9, p % 9] = se.EMPTY;
@@ -60,19 +62,21 @@ namespace Sudoku.Generate
             while (p < se.LAST_CELL_INDEX)
             {
                 if (se.Exercise[0][p / 9, p % 9] == se.EMPTY)
+                {
                     break;
+                }
 
                 p++;
             }
             return p;
         }
 
-        /// <summary>Checks if the n number can be put into the [i,j] cell</summary>
+        /// <summary>Checks if the n number can be put into the [row,col] cell</summary>
         /// <returns>True if n can be placed.</returns>
-        private bool CanNBePutIntoCell(int i, int j, int n)
+        private bool CanNBePutIntoCell(int row, int col, int n)
         {
             //If none of the houses contains n, then it can be placed.
-            return !se.Ctrl.HousesContainValue(i, j, n);
+            return !se.Ctrl.HousesContainValue(row, col, n);
         }
 
         #endregion
