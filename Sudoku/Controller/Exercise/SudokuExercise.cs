@@ -36,13 +36,11 @@ namespace Sudoku.Controller
         public SimpleSudokuController Ctrl
         {
             get { return controller; }
-            set { controller = value; }
         }
 
         public KillerSudokuExercise Killer
         {
             get { return killerExercise; }
-            set { killerExercise = value; }
         }
 
         public int LAST_CELL_INDEX

@@ -22,19 +22,16 @@ namespace Sudoku.Controller
         public Dictionary<int, Cage> Cages
         {
             get { return cages; }
-            set { cages = value; }
         }
 
         public KillerSudokuController Ctrl
         {
             get { return controller; }
-            set { controller = value; }
         }
 
         public Cell[,] Exercise
         {
             get { return killerExercise; }
-            set { killerExercise = value; }
         }
 
         #endregion

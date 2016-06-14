@@ -26,19 +26,16 @@ namespace Sudoku.Generate
         public int Difficulty
         {
             get { return difficulty; }
-            set { difficulty = value; }
         }
 
         public int KillerDifficulty
         {
             get { return killerDifficulty; }
-            set { killerDifficulty = value; }
         }
 
         public int[][,] Solution
         {
             get { return solution; }
-            set { solution = value; }
         }
 
         public Dictionary<int, List<Cell>> RectangularCells
@@ -50,7 +47,6 @@ namespace Sudoku.Generate
         public Dictionary<Cell, int> RemovedCellsAndValuesBeforeRemoval
         {
             get { return removedCellsAndValuesBeforeRemoval; }
-            set { removedCellsAndValuesBeforeRemoval = value; }
         }
 
         #endregion
