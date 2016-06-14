@@ -122,13 +122,13 @@ namespace Sudoku.Generate
 
                 do
                 {
-                    //Törlöm az eddig elmentett törölt cellákat
+                    //Clearing the saved removed cells
                     util.RemovedCellsAndValuesBeforeRemoval.Clear();
 
                     //Ha már legalább 2-szor próbálok meg törölni 2 cellát
                     if (++numberOfTriesToRemoveTwoCells > 1)
                     {
-                        //Visszaállítom a tömbök mentett állapotát (az utoljára törölt 2 cella törlése előtti állapotot)
+                        //Restoring the saved state of tables (the state before removing the last 2 cells)
                         Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tempExercise);
                         //Restoring the number of empty cells
                         se.NumberOfEmptyCells = numberOfEmptyCells;
@@ -142,15 +142,15 @@ namespace Sudoku.Generate
                         
                         se.Exercise[0][row, col] = se.EMPTY;
 
-                        //Mentem a törölt cella indexeit, és törlés előtti értékét
+                        //Saving the removed cell and its value before removal
                         util.RemovedCellsAndValuesBeforeRemoval.Add(new Cell(row, col), cellValue);
 
-                        //Törlöm a szükséges értékeket a számtömbökből
+                        //Removing the necessary values from the number tables
                         se.Ctrl.RegenerateNumberTablesForRemovedValue(cellValue, row, col);
 
                     } while (++k <= 1);
 
-                    //Mivel töröltem 2 számot, az üres cellák száma nő 2-vel
+                    //Since 2 numbers were removed, the number of empty cells increases by 2
                     se.NumberOfEmptyCells = numberOfEmptyCells + 2;
 
                     /* Backtrack algoritmus használatával megoldja a feladatot, és false értéket ad vissza, ha a feladatnak több megoldása van.
@@ -197,20 +197,20 @@ namespace Sudoku.Generate
             se.NumberOfEmptyCells = util.RemovedCellsAndValuesBeforeRemoval.Count;
         }
 
-        /// <summary> A RemoveNumbersWithBackTrack eljárásban van szükség rá. Visszaállítja a feladatot az utolsó megoldható (röviden korábbi) állapotába.</summary>
-        /// <param name="tombokMentes">Ebben vannak a korábbi állapot értékei(nek nagy része)</param>
+        /// <summary>A RemoveNumbersWithBackTrack eljárásban van szükség rá. Visszaállítja a feladatot az utolsó megoldható (röviden korábbi) állapotába.</summary>
+        /// <param name="tempExercise">Ebben vannak a korábbi állapot értékei(nek nagy része)</param>
         /// <param name="numberOfEmptyCells">Üres cellák száma a feladat korábbi állapotában</param>
-        private void RestoreExerciseToItsLastSolvableStateFrom(int[][,] tombokMentes, ref int numberOfEmptyCells)
+        private void RestoreExerciseToItsLastSolvableStateFrom(int[][,] tempExercise, ref int numberOfEmptyCells)
         {
-            //Visszaállítom a "korábbi állapotot"
-            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tombokMentes);
+            //Restroring the "previous state"
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, tempExercise);
 
             //Végigmegyek az utolsó két törölt cellán
             //Az utoljára törölt két cellát ismét kitörlöm
             //A törölhető cellák törlése a számtömbökben
             RemoveCellsAndRegenerateTablesForRestoration();
-            
-            //Mivel töröltem 2 cellát, így az üres cellák száma nő 2-vel
+
+            //Since 2 numbers were removed, the number of empty cells increases by 2
             se.NumberOfEmptyCells = numberOfEmptyCells + 2;
         }
 
@@ -223,14 +223,13 @@ namespace Sudoku.Generate
             }
         }
 
-        /// <summary> Meghívja a feladat vizsgálatához szükséges függvényt.</summary>
-        /// <returns> Ha a feladatnak egy megoldása van, akkor true-val, egyébként pedig false-szal tér vissza </returns>
+        /// <summary>
+        /// Solves the exercise with backtrack.
+        /// The solution is stored in se.Exercise[0].
+        /// </summary>
+        /// <returns>True if the exercise has only one solution, otherwise false.</returns>
         private bool IsExerciseSolvableWithBackTrack()
         {
-            /* Megoldja a feladatot.
-             * A megoldást a megoldottTabla[0]-ba adja vissza, és visszatér true-val ha a feladatnak egy megoldása van,
-             * egyébként false-szal
-             Control-ban a feladat értékei vannak.*/
             return new BackTrackSolver().SolveExerciseWithBackTrack();
         }
 
