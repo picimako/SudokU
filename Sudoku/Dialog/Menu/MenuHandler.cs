@@ -120,7 +120,6 @@ namespace Sudoku.Dialog
             new SettingsForm().ShowDialog();
             if (conf.Get(LANGUAGE) != languageBeforeSettingsDialogOpened)
                 SetLabels();
-            //TODO: update labels of MainWindow starting from this point
         }
 
         #endregion
