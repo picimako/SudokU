@@ -9,36 +9,15 @@ namespace Sudoku.Generate
         #region Members
 
         private SudokuExercise se = SudokuExercise.get;
-        private int difficulty, killerDifficulty;
         private int[][,] solution;
 
         #endregion
 
         #region Properties
 
-        public int Difficulty
-        {
-            get { return difficulty; }
-        }
-
-        public int KillerDifficulty
-        {
-            get { return killerDifficulty; }
-        }
-
         public int[][,] Solution
         {
             get { return solution; }
-        }
-
-        #endregion
-
-        #region Constructor
-
-        public GeneratorUtil(int difficulty, int killerDifficulty)
-        {
-            this.difficulty = difficulty;
-            this.killerDifficulty = killerDifficulty;
         }
 
         #endregion

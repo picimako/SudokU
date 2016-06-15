@@ -14,12 +14,27 @@ namespace Sudoku.Controller
         private SimpleSudokuController controller;
         private KillerSudokuExercise killerExercise;
 
+        private int difficulty;
+        private int killerDifficulty;
+
         private int[][,] exercise;
         private int[,] solution;
-        
+
         #endregion
 
         #region Properties
+
+        public int Difficulty
+        {
+            get { return difficulty; }
+            set { this.difficulty = value; }
+        }
+
+        public int KillerDifficulty
+        {
+            get { return killerDifficulty; }
+            set { this.killerDifficulty = value; }
+        }
 
         public int[][,] Exercise
         {

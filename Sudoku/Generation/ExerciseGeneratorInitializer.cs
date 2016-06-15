@@ -17,6 +17,9 @@ namespace Sudoku.Generate
         {
             SudokuExercise se = SudokuExercise.get;
 
+            se.Difficulty = difficulty;
+            se.KillerDifficulty = killerDifficulty;
+
             if (!se.IsExerciseGenerated)
             {
                 se.SetControllerForCurrentExerciseType();
@@ -40,7 +43,7 @@ namespace Sudoku.Generate
             }
             else
             {
-                new ExerciseGenerator(difficulty, killerDifficulty).Generate();
+                new ExerciseGenerator().Generate();
             }
             return true;
         }

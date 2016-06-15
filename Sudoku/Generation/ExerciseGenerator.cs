@@ -14,11 +14,9 @@ namespace Sudoku.Generate
         private FullTableGenerator tableGenerator;
         private Random random = new Random();
 
-        /// <param name="difficulty">The difficulty of the simple exercise.</param>
-        /// <param name="killerDifficulty">The difficulty of the optional Killer exercise.</param>
-        public ExerciseGenerator(int difficulty, int killerDifficulty)
+        public ExerciseGenerator()
         {
-            util = new GeneratorUtil(difficulty, killerDifficulty);
+            util = new GeneratorUtil();
             remover = new NumberRemover(util);
         }
 
@@ -67,7 +65,7 @@ namespace Sudoku.Generate
             }
             else
             {
-                if (util.Difficulty != 0)
+                if (se.Difficulty != 0)
                     remover.RemoveNumbersWithBackTrack(); //További számok kivétele nehezítés gyanánt
 
                 se.Solution = util.Solution[0];
@@ -94,7 +92,7 @@ namespace Sudoku.Generate
                  * KillerDifficulty + 3 - 1 az a szám, amekkora legnagyobb méretű ketreceket megengedek.
                  * Persze ettől függetlenül létrejöhetnek olyan ketrecek, amelyek ennél több cellából állnak, mert általában van olyan cella,
                  * ami önmaga alkotna egy ketrecet, de ekkor hozzá kell venni egy szomszéd cella ketrecéhez.*/
-                currentCageSize = random.Next(2, util.KillerDifficulty + 3);
+                currentCageSize = random.Next(2, se.KillerDifficulty + 3);
 
                 se.Killer.Ctrl.PutCellInCage(currentCell, cageIndex);
 

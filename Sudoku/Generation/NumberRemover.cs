@@ -109,7 +109,7 @@ namespace Sudoku.Generate
             int[][,] tempExercise = Arrays.CreateInitializedArray();
 
             //Removing 2 cells n times where n is the difficulty of the exercise set on the UI
-            for (int n = 1; n <= util.Difficulty; n++)
+            for (int n = 1; n <= se.Difficulty; n++)
             {
                 //If removing the first 2 numbers
                 if (n == 1)
