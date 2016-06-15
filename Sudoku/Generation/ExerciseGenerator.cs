@@ -48,7 +48,7 @@ namespace Sudoku.Generate
                  * nem Killer esetén: az üres cellák száma kisebb, mint 30
                  * Killer esetén: amíg a feladat nem jól generált*/
             } while (!se.IsExerciseKiller
-                   ? util.RemovedCellsAndValuesBeforeRemoval.Count < maxNumberOfEmptiedCells
+                   ? remover.RemovedCellsAndValuesBeforeRemoval.Count < maxNumberOfEmptiedCells
                    : !correctFullTableGenerated);
 
             if (se.IsExerciseKiller)

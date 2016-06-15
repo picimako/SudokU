@@ -15,6 +15,8 @@ namespace Sudoku.Generate
         private SudokuExercise se = SudokuExercise.get;
         private Random random = new Random();
         private GeneratorUtil util;
+        //Key: a removed cell. Value: the value of the cell before the removal.
+        private Dictionary<Cell, int> removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
 
         #endregion
 
@@ -29,13 +31,17 @@ namespace Sudoku.Generate
 
         #region Methods
 
+        public Dictionary<Cell, int> RemovedCellsAndValuesBeforeRemoval
+        {
+            get { return removedCellsAndValuesBeforeRemoval; }
+        }
+
         /// <summary> 
         /// Removes numbers while it can remove a number that still makes the exercise solvable without backtrack algorithm.
         /// </summary>
         public void RemoveNumbersWithoutBackTrack()
         {
             List<int> blockIndecesOfLastNRemovedCells = new List<int>(1);
-            util.RectangularCells = new Dictionary<int, List<Cell>>();
 
             int row = -1;
             int col = -1;
@@ -44,7 +50,7 @@ namespace Sudoku.Generate
             do
             {
                 //Ha még nem vettem ki számot, akor generálok indexeket
-                if (util.RemovedCellsAndValuesBeforeRemoval.Count == 0)
+                if (removedCellsAndValuesBeforeRemoval.Count == 0)
                 {
                     GenerateCellIndeces(ref row, ref col, ref cellValue);
                 }
@@ -72,12 +78,12 @@ namespace Sudoku.Generate
                 se.Exercise[0][row, col] = se.EMPTY;
 
                 //Elmentem a törölt cella indexeit, és törlés előtti értékét
-                util.RemovedCellsAndValuesBeforeRemoval.Add(new Cell(row, col), cellValue);
+                removedCellsAndValuesBeforeRemoval.Add(new Cell(row, col), cellValue);
 
                 //Cella törlése miatt a törölhető értékek beállítása a számtömbökben.
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(cellValue, row, col);
 
-            } while (se.Ctrl.IsExerciseSolvableWithoutBackTrack(util.RemovedCellsAndValuesBeforeRemoval.Count));
+            } while (se.Ctrl.IsExerciseSolvableWithoutBackTrack(removedCellsAndValuesBeforeRemoval.Count));
 
             //Mivel az utolsó megoldás során marad üres cella, így a teljes megoldás értékeit megkapja Exercise
             Arrays.CopyJaggedThreeDimensionArray(se.Exercise, util.Solution);
@@ -123,7 +129,7 @@ namespace Sudoku.Generate
                 do
                 {
                     //Clearing the saved removed cells
-                    util.RemovedCellsAndValuesBeforeRemoval.Clear();
+                    removedCellsAndValuesBeforeRemoval.Clear();
 
                     //Ha már legalább 2-szor próbálok meg törölni 2 cellát
                     if (++numberOfTriesToRemoveTwoCells > 1)
@@ -143,7 +149,7 @@ namespace Sudoku.Generate
                         se.Exercise[0][row, col] = se.EMPTY;
 
                         //Saving the removed cell and its value before removal
-                        util.RemovedCellsAndValuesBeforeRemoval.Add(new Cell(row, col), cellValue);
+                        removedCellsAndValuesBeforeRemoval.Add(new Cell(row, col), cellValue);
 
                         //Removing the necessary values from the number tables
                         se.Ctrl.RegenerateNumberTablesForRemovedValue(cellValue, row, col);
@@ -187,14 +193,14 @@ namespace Sudoku.Generate
             //Mivel az utolsó elemet (az utoljára kivett számot) nem kell visszaállítani, törlöm a lista utolsó elemét
             if (nemKellUtolso)
             {
-                util.RemovedCellsAndValuesBeforeRemoval.Remove(util.RemovedCellsAndValuesBeforeRemoval.Last().Key);
+                removedCellsAndValuesBeforeRemoval.Remove(removedCellsAndValuesBeforeRemoval.Last().Key);
             }
 
             //Törlöm az aktuális cella értékét
             //A törlendő cellák törlése
             RemoveCellsAndRegenerateTablesForRestoration();
 
-            se.NumberOfEmptyCells = util.RemovedCellsAndValuesBeforeRemoval.Count;
+            se.NumberOfEmptyCells = removedCellsAndValuesBeforeRemoval.Count;
         }
 
         /// <summary>A RemoveNumbersWithBackTrack eljárásban van szükség rá. Visszaállítja a feladatot az utolsó megoldható (röviden korábbi) állapotába.</summary>
@@ -216,7 +222,7 @@ namespace Sudoku.Generate
 
         private void RemoveCellsAndRegenerateTablesForRestoration()
         {
-            foreach (KeyValuePair<Cell, int> cell in util.RemovedCellsAndValuesBeforeRemoval)
+            foreach (KeyValuePair<Cell, int> cell in removedCellsAndValuesBeforeRemoval)
             {
                 se.Exercise[0][cell.Key.Row, cell.Key.Col] = se.EMPTY;
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(cell.Value, cell.Key.Row, cell.Key.Col);

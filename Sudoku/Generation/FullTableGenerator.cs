@@ -20,6 +20,9 @@ namespace Sudoku.Generate
         private NotFillableItemFinder itemFinder = new NotFillableItemFinder();
         private EmptyCellFinder emptyCellFinder = new EmptyCellFinder();
         private Random random = new Random();
+        /* Stores Cells which belong to number tables where the left 4 cells are rectangular.
+         * The key is the number of the number table.*/
+        private Dictionary<int, List<Cell>> rectangularCells = new Dictionary<int, List<Cell>>();
 
         #endregion
 
@@ -50,8 +53,8 @@ namespace Sudoku.Generate
             sudokuNumbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             //Stores cells which belong to blocks containing the least empty cells among the blocks
             List<Cell> cellsInTheMostlyFilledBlock = null;
-            //For storing cell indeces whiches placement is rectangular (it will be 4 cells)
-            List<Cell> rectangularCells = null;
+            //for storing cell indeces whiches placement is rectangular (it will be 4 cells)
+            List<Cell> rectangularCellList = null;
 
             se.InitExercise();
             if (!GenerateFirstInstancesOfNumbers(out valueOfCellAtMiddleOfTable))
@@ -67,9 +70,9 @@ namespace Sudoku.Generate
                 {
                     //Saving the current state of the generated exercise for possible restoration later
                     Arrays.CopyJaggedThreeDimensionArray(tempTable, se.Exercise);
-                    if (numberToFillIn < 9 && AreCellsPlacedAsRectangle(ref rectangularCells, numberToFillIn))
+                    if (numberToFillIn < 9 && AreCellsPlacedAsRectangle(ref rectangularCellList, numberToFillIn))
                     {
-                        util.RectangularCells.Add(numberToFillIn, rectangularCells);
+                        rectangularCells.Add(numberToFillIn, rectangularCellList);
 
                         /* Megvizsgálom az üresen maradt 4 cellát, hogy az numberToFillIn-nél kisebb indexű számtömbökben esetleg szintén üresen maradt 4 cella
                          * közül valamelyik indexei egyeznek-e a most üresen maradtak közül valamelyikével.*/
@@ -83,14 +86,14 @@ namespace Sudoku.Generate
                     if (!FilledInOnlyEmptyCellInHouse(numberToFillIn, true))
                     {
                         int index;
-                        int hanyCella = 2;
+                        int numberOfEmptyCellsToSearch = 2;
 
                         /* Megkeresem azokat a cellákat melyek olyan blokkokban szerepelnek, amelyekben az összes közül a legkevesebb üres cella fordul elő.
                          * Ehhez szükséges a hanyCella nevű változó.*/
                         do
                         {
                             //Lekérem az előbb leírtaknak megfelelő cellák indexeit. Ha 1-nél több ilyen cella van (minimum 2 lesz vagy pedig egy sem)
-                            cellsInTheMostlyFilledBlock = emptyCellFinder.FindXNumberOfEmptyCellsInBlocks(numberToFillIn, hanyCella);
+                            cellsInTheMostlyFilledBlock = emptyCellFinder.FindXNumberOfEmptyCellsInBlocks(numberToFillIn, numberOfEmptyCellsToSearch);
                             if (cellsInTheMostlyFilledBlock.Count > 1)
                             {
                                 index = random.Next(0, cellsInTheMostlyFilledBlock.Count);
@@ -101,14 +104,14 @@ namespace Sudoku.Generate
                                 /* Ha a cella, ahova épp beírtam egy számot olyan, hogy szerepel egy előző tábla 4 üresen maradt cellája között,
                                  * akkor annak a táblának a kitöltését be kell fejezni.
                                  * Ha viszont nincs mivel megvizsgálni, akkor felesleges meghívni magát az eljárást is*/
-                                if (util.RectangularCells.Count > 0)
+                                if (rectangularCells.Count > 0)
                                     egyezesKereses(cellsInTheMostlyFilledBlock[index]);
 
                                 break;
                             }
 
-                         //If there was no cell found, increase the minimum number of cells to search for in blocks
-                        } while (++hanyCella <= (10 - numberToFillIn)); //10-numberToFillIn empty cells can be at most in a block
+                            //If there was no cell found, increase the minimum number of cells to search for in blocks
+                        } while (++numberOfEmptyCellsToSearch <= (10 - numberToFillIn)); //10-numberToFillIn empty cells can be at most in a block
                     }
 
                     if (itemFinder.IsThereNotFillableHouseForNumber(numberToFillIn))
@@ -119,8 +122,8 @@ namespace Sudoku.Generate
                         numberToFillIn--;
 
                         //És ha a listaindexekben benne van numberToFillIn, akkor törlöm belőle
-                        if (util.RectangularCells.ContainsKey(numberToFillIn))
-                            util.RectangularCells.Remove(numberToFillIn);
+                        if (rectangularCells.ContainsKey(numberToFillIn))
+                            rectangularCells.Remove(numberToFillIn);
 
                         if (++currentTryToFillInNumber == MAX_NUMBER_OF_WRONG_GENERATIONS)
                             return false;
@@ -290,19 +293,19 @@ namespace Sudoku.Generate
         private void kozosCellaKeres(int r)
         {
             //Végigmegyek a szótár elemein
-            foreach (KeyValuePair<int, List<Cell>> _4cells in util.RectangularCells)
+            foreach (KeyValuePair<int, List<Cell>> _4cells in rectangularCells)
             {
                 //Ha nem ugyanazt a 4 cellát akarom vizsgálni
-                if (util.RectangularCells[r] != _4cells.Value)
+                if (rectangularCells[r] != _4cells.Value)
                 {
                     //Végigmegyek az r indexű tömbhöz tartozó 4 cellán (az épp félbehagyott tábla)
-                    for (int i = 0; i < util.RectangularCells[r].Count; i++)
+                    for (int i = 0; i < rectangularCells[r].Count; i++)
                     {
                         //Végiglépkedek az aktuálisan vizsgált 4 cellán
                         for (int j = 0; j < _4cells.Value.Count; j++)
                         {
                             //Ha találtam olyan cellát, amely mindkét vizsgált táblában közös
-                            if (util.RectangularCells[r][i].IsInSameRowAs(_4cells.Value[j]) && util.RectangularCells[r][i].IsInSameColumnAs(_4cells.Value[j]))
+                            if (rectangularCells[r][i].IsInSameRowAs(_4cells.Value[j]) && rectangularCells[r][i].IsInSameColumnAs(_4cells.Value[j]))
                             {
                                 //Beírom az aktuálisan vizsgált tábla egyik elemét
                                 util.SetValueOfFilledCell(_4cells.Key, _4cells.Value[j], true);
@@ -311,14 +314,14 @@ namespace Sudoku.Generate
                                 util.SetValueOfFilledCell(_4cells.Key, _4cells.Value[3 - j], false);
 
                                 //Törlöm a vizsgált 4 cellát RectangularCells-ből
-                                util.RectangularCells.Remove(_4cells.Key);
+                                rectangularCells.Remove(_4cells.Key);
 
                                 //Beírom a maradék 2 számot az r táblába
                                 FilledInOnlyEmptyCellInHouse(r, true);
                                 FilledInOnlyEmptyCellInHouse(r, false);
 
                                 //Törlöm az r indexű táblához tartozó bejegyzést is
-                                util.RectangularCells.Remove(r);
+                                rectangularCells.Remove(r);
 
                                 return;
                             }
@@ -391,7 +394,7 @@ namespace Sudoku.Generate
             int egyezoTabla = -1;
 
             //Elkezdek a szótár elemein végighaladni
-            foreach (KeyValuePair<int, List<Cell>> _4cells in util.RectangularCells)
+            foreach (KeyValuePair<int, List<Cell>> _4cells in rectangularCells)
             {
                 //l azt jelenti, hogy a 4-elemű lista hanyadik elemén állok éppen
                 for (int l = 0; l < _4cells.Value.Count; l++)
@@ -418,7 +421,7 @@ namespace Sudoku.Generate
                 FilledInOnlyEmptyCellInHouse(egyezoTabla, false);
 
                 //Törlöm a szótárból a most kitöltött tábla sorszámát, illetve a hozzá tartozó 4 cella listáját
-                util.RectangularCells.Remove(egyezoTabla);
+                rectangularCells.Remove(egyezoTabla);
             }
         }
 

@@ -12,13 +12,6 @@ namespace Sudoku.Generate
         private int difficulty, killerDifficulty;
         private int[][,] solution;
 
-        /* Stores Cells which belong to number tables where the left 4 cells are rectangular.
-         * The key is the number of the number table.*/
-        private Dictionary<int, List<Cell>> rectangularCells;
-
-        //Key: a removed cell. Value: the value of the cell before the removal.
-        private Dictionary<Cell, int> removedCellsAndValuesBeforeRemoval;
-
         #endregion
 
         #region Properties
@@ -36,17 +29,6 @@ namespace Sudoku.Generate
         public int[][,] Solution
         {
             get { return solution; }
-        }
-
-        public Dictionary<int, List<Cell>> RectangularCells
-        {
-            get { return rectangularCells; }
-            set { rectangularCells = value; }
-        }
-
-        public Dictionary<Cell, int> RemovedCellsAndValuesBeforeRemoval
-        {
-            get { return removedCellsAndValuesBeforeRemoval; }
         }
 
         #endregion
@@ -69,8 +51,6 @@ namespace Sudoku.Generate
             {
                 solution = Arrays.CreateInitializedArray();
             }
-            rectangularCells = new Dictionary<int, List<Cell>>();
-            removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
         }
 
         //TODO: investigate moving this to SimpleSudokuController

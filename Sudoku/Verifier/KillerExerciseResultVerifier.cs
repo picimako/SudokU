@@ -11,7 +11,7 @@ namespace Sudoku.Verifier
         private static SudokuExercise se = SudokuExercise.get;
 
         /// <summary>A kitöltött feladványt megvizsgálja minden feltétel alapján, hogy jó-e vagy sem</summary>
-        /// TODO: move this to a new KillerExerciseResultVerifier for it
+        // TODO: move this to a new KillerExerciseResultVerifier for it
         public bool IsKillerSolutionCorrect()
         {
             /*Amit ellenőrizni kell:
