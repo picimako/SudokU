@@ -111,17 +111,16 @@ namespace Sudoku.Controller
             se.NumberOfEmptyCells = originalNumberOfEmptyCells;
         }
 
-        public void SetValueOfFilledCell(int numToFill, Cell cell, bool kellSzamtombKitolt)
+        public void PutNumToExerciseAndMakeCellsOccupied(int numToFill, Cell cell, bool isNumberTableFillingNeeded)
         {
-            SetValueOfFilledCell(numToFill, cell.Row, cell.Col, kellSzamtombKitolt);
+            PutNumToExerciseAndMakeCellsOccupied(numToFill, cell.Row, cell.Col, isNumberTableFillingNeeded);
         }
-
         /// <summary> Fills in r into the proper tables and sets the occupied cells.</summary>
         /// <param name="numToFill">The number to fill in.</param>
         /// <param name="row">The row index of the filled in cell.</param>
         /// <param name="col">The column index of the filled in cell.</param>
         /// <param name="isNumberTableFillingNeeded">Whether occupied cells should be set in se.Exercise[numToFill]</param>
-        public void SetValueOfFilledCell(int numToFill, int row, int col, bool isNumberTableFillingNeeded)
+        public void PutNumToExerciseAndMakeCellsOccupied(int numToFill, int row, int col, bool isNumberTableFillingNeeded)
         {
             se.Exercise[0][row, col] = numToFill;
             se.Exercise[numToFill][row, col] = numToFill;
@@ -130,7 +129,9 @@ namespace Sudoku.Controller
             {
                 //Ha nem tombok[r]-be akarok írni, akkor se.Exercise[num]-ba írok -1-et az előbb kitöltött cella indexeivel megegyező cellába
                 if (num != numToFill)
-                    se.Exercise[num][row, col] = se.OCCUPIED;
+                {
+                    se.MakeCellOccupied(num, row, col);
+                }
             }
 
             /* Ha el kell végezni, akkor elvégzem se.Exercise[numToFill]-ben a foglalt cellák beállítását
@@ -138,7 +139,7 @@ namespace Sudoku.Controller
              * üres cella van, ekkor csak be kell írni a számot, de ebben a tömbben már felesleges a szükséges cellákat -1-re (foglaltra állítani)
              * mert már minden cella r vagy -1 értékű*/
             if (isNumberTableFillingNeeded)
-                se.Ctrl.MakeHousesOccupied(numToFill, row, col);
+                MakeHousesOccupied(numToFill, row, col);
         }
 
         /// <summary>Solves the exercise using backtrack algorithm.</summary>
@@ -362,7 +363,7 @@ namespace Sudoku.Controller
                 if ((col = finder.FindOnlyEmptyCellInRow(num, row: k)) > 0)
                 {
                     //beírom a megfelelő tömbökbe az r számot, és minden számtömbben beállítom a foglalt cellákat
-                    PutNumToExerciseAndMakeCellsOccupied(num, k, col);
+                    PutNumToExerciseAndMakeCellsOccupied(num, k, col, true);
                     /* megnézem, hogy a az az indexű cella, ahova most beírtam r-t, szerepel-e egy olyan tömbben, amiben még van 4 üres cella
                      * ha van ilyen, akkor elvégzi a megfelelő lépéseket*/
 
@@ -373,7 +374,7 @@ namespace Sudoku.Controller
                  * az üres, egyébként pedig -1-et*/
                 else if ((row = finder.FindOnlyEmptyCellInColumn(num, col: k)) > 0)
                 {
-                    PutNumToExerciseAndMakeCellsOccupied(num, row, k);
+                    PutNumToExerciseAndMakeCellsOccupied(num, row, k, true);
 
                     col = k;
                     return true;
@@ -382,7 +383,7 @@ namespace Sudoku.Controller
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
                 else if (finder.FindOnlyEmptyCellInBlock(num, out emptyCell, blockIndex: k))
                 {
-                    PutNumToExerciseAndMakeCellsOccupied(num, emptyCell.Row, emptyCell.Col);
+                    PutNumToExerciseAndMakeCellsOccupied(num, emptyCell, true);
 
                     row = emptyCell.Row;
                     col = emptyCell.Col;
@@ -393,20 +394,6 @@ namespace Sudoku.Controller
             row = col = -1;
 
             return false;
-        }
-
-        /// <summary>Fills in the passed cell and makes all the necessary houses occupied.</summary>
-        private void PutNumToExerciseAndMakeCellsOccupied(int num, int row, int col)
-        {
-            se.Exercise[0][row, col] = se.Exercise[num][row, col] = num;
-
-            for (int numberTable = 1; numberTable <= 9; numberTable++)
-            {
-                if (numberTable != num)
-                    se.MakeCellOccupied(numberTable, row, col);
-            }
-
-            MakeHousesOccupied(num, row, col);
         }
     }
 }
