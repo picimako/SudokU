@@ -14,7 +14,7 @@ namespace Sudoku.Generate
         private const int MAX_NUMBER_OF_REMEMBERED_REMOVED_CELL_INDECES = 6;
         private SudokuExercise se = SudokuExercise.get;
         private Random random = new Random();
-        private GeneratorUtil util;
+        private TemporarySolutionContainer container;
         //Key: a removed cell. Value: the value of the cell before the removal.
         private Dictionary<Cell, int> removedCellsAndValuesBeforeRemoval = new Dictionary<Cell, int>();
 
@@ -22,9 +22,9 @@ namespace Sudoku.Generate
 
         #region Constructor
 
-        public NumberRemover(GeneratorUtil util)
+        public NumberRemover(TemporarySolutionContainer container)
         {
-            this.util = util;
+            this.container = container;
         }
 
         #endregion
@@ -86,7 +86,7 @@ namespace Sudoku.Generate
             } while (se.Ctrl.IsExerciseSolvableWithoutBackTrack(removedCellsAndValuesBeforeRemoval.Count));
 
             //Mivel az utolsó megoldás során marad üres cella, így a teljes megoldás értékeit megkapja Exercise
-            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, util.Solution);
+            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, container.Solution);
 
             //Az utolsó törölt cella kivételével az összes többi cella értékét törlöm
             RestoreToPreviousState(true);

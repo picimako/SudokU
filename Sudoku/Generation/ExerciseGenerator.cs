@@ -9,15 +9,15 @@ namespace Sudoku.Generate
     {
         private const int maxNumberOfEmptiedCells = 30;
         private SudokuExercise se = SudokuExercise.get;
-        private GeneratorUtil util;
+        private TemporarySolutionContainer container;
         private NumberRemover remover;
         private FullTableGenerator tableGenerator;
         private Random random = new Random();
 
         public ExerciseGenerator()
         {
-            util = new GeneratorUtil();
-            remover = new NumberRemover(util);
+            container = new TemporarySolutionContainer();
+            remover = new NumberRemover(container);
         }
 
         /// <summary>Initalizes the generation and calls the necessary generation related logic.</summary>
@@ -27,14 +27,14 @@ namespace Sudoku.Generate
 
             do
             {
-                util.InitializeGeneration();
+                container.Initialize();
 
                 //A feladat eddig generált értékeit (ha voltak), törli
                 se.SetControllerForCurrentExerciseType();
 
                 /* Létrehozok egy teljesen kitöltött Sudoku feladatot.
                  * Ha ütközés jött létre a táblában, akkor a feladat generálásának újrakezdése.*/
-                tableGenerator = new FullTableGenerator(util);
+                tableGenerator = new FullTableGenerator(container);
                 correctFullTableGenerated = tableGenerator.GenerateFullTableFromEmptyTable();
                 if (!correctFullTableGenerated)
                     continue;
@@ -68,7 +68,7 @@ namespace Sudoku.Generate
                 if (se.Difficulty != 0)
                     remover.RemoveNumbersWithBackTrack(); //További számok kivétele nehezítés gyanánt
 
-                se.Solution = util.Solution[0];
+                se.Solution = container.Solution[0];
             }
         }
 

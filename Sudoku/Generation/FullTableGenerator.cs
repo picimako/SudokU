@@ -16,7 +16,7 @@ namespace Sudoku.Generate
         private const int MAX_NUMBER_OF_WRONG_GENERATIONS = 3;
         private List<int> sudokuNumbers;
         private SudokuExercise se = SudokuExercise.get;
-        private GeneratorUtil util;
+        private TemporarySolutionContainer container;
         private NotFillableItemFinder itemFinder = new NotFillableItemFinder();
         private EmptyCellFinder emptyCellFinder = new EmptyCellFinder();
         private Random random = new Random();
@@ -28,9 +28,9 @@ namespace Sudoku.Generate
 
         #region Constructor
 
-        public FullTableGenerator(GeneratorUtil util)
+        public FullTableGenerator(TemporarySolutionContainer container)
         {
-            this.util = util;
+            this.container = container;
         }
 
         #endregion
@@ -99,7 +99,7 @@ namespace Sudoku.Generate
                                 index = random.Next(0, cellsInTheMostlyFilledBlock.Count);
 
                                 //És oda írom be a számot
-                                util.SetValueOfFilledCell(numberToFillIn, cellsInTheMostlyFilledBlock[index], true);
+                                se.Ctrl.SetValueOfFilledCell(numberToFillIn, cellsInTheMostlyFilledBlock[index], true);
 
                                 /* Ha a cella, ahova épp beírtam egy számot olyan, hogy szerepel egy előző tábla 4 üresen maradt cellája között,
                                  * akkor annak a táblának a kitöltését be kell fejezni.
@@ -136,7 +136,7 @@ namespace Sudoku.Generate
 
             if (!se.IsExerciseKiller)
                 //Saving the solved table
-                Arrays.CopyJaggedThreeDimensionArray(util.Solution, se.Exercise);
+                Arrays.CopyJaggedThreeDimensionArray(container.Solution, se.Exercise);
 
             return true;
         }
@@ -194,7 +194,7 @@ namespace Sudoku.Generate
                 if (index == 4)
                     valueOfCellAtMiddleOfTable = sudokuNumbers[r];
 
-                util.SetValueOfFilledCell(sudokuNumbers[r], index, index, true);
+                se.Ctrl.SetValueOfFilledCell(sudokuNumbers[r], index, index, true);
 
                 //Filled in the number, so removing from the list
                 sudokuNumbers.Remove(sudokuNumbers[r]);
@@ -220,7 +220,7 @@ namespace Sudoku.Generate
                 //If there is empty cell, choose one from them
                 int index = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
 
-                util.SetValueOfFilledCell(r, sudokuNumbers[index], 8 - sudokuNumbers[index], true);
+                se.Ctrl.SetValueOfFilledCell(r, sudokuNumbers[index], 8 - sudokuNumbers[index], true);
 
                 //Clear list so that it is needed for the examination of the side diagonal of the next number table
                 sudokuNumbers.Clear();
@@ -253,7 +253,7 @@ namespace Sudoku.Generate
             //Generálok egy számot, ez lesz beírva a blokk aktuális cellájába
             int index = GetRandomNumberFromRemainingNumbers(sudokuNumbers);
 
-            util.SetValueOfFilledCell(sudokuNumbers[index], row, col, true);
+            se.Ctrl.SetValueOfFilledCell(sudokuNumbers[index], row, col, true);
 
             //Beírtam a számot, ezért kitörlöm a listából
             sudokuNumbers.Remove(sudokuNumbers[index]);
@@ -308,10 +308,10 @@ namespace Sudoku.Generate
                             if (rectangularCells[r][i].IsInSameRowAs(_4cells.Value[j]) && rectangularCells[r][i].IsInSameColumnAs(_4cells.Value[j]))
                             {
                                 //Beírom az aktuálisan vizsgált tábla egyik elemét
-                                util.SetValueOfFilledCell(_4cells.Key, _4cells.Value[j], true);
+                                se.Ctrl.SetValueOfFilledCell(_4cells.Key, _4cells.Value[j], true);
 
                                 //Beírom az aktuálisan vizsgált tábla egyik elemét
-                                util.SetValueOfFilledCell(_4cells.Key, _4cells.Value[3 - j], false);
+                                se.Ctrl.SetValueOfFilledCell(_4cells.Key, _4cells.Value[3 - j], false);
 
                                 //Törlöm a vizsgált 4 cellát RectangularCells-ből
                                 rectangularCells.Remove(_4cells.Key);
@@ -350,7 +350,7 @@ namespace Sudoku.Generate
                 if ((col = emptyCellFinder.FindOnlyEmptyCellInRow(r, row: h)) > 0)
                 {
                     //beírom a megfelelő tömbökbe az r számot, és minden számtömbben beállítom a foglalt cellákat
-                    util.SetValueOfFilledCell(r, h, col, kellSzamTombKitolt);
+                    se.Ctrl.SetValueOfFilledCell(r, h, col, kellSzamTombKitolt);
                     /* megnézem, hogy a az az indexű cella, ahova most beírtam r-t, szerepel-e egy olyan tömbben, amiben még van 4 üres cella
                      * ha van ilyen, akkor elvégzi a megfelelő lépéseket*/
                     egyezesKereses(h, col);
@@ -360,7 +360,7 @@ namespace Sudoku.Generate
                  * az üres, egyébként pedig -1-et*/
                 else if ((row = emptyCellFinder.FindOnlyEmptyCellInColumn(r, col: h)) > 0)
                 {
-                    util.SetValueOfFilledCell(r, row, h, kellSzamTombKitolt);
+                    se.Ctrl.SetValueOfFilledCell(r, row, h, kellSzamTombKitolt);
                     egyezesKereses(row, h);
                     return true;
                 }
@@ -368,7 +368,7 @@ namespace Sudoku.Generate
                  * ha egy üres cellát talált, akkor visszatér true-val, egyébként false-szal*/
                 else if (emptyCellFinder.FindOnlyEmptyCellInBlock(r, out emptyCell, blockIndex: h))
                 {
-                    util.SetValueOfFilledCell(r, emptyCell, kellSzamTombKitolt);
+                    se.Ctrl.SetValueOfFilledCell(r, emptyCell, kellSzamTombKitolt);
                     egyezesKereses(emptyCell);
                     return true;
                 }
