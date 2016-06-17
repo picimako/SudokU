@@ -1,6 +1,6 @@
 ﻿using Sudoku.Controller;
 
-namespace Sudoku.Generate
+namespace Sudoku.Generation.Solver
 {
     class BackTrackSolver
     {
@@ -18,7 +18,7 @@ namespace Sudoku.Generate
         /// <returns>True if there is only one solution found.</returns>
         public bool SolveExerciseWithBackTrack()
         {
-            se.Ctrl.IsExerciseSolvableWithoutBackTrack(se.NumberOfEmptyCells);
+            se.IsExerciseSolvableWithoutBackTrack(se.NumberOfEmptyCells);
             Solve(0);
             return numberOfSolutionsFound == 1;
         }

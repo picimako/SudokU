@@ -1,4 +1,5 @@
 ﻿using Sudoku.Generate;
+using Sudoku.Generation.Solver;
 
 namespace Sudoku.Controller
 {
@@ -13,6 +14,9 @@ namespace Sudoku.Controller
 
         private SimpleSudokuController controller;
         private KillerSudokuExercise killerExercise;
+        //TODO: it might not be a good idea to have an ExerciseSolver in SudokuExercise
+        //and then in ExerciseSolver make changes on SudokuExercise, but will do the work for now
+        private ExerciseSolver solver;
 
         private int difficulty;
         private int killerDifficulty;
@@ -58,6 +62,11 @@ namespace Sudoku.Controller
             get { return killerExercise; }
         }
 
+        public ExerciseSolver Solver
+        {
+            get { return solver; }
+        }
+
         public int LAST_CELL_INDEX
         {
             get { return LAST_CELL; }
@@ -95,6 +104,7 @@ namespace Sudoku.Controller
         {
             NumberOfEmptyCells = 0;
             exercise = Arrays.CreateInitializedArray();
+            solver = new ExerciseSolver();
         }
 
         public void InitKillerExercise()
@@ -167,6 +177,21 @@ namespace Sudoku.Controller
         public bool IsCellTheLastInTable(int p)
         {
             return p == LAST_CELL;
+        }
+
+        /// <summary>
+        /// Megoldja a feladatot visszalépéses algoritmus használata nélkül.
+        /// Akkor oldható meg backtrack nélkül egy feladat, ha csak a sima kitöltést elvégezve nem marad üres cella a táblában.
+        /// Ez a függvény eldönti, hogy a feladat megoldaható-e backtrack nélkül, sima kitöltéssel vagy sem.
+        /// </summary>
+        /// <param name="numberOfEmptyCells">Az üres cellák száma</param>
+        /// <returns>Ha megoldható backtrack használata nélkül, akkor true, egyébként false</returns>
+        public bool IsExerciseSolvableWithoutBackTrack(int numberOfEmptyCells)
+        {
+            //az üres cellák száma a generáláskori üres cellák száma lesz
+            NumberOfEmptyCells = numberOfEmptyCells;
+
+            return solver.SolveExerciseWithoutBackTrack();
         }
 
         #endregion

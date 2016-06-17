@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Sudoku.Cells;
 using Sudoku.Controller;
+using Sudoku.Generation.Solver;
 using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Generate
@@ -83,7 +84,7 @@ namespace Sudoku.Generate
                 //Cella törlése miatt a törölhető értékek beállítása a számtömbökben.
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(cellValue, row, col);
 
-            } while (se.Ctrl.IsExerciseSolvableWithoutBackTrack(removedCellsAndValuesBeforeRemoval.Count));
+            } while (se.IsExerciseSolvableWithoutBackTrack(removedCellsAndValuesBeforeRemoval.Count));
 
             //Mivel az utolsó megoldás során marad üres cella, így a teljes megoldás értékeit megkapja Exercise
             Arrays.CopyJaggedThreeDimensionArray(se.Exercise, container.Solution);

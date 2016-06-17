@@ -53,6 +53,15 @@ namespace Sudoku.Controller
             }
         }
 
+        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
+        /// <param name="num">The number table.</param>
+        public virtual void MakeHousesOccupied(int num, int row, int col)
+        {
+            MakeRowOccupied(num, row);
+            MakeColumnOccupied(num, col);
+            MakeBlockOccupied(num, StartRowOfBlockByRow(row), StartColOfBlockByCol(col));
+        }
+
         /// <summary>Inspects whether value is present in any houses of the current cell of the exercise.</summary>
         /// <returns>True in case of inclusion, otherwise false.</returns>
         public virtual bool HousesContainValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
@@ -65,56 +74,11 @@ namespace Sudoku.Controller
             return true;
         }
 
-        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
-        /// <param name="num">The number table.</param>
-        public virtual void MakeHousesOccupied(int num, int row, int col)
-        {
-            MakeRowOccupied(num, row);
-            MakeColumnOccupied(num, col);
-            MakeBlockOccupied(num, StartRowOfBlockByRow(row), StartColOfBlockByCol(col));
-        }
-
-        /// <summary>Megoldja a feladatot visszalépéses algoritmus használata nélkül.
-        /// Akkor oldható meg backtrack nélkül egy feladat, ha csak a sima kitöltést elvégezve nem marad üres cella a táblában.
-        /// Ez a függvény eldönti, hogy a feladat megoldaható-e backtrack nélkül, sima kitöltéssel vagy sem.
-        /// </summary>
-        /// <param name="numberOfEmptyCells">Az üres cellák száma</param>
-        /// <returns>Ha megoldható backtrack használata nélkül, akkor true, egyébként false</returns>
-        public bool IsExerciseSolvableWithoutBackTrack(int numberOfEmptyCells)
-        {
-            //az üres cellák száma a generáláskori üres cellák száma lesz
-            se.NumberOfEmptyCells = numberOfEmptyCells;
-
-            return SolveExerciseWithoutBackTrack();
-        }
-
-        public void SolveReadExercise()
-        {
-            GenerateValuesInNumberTables();
-
-            int[][,] exerciseInitialState;
-            exerciseInitialState = Arrays.CreateInitializedArray();
-            Arrays.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
-            int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
-
-            if (!SolveExerciseWithoutBackTrack())
-                //WARN: investigate this part as there may be a problem generating exercises that need solving
-                //with backtrack
-                se.Solution = SolveExerciseWithBackTrack();
-            else
-            {
-                se.Solution = new int[9, 9];
-                Arrays.CopyTwoDimensionArray(se.Solution, se.Exercise[0]);
-            }
-
-            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseInitialState);
-            se.NumberOfEmptyCells = originalNumberOfEmptyCells;
-        }
-
         public void PutNumToExerciseAndMakeCellsOccupied(int numToFill, Cell cell, bool isNumberTableFillingNeeded)
         {
             PutNumToExerciseAndMakeCellsOccupied(numToFill, cell.Row, cell.Col, isNumberTableFillingNeeded);
         }
+
         /// <summary> Fills in r into the proper tables and sets the occupied cells.</summary>
         /// <param name="numToFill">The number to fill in.</param>
         /// <param name="row">The row index of the filled in cell.</param>
@@ -142,17 +106,9 @@ namespace Sudoku.Controller
                 MakeHousesOccupied(numToFill, row, col);
         }
 
-        /// <summary>Solves the exercise using backtrack algorithm.</summary>
-        /// <returns>The solved exercise.</returns>
-        protected int[,] SolveExerciseWithBackTrack()
-        {
-            new BackTrackSolver().SolveExerciseWithBackTrack();
-            return se.Exercise[0];
-        }
-
         /// <summary>Fills the number tables according to the values in the exercise.</summary>
         /// <returns>True if there is a solvable exercise, otherwise false.</returns>
-        protected bool GenerateValuesInNumberTables()
+        public bool GenerateValuesInNumberTables()
         {
             bool isThereSolvableExercise = false;
             if (!se.IsExerciseFull() && !se.IsExerciseEmpty())
@@ -183,162 +139,7 @@ namespace Sudoku.Controller
             return isThereSolvableExercise;
         }
 
-        /// <summary>Inspects whether value is present in the colOfCurrentCell column of the exercise.</summary>
-        /// <returns>True in case of inclusion, otherwise false.</returns>
-        protected bool ColumnContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
-        {
-            for (int row = 0; row < 9; row++)
-            {
-                if (row != rowOfCurrentCell && se.Exercise[0][row, colOfCurrentCell] == value)
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Inspects whether value is present in the rowOfCurrentCell row of the exercise.</summary>
-        /// <returns>True in case of inclusion, otherwise false.</returns>
-        protected bool RowContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (col != colOfCurrentCell && se.Exercise[0][rowOfCurrentCell, col] == value)
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Inspects whether value is present in the block of the current cell of the exercise.</summary>
-        /// <returns>True in case of inclusion, otherwise false.</returns>
-        protected bool BlockContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
-        {
-            for (int row = StartRowOfBlockByRow(rowOfCurrentCell); row <= EndRowOfBlockByRow(rowOfCurrentCell); row++)
-            {
-                for (int col = StartColOfBlockByCol(colOfCurrentCell); col <= EndColOfBlockByCol(colOfCurrentCell); col++)
-                {
-                    if (row != rowOfCurrentCell && col != colOfCurrentCell && se.Exercise[0][row, col] == value)
-                        return true;
-                }
-            }
-
-            return false;
-        }
-		
-        /// <summary>Marks all the not empty cells as occupied in the block of the current cell.</summary>
-        // __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __
-        //|00|__|__|	//|__|01|__|	//|__|__|02|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|
-        //|__|__|__|	//|__|__|__|	//|__|__|__|	//|10|__|__|	//|__|11|__|	//|__|__|12|	//|__|__|__|	//|__|__|__|	//|__|__|__|
-        //|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|20|__|__|	//|__|21|__|	//|__|__|22|
-		protected virtual void MakeBlockOccupied(int num, int row, int col)
-        {
-            for (int r = row; r <= row + 2; r++)
-            {
-                for (int p = col; p <= col + 2; p++)
-                {
-                    MakeCellOccupied(num, r, p);
-                }
-            }
-        }
-
-        /// <summary>Marks all the not empty cells as occupied in the row of the current cell.</summary>
-		protected void MakeRowOccupied(int num, int row)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                MakeCellOccupied(num, row, col);
-            }
-        }
-
-        /// <summary>Marks all the not empty cells as occupied in the column of the current cell.</summary>
-        protected void MakeColumnOccupied(int num, int col)
-        {
-            for (int row = 0; row < 9; row++)
-            {
-                MakeCellOccupied(num, row, col);
-            }
-        }
-
-        /// <summary>Marks the cell as occupied if the cell is empty.</summary>
-        protected void MakeCellOccupied(int num, int row, int col)
-        {
-            if (se.IsCellEmpty(num, row, col))
-                se.MakeCellOccupied(num, row, col);
-        }
-
-        /// <summary>Solves the exercise without using backtrack algorithm (as much as the difficulty of the exercise makes it possible).</summary>
-        /// <returns>True if the exercise is solved completely (there is no empty cell), otherwise false</returns>
-        protected bool SolveExerciseWithoutBackTrack()
-        {
-            int numberOfEmptyCellsToFill = se.NumberOfEmptyCells;
-            //the value for the only empty cell throughout number tables
-            //-1 means the cell is not empty in any number tables, or it is empty in more than 1 number tables
-            int valueOfOnlyEmptyCellThroughoutNumberTables = -1;
-            se.FirstEmptyCell = 0;
-            bool cellFillingHappened;
-
-            for (int cell = 1; cell <= numberOfEmptyCellsToFill; cell++)
-            {
-                cellFillingHappened = false;
-
-                for (int p = se.FirstEmptyCell; p < se.LAST_CELL_INDEX; p++)
-                {
-                    //If the cell in not empty, then moving on to the next cell, as only empty cells are inspected.
-                    if (!se.IsCellEmpty(0, p))
-                        continue;
-
-                    valueOfOnlyEmptyCellThroughoutNumberTables = -1;
-
-                    //Getting the number tables where the current cell is empty
-                    for (int num = 1; num < 10; num++)
-                    {
-                        if (se.IsCellEmpty(num, p))
-                        {
-                            if (valueOfOnlyEmptyCellThroughoutNumberTables == -1)
-                                valueOfOnlyEmptyCellThroughoutNumberTables = num;
-                            else
-                            {
-                                valueOfOnlyEmptyCellThroughoutNumberTables = -1;
-                                break;
-                            }
-                        }
-                    }
-
-                    //If the current cell is empty in only one table (including the exercise)
-                    //then the value of the found number table should be filled in
-                    if (valueOfOnlyEmptyCellThroughoutNumberTables != -1)
-                    {
-                        se.Exercise[0][p / 9, p % 9] = valueOfOnlyEmptyCellThroughoutNumberTables;
-                        se.Exercise[valueOfOnlyEmptyCellThroughoutNumberTables][p / 9, p % 9] = valueOfOnlyEmptyCellThroughoutNumberTables;
-                        MakeHousesOccupied(valueOfOnlyEmptyCellThroughoutNumberTables, p / 9, p % 9);
-                        cellFillingHappened = true;
-                        PostProcessCellFilling(p);
-                    }
-                    else
-                    {
-                        int row, col;
-
-                        for (int num = 1; num <= 9; num++)
-                        {
-                            if (FindAndFillOnlyEmptyCellInHouses(num, out row, out col))
-                            {
-                                cellFillingHappened = true;
-                                PostProcessCellFilling((row * 9) + col);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (!cellFillingHappened)
-                    break;
-            }
-
-            //If there is no empty cell, then the exercise could be solved without using backtrack algorithm
-            return se.IsExerciseFull();
-        }
-
-        private void PostProcessCellFilling(int position)
+        public void PostProcessCellFilling(int position)
         {
             se.NumberOfEmptyCells--;
 
@@ -349,7 +150,7 @@ namespace Sudoku.Controller
 
         /// <summary> Ha van olyan ház, amelyben egyetlen egy üres cella van (oda biztos beírható az adott szám), akkor azt kitölti. </summary>
         /// <returns>True if an empty cell was found and could be filled in the house of the given cell, otherwise false.</returns>
-        private bool FindAndFillOnlyEmptyCellInHouses(int num, out int row, out int col)
+        public bool FindAndFillOnlyEmptyCellInHouses(int num, out int row, out int col)
         {
             Cell emptyCell = new Cell();
 
@@ -394,6 +195,89 @@ namespace Sudoku.Controller
             row = col = -1;
 
             return false;
+        }
+
+        /// <summary>Inspects whether value is present in the rowOfCurrentCell row of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        protected bool RowContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (col != colOfCurrentCell && se.Exercise[0][rowOfCurrentCell, col] == value)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Inspects whether value is present in the colOfCurrentCell column of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        protected bool ColumnContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                if (row != rowOfCurrentCell && se.Exercise[0][row, colOfCurrentCell] == value)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Inspects whether value is present in the block of the current cell of the exercise.</summary>
+        /// <returns>True in case of inclusion, otherwise false.</returns>
+        protected bool BlockContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
+        {
+            for (int row = StartRowOfBlockByRow(rowOfCurrentCell); row <= EndRowOfBlockByRow(rowOfCurrentCell); row++)
+            {
+                for (int col = StartColOfBlockByCol(colOfCurrentCell); col <= EndColOfBlockByCol(colOfCurrentCell); col++)
+                {
+                    if (row != rowOfCurrentCell && col != colOfCurrentCell && se.Exercise[0][row, col] == value)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Marks all the not empty cells as occupied in the row of the current cell.</summary>
+        protected void MakeRowOccupied(int num, int row)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                MakeCellOccupied(num, row, col);
+            }
+        }
+
+        /// <summary>Marks all the not empty cells as occupied in the column of the current cell.</summary>
+        protected void MakeColumnOccupied(int num, int col)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                MakeCellOccupied(num, row, col);
+            }
+        }
+
+        /// <summary>Marks all the not empty cells as occupied in the block of the current cell.</summary>
+        // __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __		// __ __ __
+        //|00|__|__|	//|__|01|__|	//|__|__|02|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|
+        //|__|__|__|	//|__|__|__|	//|__|__|__|	//|10|__|__|	//|__|11|__|	//|__|__|12|	//|__|__|__|	//|__|__|__|	//|__|__|__|
+        //|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|__|__|__|	//|20|__|__|	//|__|21|__|	//|__|__|22|
+        protected void MakeBlockOccupied(int num, int row, int col)
+        {
+            for (int r = row; r <= row + 2; r++)
+            {
+                for (int p = col; p <= col + 2; p++)
+                {
+                    MakeCellOccupied(num, r, p);
+                }
+            }
+        }
+
+        /// <summary>Marks the cell as occupied if the cell is empty.</summary>
+        protected void MakeCellOccupied(int num, int row, int col)
+        {
+            if (se.IsCellEmpty(num, row, col))
+                se.MakeCellOccupied(num, row, col);
         }
     }
 }

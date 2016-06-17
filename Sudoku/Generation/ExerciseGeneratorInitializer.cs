@@ -29,7 +29,7 @@ namespace Sudoku.Generate
                     if (!ExerciseReader.ReadSudoku(se.ExerciseFilePath))
                         return false;
 
-                    se.Ctrl.SolveReadExercise();
+                    se.Solver.SolveReadExercise();
                 }
                 else
                 {
