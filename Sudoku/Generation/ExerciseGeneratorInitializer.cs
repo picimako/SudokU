@@ -1,11 +1,10 @@
 ﻿using Sudoku.Controller;
+using Sudoku.Generation.Solver;
 
 namespace Sudoku.Generate
 {
     public class ExerciseGeneratorInitializer
     {
-        public ExerciseGeneratorInitializer() { }
-
         /// <summary>
         /// Decides whether it needs to generate the exercise automatically or the user need to read it from
         /// file, and then acts so.
@@ -29,7 +28,7 @@ namespace Sudoku.Generate
                     if (!ExerciseReader.ReadSudoku(se.ExerciseFilePath))
                         return false;
 
-                    se.Solver.SolveReadExercise();
+                    new ReadExerciseSolver().Solve();
                 }
                 else
                 {

@@ -97,7 +97,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Generation\FullTableGenerator.cs" />
-    <Compile Include="Generation\Solver\ExerciseSolver.cs" />
+    <Compile Include="Generation\Solver\ReadExerciseSolver.cs" />
+    <Compile Include="Generation\Solver\WithoutBackTrackSolver.cs" />
     <Compile Include="Generation\TemporarySolutionContainer.cs" />
     <Compile Include="Generation\NumberRemover.cs" />
     <Compile Include="Generation\SudokuCreationType.cs" />

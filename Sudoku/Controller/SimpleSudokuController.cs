@@ -1,6 +1,6 @@
-﻿using Sudoku.Generate;
-using Sudoku.Cells;
+﻿using Sudoku.Cells;
 using Sudoku.Controller.Finder;
+using Sudoku.Generate;
 using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller

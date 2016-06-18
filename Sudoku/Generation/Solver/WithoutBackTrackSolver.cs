@@ -2,31 +2,9 @@
 
 namespace Sudoku.Generation.Solver
 {
-    public class ExerciseSolver
+    public class WithoutBackTrackSolver
     {
         SudokuExercise se = SudokuExercise.get;
-
-        public void SolveReadExercise()
-        {
-            se.Ctrl.GenerateValuesInNumberTables();
-
-            int[][,] exerciseInitialState = Arrays.CreateInitializedArray();
-            Arrays.CopyJaggedThreeDimensionArray(exerciseInitialState, se.Exercise);
-            int originalNumberOfEmptyCells = se.NumberOfEmptyCells;
-
-            if (!SolveExerciseWithoutBackTrack())
-                //WARN: investigate this part as there may be a problem generating exercises that need solving
-                //with backtrack
-                se.Solution = SolveExerciseWithBackTrack();
-            else
-            {
-                se.Solution = new int[9, 9];
-                Arrays.CopyTwoDimensionArray(se.Solution, se.Exercise[0]);
-            }
-
-            Arrays.CopyJaggedThreeDimensionArray(se.Exercise, exerciseInitialState);
-            se.NumberOfEmptyCells = originalNumberOfEmptyCells;
-        }
 
         /// <summary>Solves the exercise without using backtrack algorithm (as much as the difficulty of the exercise makes it possible).</summary>
         /// <returns>True if the exercise is solved completely (there is no empty cell), otherwise false</returns>
@@ -78,7 +56,8 @@ namespace Sudoku.Generation.Solver
                     }
                     else
                     {
-                        int row, col;
+                        int row;
+                        int col;
 
                         for (int num = 1; num <= 9; num++)
                         {
@@ -98,14 +77,6 @@ namespace Sudoku.Generation.Solver
 
             //If there is no empty cell, then the exercise could be solved without using backtrack algorithm
             return se.IsExerciseFull();
-        }
-
-        /// <summary>Solves the exercise using backtrack algorithm.</summary>
-        /// <returns>The solved exercise.</returns>
-        public int[,] SolveExerciseWithBackTrack()
-        {
-            new BackTrackSolver().SolveExerciseWithBackTrack();
-            return se.Exercise[0];
         }
     }
 }

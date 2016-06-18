@@ -14,9 +14,6 @@ namespace Sudoku.Controller
 
         private SimpleSudokuController controller;
         private KillerSudokuExercise killerExercise;
-        //TODO: it might not be a good idea to have an ExerciseSolver in SudokuExercise
-        //and then in ExerciseSolver make changes on SudokuExercise, but will do the work for now
-        private ExerciseSolver solver;
 
         private int difficulty;
         private int killerDifficulty;
@@ -62,11 +59,6 @@ namespace Sudoku.Controller
             get { return killerExercise; }
         }
 
-        public ExerciseSolver Solver
-        {
-            get { return solver; }
-        }
-
         public int LAST_CELL_INDEX
         {
             get { return LAST_CELL; }
@@ -104,7 +96,6 @@ namespace Sudoku.Controller
         {
             NumberOfEmptyCells = 0;
             exercise = Arrays.CreateInitializedArray();
-            solver = new ExerciseSolver();
         }
 
         public void InitKillerExercise()
@@ -191,7 +182,7 @@ namespace Sudoku.Controller
             //az üres cellák száma a generáláskori üres cellák száma lesz
             NumberOfEmptyCells = numberOfEmptyCells;
 
-            return solver.SolveExerciseWithoutBackTrack();
+            return new WithoutBackTrackSolver().SolveExerciseWithoutBackTrack();
         }
 
         #endregion
