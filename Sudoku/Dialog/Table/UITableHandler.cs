@@ -4,8 +4,8 @@ using System.Windows.Forms;
 using System.Drawing;
 using Sudoku.Cells;
 using Sudoku.Configuration;
-using Sudoku.Dialog.Table.Finder;
 using Sudoku.Controller;
+using Sudoku.Dialog.Table.Finder;
 using Sudoku.Language;
 using Sudoku.Util;
 using static Sudoku.Cells.CellHandler;
@@ -17,18 +17,17 @@ namespace Sudoku.Dialog
     class UITableHandler
     {
         #region Members
-
-        //Each TextBox is a cell on the UI to contain the values of the exercise
-        private TextBox[,] guiTable;
         private SudokuExercise se = SudokuExercise.get;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
-        private NearestEditableGUICellFinder cellFinder;
 
-        private Button verifyExerciseButton;
+        //Each TextBox is a cell on the UI that contain the values of the exercise
+        private TextBox[,] guiTable;
         private Color[] colors = Colors.GetColors();
-        private Label numberOfEmptyCellsLabel;
         private TableLayoutPanel exerciseTable;
+        private NearestEditableGUICellFinder cellFinder;
+        private Button verifyExerciseButton;
+        private Label numberOfEmptyCellsLabel;
         /*The previous value of the cell. To be able to change the number tables, I need to know the value of the cell before
          removing its value.*/
         private int previousCellValue;
@@ -40,7 +39,6 @@ namespace Sudoku.Dialog
         public TextBox[,] GUITable
         {
             get { return guiTable; }
-            set { guiTable = value; }
         }
 
         #endregion
@@ -142,9 +140,8 @@ namespace Sudoku.Dialog
                     guiTable[row, col].TextChanged += new EventHandler(TextBox_TextChanged);
                     guiTable[row, col].GotFocus += (sender, e) =>
                     {
-                        int rowInFocus = AsCell(sender).Row;
-                        int colInFocus = AsCell(sender).Col;
-                        Int32.TryParse(guiTable[rowInFocus, colInFocus].Text, out previousCellValue);
+                        Cell cellInFocus = new Cell(AsCell(sender).Row, AsCell(sender).Col);
+                        Int32.TryParse(guiTable[cellInFocus.Row, cellInFocus.Col].Text, out previousCellValue);
                     };
 
                     guiTable[row, col].KeyDown += new KeyEventHandler(TextBox_KeyDown);
@@ -155,7 +152,7 @@ namespace Sudoku.Dialog
             cellFinder = new NearestEditableGUICellFinder(guiTable);
         }
 
-        public void CreateTableOnGUI()
+        private void CreateTableOnGUI()
         {
             //Hiding the table to speed up drawing
             exerciseTable.Visible = false;
@@ -258,7 +255,8 @@ namespace Sudoku.Dialog
                         if (se.Ctrl.HousesContainValue(row, col, valueOfChangedCell) || se.Killer.Ctrl.NeighbourCellFinder.IsCageContainValue(se.Killer.Exercise[row, col].CageIndex, valueOfChangedCell, se.Exercise[0]))
                             SetIncorrectCellBackground(changedCell);
                         else
-                            SetOriginalKillerCellBackgroundColor(changedCell);
+                            //Killer
+                            SetOriginalCellBackgroundColor(changedCell);
                     }
 
                 if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
@@ -281,30 +279,21 @@ namespace Sudoku.Dialog
 
         private void SetOriginalCellBackgroundColor(TextBox cell)
         {
+            Cell aCell = cell.Tag as Cell;
             if (!se.IsExerciseKiller)
             {
-                Cell aCell = cell.Tag as Cell;
-                cell.BackColor = IsCellSpecial(aCell.Row, aCell.Col) ? Color.LightBlue : Color.White;
+                cell.BackColor = Colors.GetOriginalCellColorOf(aCell);
             }
             else
             {
-                SetOriginalKillerCellBackgroundColor(cell);
+                int currentCellCageIndex = se.Killer.Exercise[aCell.Row, aCell.Col].CageIndex;
+                cell.BackColor = Colors.GetOriginalKillerCellColorOf(currentCellCageIndex);
             }
-        }
-
-        private void SetOriginalKillerCellBackgroundColor(TextBox cell)
-        {
-            int row = (cell.Tag as Cell).Row;
-            int col = (cell.Tag as Cell).Col;
-            cell.BackColor =
-                se.Killer.Exercise[row, col].CageIndex <= 10
-                ? colors[se.Killer.Exercise[row, col].CageIndex]
-                : colors[se.Killer.Exercise[row, col].CageIndex - 10];
         }
 
         private void SetIncorrectCellBackground(TextBox cell)
         {
-            cell.BackColor = Color.Red;
+            cell.BackColor = Colors.INCORRECT;
         }
 
         /// <summary>Zero, text and special characters are not allowed to type into the cells.</summary>
