@@ -20,8 +20,10 @@ namespace Sudoku.Generate
         private NotFillableItemFinder itemFinder = new NotFillableItemFinder();
         private EmptyCellFinder emptyCellFinder = new EmptyCellFinder();
         private Random random = new Random();
-        /* Stores Cells which belong to number tables where the left 4 cells are rectangular.
-         * The key is the number of the number table.*/
+        /// <summary>
+        /// Stores Cells which belong to number tables where the left 4 cells are rectangular.
+        /// The key is the number of the number table.
+        /// </summary>
         private Dictionary<int, List<Cell>> rectangularCells = new Dictionary<int, List<Cell>>();
 
         #endregion
@@ -338,7 +340,8 @@ namespace Sudoku.Generate
         /// <returns> Ha talált egyedüli üres cellát egy házban, akkor true-val, egyébként false-szal. </returns>
         private bool FilledInOnlyEmptyCellInHouse(int r, bool isNumberTableFillingNeeded)
         {
-            int row, col;
+            int row;
+            int col;
 
             Cell emptyCell = new Cell();
 

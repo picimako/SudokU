@@ -18,7 +18,8 @@ namespace Sudoku.Dialog.Table.Finder
         /// <returns></returns>
         public Cell FindNearestEditableCellComparedTo(Cell cell, Keys keyCode)
         {
-            int row = cell.Row, col = cell.Col;
+            int row = cell.Row;
+            int col = cell.Col;
             switch (keyCode)
             {
                 case Keys.Left:

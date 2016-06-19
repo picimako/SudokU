@@ -87,7 +87,8 @@ namespace Sudoku.Cells
 
         public Cell WithAlteredIndecesByDirection(Direction direction)
         {
-            int row = this.Row, col = this.Col;
+            int row = this.Row;
+            int col = this.Col;
             switch (direction)
             {
                 case Direction.LEFT:

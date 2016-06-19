@@ -77,7 +77,8 @@ namespace Sudoku.Controller.Finder.Killer
         private void CollectCell(Direction direction, Cell cell, int cageIndex, bool egyenlo)
         {
             Cell alteredCell = cell.WithAlteredIndecesByDirection(direction);
-            int row = alteredCell.Row, col = alteredCell.Col;
+            int row = alteredCell.Row;
+            int col = alteredCell.Col;
 
             if (egyenlo
                 /* Ha az [i, j] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
