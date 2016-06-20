@@ -1,5 +1,8 @@
 ﻿namespace Sudoku.Configuration
 {
+    /// <summary>
+    /// Store the name of XML configuration attributes.
+    /// </summary>
     public sealed class ConfigurationKeys
     {
         public static readonly ConfigurationKeys DEFAULT_FILE_PATH = new ConfigurationKeys("DefaultFilePath");

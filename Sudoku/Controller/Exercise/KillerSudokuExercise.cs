@@ -3,6 +3,10 @@ using Sudoku.Cells;
 
 namespace Sudoku.Controller
 {
+    /// <summary>
+    /// Represents a Killer Sudoku Exercise.
+    /// It is a layout on top of a sudoku exercise.
+    /// </summary>
     public class KillerSudokuExercise
     {
         #region Members

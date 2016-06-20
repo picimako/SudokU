@@ -6,6 +6,9 @@ using System.Windows.Forms;
 
 namespace Sudoku.Configuration
 {
+    /// <summary>
+    /// Class for reading, storing and updating the XML configuration.
+    /// </summary>
     public class ConfigHandler
     {
         #region Members
@@ -13,7 +16,7 @@ namespace Sudoku.Configuration
         private static ConfigHandler HANDLER;
         private string CONFIG_FILE_RELATIVE_PATH = "/Resources/Config/config.xml";
         private Dictionary<string, string> configuration;
-        private XmlDocument xmlDoc;
+        private XmlDocument xmlConfig;
         private bool exerciseInProgress;
 
         #endregion
@@ -55,11 +58,11 @@ namespace Sudoku.Configuration
 
         public void ReadConfiguration()
         {
-            xmlDoc = new XmlDocument();
+            xmlConfig = new XmlDocument();
             try
             {
-                xmlDoc.Load(Environment.CurrentDirectory + CONFIG_FILE_RELATIVE_PATH);
-                XmlNode root = xmlDoc.DocumentElement;
+                xmlConfig.Load(Environment.CurrentDirectory + CONFIG_FILE_RELATIVE_PATH);
+                XmlNode root = xmlConfig.DocumentElement;
                 XmlNodeList nodeList = root.ChildNodes;
                 foreach (XmlNode node in nodeList)
                 {
@@ -81,13 +84,13 @@ namespace Sudoku.Configuration
         public void SetAttributeValue(ConfigurationKeys config, string value)
         {
             configuration[config.Name()] = value;
-            XmlNode node = xmlDoc.SelectSingleNode("/Configuration/Item[@name='" + config.Name() + "']");
+            XmlNode node = xmlConfig.SelectSingleNode("/Configuration/Item[@name='" + config.Name() + "']");
             node.Attributes["value"].Value = value;
         }
 
         public void SaveConfiguration()
         {
-            xmlDoc.Save(Environment.CurrentDirectory + CONFIG_FILE_RELATIVE_PATH);
+            xmlConfig.Save(Environment.CurrentDirectory + CONFIG_FILE_RELATIVE_PATH);
         }
 
         #endregion

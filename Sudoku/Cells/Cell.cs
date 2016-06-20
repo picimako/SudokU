@@ -2,6 +2,10 @@
 
 namespace Sudoku.Cells
 {
+    /// <summary>
+    /// Represents a cell with a row and column index.
+    /// Also used for storing the cage index of a cell for Killer Sudoku exercises.
+    /// </summary>
     public class Cell
     {
         #region Members

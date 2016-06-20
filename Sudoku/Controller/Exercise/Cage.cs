@@ -3,6 +3,9 @@ using Sudoku.Cells;
 
 namespace Sudoku.Controller
 {
+    /// <summary>
+    /// Represents a cage in Killer Sudoku exercises by the cells and the sum of numbers in it.
+    /// </summary>
     public class Cage
     {
         private List<Cell> cells = new List<Cell>();
@@ -11,7 +14,6 @@ namespace Sudoku.Controller
         public List<Cell> Cells
         {
             get { return cells; }
-            set { cells = value; }
         }
 
         public int SumOfNumbers
