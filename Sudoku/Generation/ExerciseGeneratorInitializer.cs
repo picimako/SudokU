@@ -1,5 +1,6 @@
 ﻿using Sudoku.Controller;
 using Sudoku.Generation.Solver;
+using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Generate
 {
@@ -37,7 +38,7 @@ namespace Sudoku.Generate
                         return false;
 
                     //All cells are empty
-                    se.NumberOfEmptyCells = se.LAST_CELL_INDEX;
+                    se.NumberOfEmptyCells = LAST_CELL;
                 }
             }
             else

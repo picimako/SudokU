@@ -1,10 +1,11 @@
 ﻿using Sudoku.Controller;
+using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Generation.Solver
 {
     public class WithoutBackTrackSolver
     {
-        SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.get;
 
         /// <summary>Solves the exercise without using backtrack algorithm (as much as the difficulty of the exercise makes it possible).</summary>
         /// <returns>True if the exercise is solved completely (there is no empty cell), otherwise false</returns>
@@ -21,7 +22,7 @@ namespace Sudoku.Generation.Solver
             {
                 cellFillingHappened = false;
 
-                for (int p = se.FirstEmptyCell; p < se.LAST_CELL_INDEX; p++)
+                for (int p = se.FirstEmptyCell; p < LAST_CELL; p++)
                 {
                     //If the cell in not empty, then moving on to the next cell, as only empty cells are inspected.
                     if (!se.IsCellEmpty(0, p))

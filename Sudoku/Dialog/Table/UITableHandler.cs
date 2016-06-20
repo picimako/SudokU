@@ -9,6 +9,7 @@ using Sudoku.Dialog.Table.Finder;
 using Sudoku.Language;
 using Sudoku.Util;
 using static Sudoku.Cells.CellHandler;
+using static Sudoku.Controller.SudokuExercise;
 using static Sudoku.Verifier.ExerciseResultVerifier;
 using static Sudoku.Verifier.KillerExerciseResultVerifier;
 
@@ -61,7 +62,7 @@ namespace Sudoku.Dialog
 
         public void ReloadTableForRestart(int[][,] exerciseBackup)
         {
-            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            for (int p = 0; p < LAST_CELL; p++)
             {
                 //Since changing the value of the cell, the eventhandler gets temporarily removed
                 guiTable[p / 9, p % 9].TextChanged -= new EventHandler(this.TextBox_TextChanged);
@@ -197,7 +198,7 @@ namespace Sudoku.Dialog
             //If the cell is empty, the value got removed from it
             if (String.IsNullOrEmpty(changedCell.Text))
             {
-                se.Exercise[0][row, col] = se.EMPTY;
+                se.Exercise[0][row, col] = EMPTY;
 
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(previousCellValue, row, col);
 
@@ -236,7 +237,7 @@ namespace Sudoku.Dialog
                 if (se.IsExerciseKiller)
                     se.Killer.Ctrl.FillInCage(se.Killer.Exercise[row, col].CageIndex);
 
-                if (previousCellValue == se.EMPTY)
+                if (previousCellValue == EMPTY)
                     se.NumberOfEmptyCells--;
 
                 if (se.IsExerciseFull())

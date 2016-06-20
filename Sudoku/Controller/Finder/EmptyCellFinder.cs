@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Sudoku.Cells;
+using static Sudoku.Controller.SudokuExercise;
 using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller.Finder
 {
     class EmptyCellFinder
     {
-        SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.get;
 
         /// <summary>Iterates through the 'i' row or column in the 'num' numbertable and searches for an only empty cell
         /// in the row or column</summary>
@@ -112,7 +113,7 @@ namespace Sudoku.Controller.Finder
             List<Cell> emptyCells = new List<Cell>();
 
             int p = 0;
-            while (p < se.LAST_CELL_INDEX && emptyCells.Count <= 4)
+            while (p < LAST_CELL && emptyCells.Count <= 4)
             {
                 if (se.IsCellEmpty(num, p))
                     emptyCells.Add(new Cell(p / 9, p % 9));

@@ -4,6 +4,7 @@ using System.Linq;
 using Sudoku.Cells;
 using Sudoku.Controller;
 using Sudoku.Generation.Solver;
+using static Sudoku.Controller.SudokuExercise;
 using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Generate
@@ -72,11 +73,11 @@ namespace Sudoku.Generate
                     do
                     {
                         GenerateCellIndeces(ref row, ref col, ref cellValue);
-                    } while (blockIndecesOfLastNRemovedCells.Contains(BlockIndexByCellIndeces(row, col)) || cellValue == se.EMPTY);
+                    } while (blockIndecesOfLastNRemovedCells.Contains(BlockIndexByCellIndeces(row, col)) || cellValue == EMPTY);
                 }
 
                 //Kitörlöm a generált indexeken levő számot
-                se.Exercise[0][row, col] = se.EMPTY;
+                se.Exercise[0][row, col] = EMPTY;
 
                 //Elmentem a törölt cella indexeit, és törlés előtti értékét
                 removedCellsAndValuesBeforeRemoval.Add(new Cell(row, col), cellValue);
@@ -147,7 +148,7 @@ namespace Sudoku.Generate
                     {
                         GenerateCellIndicesUntilOccupied(ref row, ref col, ref cellValue);
                         
-                        se.Exercise[0][row, col] = se.EMPTY;
+                        se.Exercise[0][row, col] = EMPTY;
 
                         //Saving the removed cell and its value before removal
                         removedCellsAndValuesBeforeRemoval.Add(new Cell(row, col), cellValue);
@@ -173,7 +174,7 @@ namespace Sudoku.Generate
             do
             {
                 GenerateCellIndeces(ref row, ref col, ref cellValue);
-            } while (cellValue == se.EMPTY);
+            } while (cellValue == EMPTY);
         }
 
         /// <summary> Generates random row and col cell indeces</summary>
@@ -225,7 +226,7 @@ namespace Sudoku.Generate
         {
             foreach (KeyValuePair<Cell, int> cell in removedCellsAndValuesBeforeRemoval)
             {
-                se.Exercise[0][cell.Key.Row, cell.Key.Col] = se.EMPTY;
+                se.Exercise[0][cell.Key.Row, cell.Key.Col] = EMPTY;
                 se.Ctrl.RegenerateNumberTablesForRemovedValue(cell.Value, cell.Key.Row, cell.Key.Col);
             }
         }

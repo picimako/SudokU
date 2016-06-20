@@ -4,8 +4,8 @@ namespace Sudoku.Generation.Solver
 {
     public class ReadExerciseSolver
     {
-        SudokuExercise se = SudokuExercise.get;
-        WithoutBackTrackSolver solver = new WithoutBackTrackSolver();
+        private SudokuExercise se = SudokuExercise.get;
+        private WithoutBackTrackSolver solver = new WithoutBackTrackSolver();
 
         public void Solve()
         {

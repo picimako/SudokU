@@ -7,6 +7,7 @@ using Sudoku.Controller;
 using Sudoku.Language;
 using Sudoku.Util;
 using static Sudoku.Configuration.ConfigurationKeys;
+using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Verifier
 {
@@ -67,7 +68,7 @@ namespace Sudoku.Verifier
         private void VerifyShowIncorrectNumbers()
         {
             bool isSolutionCorrect = true;
-            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            for (int p = 0; p < LAST_CELL; p++)
             {
                 if (!IsFieldEmpty(p) && !IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
                 {
@@ -84,7 +85,7 @@ namespace Sudoku.Verifier
         private void VerifyShowNumberOfIncorrectNumbers()
         {
             int numberOfIncorrectCells = 0;
-            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            for (int p = 0; p < LAST_CELL; p++)
             {
                 if (!IsFieldEmpty(p) && !IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
                     numberOfIncorrectCells++;
@@ -94,7 +95,7 @@ namespace Sudoku.Verifier
 
         private void VerifyShowWhetherSolutionIsCorrect()
         {
-            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            for (int p = 0; p < LAST_CELL; p++)
             {
                 if (!IsFieldValueMatchCurrentCellValueInSolutionInPosition(p))
                 {

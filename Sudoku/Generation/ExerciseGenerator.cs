@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Sudoku.Cells;
 using Sudoku.Controller;
+using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Generate
 {
@@ -61,7 +62,7 @@ namespace Sudoku.Generate
                 se.Exercise = Arrays.CreateInitializedArray(); ;
 
                 //81 lesz az üres cellák száma, mert nem kell megadni egyetlen egy számot sem a feladatban
-                se.NumberOfEmptyCells = se.LAST_CELL_INDEX;
+                se.NumberOfEmptyCells = LAST_CELL;
             }
             else
             {

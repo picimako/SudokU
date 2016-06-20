@@ -1,6 +1,7 @@
 ﻿using Sudoku.Cells;
 using Sudoku.Controller.Finder;
 using Sudoku.Generate;
+using static Sudoku.Controller.SudokuExercise;
 using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller
@@ -29,7 +30,7 @@ namespace Sudoku.Controller
             se.Exercise[removedValue] = new int[9, 9];
 
             //2.
-            for (int p = 0; p < se.LAST_CELL_INDEX; p++)
+            for (int p = 0; p < LAST_CELL; p++)
             {
                 if (se.Exercise[0][p / 9, p % 9] == removedValue)
                 {
@@ -48,7 +49,7 @@ namespace Sudoku.Controller
             {
                 if (num != removedValue && !HousesContainValue(deletedCellRow, deletedCellColumn, num))
                 {
-                    se.Exercise[num][deletedCellRow, deletedCellColumn] = se.EMPTY;
+                    se.Exercise[num][deletedCellRow, deletedCellColumn] = EMPTY;
                 }
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Sudoku.Cells;
 using Sudoku.Controller.Finder.Killer;
 using Sudoku.Log;
+using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Controller
 {
@@ -43,11 +44,11 @@ namespace Sudoku.Controller
             int p = 0;
 
             //Amíg nem lépek ki a tábláról és a vizsgált cella nem üres, átlépek a következő cellára
-            while (p < se.LAST_CELL_INDEX && se.Killer.IsCellInAnyCage(p / 9, p % 9))
+            while (p < LAST_CELL && se.Killer.IsCellInAnyCage(p / 9, p % 9))
                 p++;
 
             //Ha nem léptem ki a tábláról, akkor van üres cella, visszatérek az indexeivel
-            return p < se.LAST_CELL_INDEX ? new Cell(p / 9, p % 9) : Cell.OUT_OF_RANGE;
+            return p < LAST_CELL ? new Cell(p / 9, p % 9) : Cell.OUT_OF_RANGE;
         }
 
         /// <summary>Összegyűjti azokat a ketrecszámokat, amely ketrecek az [i,j] cella szomszédja(i) és az [i,j] cella értéke még nem szerepel
@@ -143,8 +144,8 @@ namespace Sudoku.Controller
         {
             foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
             {
-                if (se.Solution[cell.Row, cell.Col] == se.EMPTY)
-                    se.Solution[cell.Row, cell.Col] = se.OCCUPIED;
+                if (se.Solution[cell.Row, cell.Col] == EMPTY)
+                    se.Solution[cell.Row, cell.Col] = OCCUPIED;
             }
         }
 

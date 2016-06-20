@@ -1,4 +1,5 @@
 ﻿using Sudoku.Controller;
+using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Generation.Solver
 {
@@ -52,16 +53,16 @@ namespace Sudoku.Generation.Solver
                     }
                 }
 
-                se.Exercise[0][p / 9, p % 9] = se.EMPTY;
+                se.Exercise[0][p / 9, p % 9] = EMPTY;
             }
         }
 
         private int FindFirstEmptyCellAfterP(int pos)
         {
             int p = pos;
-            while (p < se.LAST_CELL_INDEX)
+            while (p < LAST_CELL)
             {
-                if (se.Exercise[0][p / 9, p % 9] == se.EMPTY)
+                if (se.Exercise[0][p / 9, p % 9] == EMPTY)
                 {
                     break;
                 }

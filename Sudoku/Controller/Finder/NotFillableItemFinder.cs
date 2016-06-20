@@ -1,10 +1,11 @@
-﻿using static Sudoku.Table.TableUtil;
+﻿using static Sudoku.Controller.SudokuExercise;
+using static Sudoku.Table.TableUtil;
 
 namespace Sudoku.Controller.Finder
 {
     class NotFillableItemFinder
     {
-        SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.get;
 
         //True if all the houses examined so far contain only occupied cells
         //TODO: this may not needed
@@ -77,7 +78,7 @@ namespace Sudoku.Controller.Finder
         /// <summary>Returns whether the given cell is not occupied.</summary>
         private bool IsThereNotOccupiedCell(int num, int row, int col)
         {
-            if (se.Exercise[num][row, col] != se.OCCUPIED)
+            if (se.Exercise[num][row, col] != OCCUPIED)
             {
                 isCurrentHouseFull = false;
                 return true;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Sudoku.Cells;
 using Sudoku.Controller;
 using Sudoku.Controller.Finder;
+using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Generate
 {
@@ -208,7 +209,7 @@ namespace Sudoku.Generate
                 //Az r szám tömbjének mellékátlójában összegyűjtöm azokat a cellákat, amelyek üresek, és elmentem őket sudokuNumbers-be
                 for (int i = 8; i >= 0; i--)
                 {
-                    if (se.Exercise[r][i, 8 - i] == se.EMPTY)
+                    if (se.Exercise[r][i, 8 - i] == EMPTY)
                         sudokuNumbers.Add(i);
                 }
 
