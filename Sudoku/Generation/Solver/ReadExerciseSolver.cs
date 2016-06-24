@@ -2,11 +2,18 @@
 
 namespace Sudoku.Generation.Solver
 {
+    /// <summary>
+    /// Solver class for exercises read form file.
+    /// </summary>
     public class ReadExerciseSolver
     {
         private SudokuExercise se = SudokuExercise.get;
         private WithoutBackTrackSolver solver = new WithoutBackTrackSolver();
 
+        /// <summary>
+        /// Generates the number tables based on the read values.
+        /// Then solves the exercise and sets the necessary fields.
+        /// </summary>
         public void Solve()
         {
             se.Ctrl.GenerateValuesInNumberTables();
@@ -29,7 +36,9 @@ namespace Sudoku.Generation.Solver
             se.NumberOfEmptyCells = originalNumberOfEmptyCells;
         }
 
-        /// <summary>Solves the exercise using backtrack algorithm.</summary>
+        /// <summary>
+        /// Solves the exercise using backtrack algorithm.
+        /// </summary>
         /// <returns>The solved exercise.</returns>
         private int[,] SolveExerciseWithBackTrack()
         {
