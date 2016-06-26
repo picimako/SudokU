@@ -113,16 +113,11 @@ namespace Sudoku.Controller.Finder.Killer
             if (addingNeighbourToCageOfCell
                 /* If we want to join one of the neighbour cells to the cage of "cell".
                  * If the neighbour is in any of the cages, and the neighbour cell is in the cage of "cell".*/
-                /* Ha az [cell.Row, cell.Col] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
-                 * A szomszéd szerepel-e már valamelyik ketrecben, és a szomszéd cella értéke benne van-e az [cell.Row,cell.Col] indexű cella ketrecében*/
                 ? !se.Killer.IsCellInAnyCage(row, col) && !IsCageContainValue(se.Solution[row, col], cageIndex, se.Solution)
 
                 /* If we want to join "cell" to the cage of one of the neighbour cells.
                  * This can happen when "cell" is left empty, and the cells around it are already in a cage.
                  * If the neighbour is in a cage, and the cage of the neighbour cell doesn't contain the value of "cell".*/
-                /* Ha az [cell.Row,cell.Col] indexű cellát szeretném valamelyik szomszéd cella ketrecében elhelyezni.
-                * Ez akkor jöhet elő, ha az [cell.Row,Cell.col] indexű cella üresen marad, és a körülötte levő cellák már mind benne vannak egy ketrecben.
-                * Ha a szomszéd már benne van egy ketrecben, és a szomszéd cella ketrece nem tartalmazza az [cell.Row,cell.Col] indexű cella értékét*/
                 : se.Killer.IsCellInAnyCage(row, col) && !IsCageContainValue(se.Solution[cell.Row, cell.Col], se.Killer.Exercise[row, col].CageIndex, se.Solution))
                 possibleNeighbourCells.Add(new Cell(row, col));
         }
