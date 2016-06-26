@@ -2,9 +2,14 @@
 
 namespace Sudoku.Generate
 {
+    /// <summary>
+    /// Factory class for creating Sudoku controllers for different types of Sudokus.
+    /// </summary>
     class SudokuControllerFactory
     {
-        /// <summary>Creates a SudokuController based on the given exercise type.</summary>
+        /// <summary>
+        /// Creates a SudokuController based on the given exercise type.
+        /// </summary>
         public SimpleSudokuController CreateController(SudokuType exerciseType)
         {
             SimpleSudokuController controller = null;

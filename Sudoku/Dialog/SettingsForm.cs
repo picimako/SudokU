@@ -70,12 +70,12 @@ namespace Sudoku.Dialog
 
         private void SetFormControlDefaultValues()
         {
-            sameNumberAlreadyInHouseHintBox.Checked = Boolean.Parse(conf.Get(CELL_RED_BACKGROUND_ENABLED));
-            sumOfNumbersBiggerInCageHintBox.Checked = Boolean.Parse(conf.Get(SUM_OF_NUMBERS_BIGGER_IN_CAGE_CHECK_ENABLED));
+            sameNumberAlreadyInHouseHintBox.Checked = conf.GetAsBool(CELL_RED_BACKGROUND_ENABLED);
+            sumOfNumbersBiggerInCageHintBox.Checked = conf.GetAsBool(SUM_OF_NUMBERS_BIGGER_IN_CAGE_CHECK_ENABLED);
 
-            showWrongCellsRadio.Checked = Boolean.Parse(conf.Get(SHOW_INCORRECT_CELLS_ENABLED));
-            showNumberOfWrongCellsRadio.Checked = Boolean.Parse(conf.Get(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED));
-            showExerciseCorrectnessRadio.Checked = Boolean.Parse(conf.Get(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED));
+            showWrongCellsRadio.Checked = conf.GetAsBool(SHOW_INCORRECT_CELLS_ENABLED);
+            showNumberOfWrongCellsRadio.Checked = conf.GetAsBool(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED);
+            showExerciseCorrectnessRadio.Checked = conf.GetAsBool(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED);
 
             //A segítség és óra CheckBox, valamint az ellenőrzés csoportja vanFeladat értéke szerint kapnak értéket
             sameNumberAlreadyInHouseHintBox.Enabled = sumOfNumbersBiggerInCageHintBox.Enabled = ellenorzesGroup.Enabled = !conf.ExerciseInProgress;

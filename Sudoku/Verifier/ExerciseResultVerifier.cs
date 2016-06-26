@@ -51,15 +51,15 @@ namespace Sudoku.Verifier
                 return;
             }            
 
-            if (Boolean.Parse(conf.Get(SHOW_INCORRECT_CELLS_ENABLED)))
+            if (conf.GetAsBool(SHOW_INCORRECT_CELLS_ENABLED))
             {
                 VerifyShowIncorrectNumbers();
             }
-            else if (Boolean.Parse(conf.Get(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED)))
+            else if (conf.GetAsBool(SHOW_NUMBER_OF_INCORRECT_CELLS_ENABLED))
             {
                 VerifyShowNumberOfIncorrectNumbers();
             }
-            else if (Boolean.Parse(conf.Get(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED)))
+            else if (conf.GetAsBool(SHOW_WHETHER_SOLUTION_IS_CORRECT_ENABLED))
             {
                 VerifyShowWhetherSolutionIsCorrect();
             }
@@ -130,30 +130,38 @@ namespace Sudoku.Verifier
             checkLabel.Text = loc.Get("good_wrong_solution_label") + " " + loc.Get("wrong");
         }
 
+        /// <remarks>
+        /// No need for TryParse as text and special characters are not allowed in TextBox cells.
+        /// </remarks>
         private int ParseValueOfCurrentCellInPosition(int pos)
         {
-            //No need for TryParse as text and special characters are not allowed in TextBox cells
             return Int32.Parse(activeTable[pos / 9, pos % 9].Text);
         }
 
-        /// <summary>Megvizsgálja, hogy a feladat megoldásában van-e 0 értékű cella.</summary>
+        /// <summary>
+        /// Inspects whether the solution contains 0 value.
+        /// </summary>
         /// <param name="solution">The solution of the exercise.</param>
-        /// <returns>A nincs 0 értékű cella a megoldásban, akkor true, egyébként false</returns>
+        /// <returns>True if the exercise doesn't contains 0 value, meaning the solution is correct, otherwise false.</returns>
         public static bool IsExerciseCorrect(int[,] solution)
         {
             return !solution.OfType<int>().ToList().Contains(0);
         }
 
-        /// <summary>Returns whether checking the "sum of numbers are bigger than the expected sum of numbers in a cage" is enabled</summary>
+        /// <summary>
+        /// Returns whether checking the "sum of numbers are bigger than the expected sum of numbers in a cage" is enabled.
+        /// </summary>
         public static bool ToCheckSumOfNumbersBiggerInCage()
         {
-            return Boolean.Parse(conf.Get(SUM_OF_NUMBERS_BIGGER_IN_CAGE_CHECK_ENABLED));
+            return conf.GetAsBool(SUM_OF_NUMBERS_BIGGER_IN_CAGE_CHECK_ENABLED);
         }
 
-        /// <summary>Returns whether checking the "typed number is already in the changed house" is enabled.</summary>
+        /// <summary>
+        /// Returns whether checking the "typed number is already in the changed house" is enabled.
+        /// </summary>
         public static bool ToCheckSameNumberAlreadyInHouse()
         {
-            return Boolean.Parse(conf.Get(CELL_RED_BACKGROUND_ENABLED));
+            return conf.GetAsBool(CELL_RED_BACKGROUND_ENABLED);
         }
 
         #endregion

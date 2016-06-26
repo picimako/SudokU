@@ -5,27 +5,36 @@ using Sudoku.Log;
 
 namespace Sudoku.Controller.Finder.Killer
 {
+    /// <summary>
+    /// Helper class for Killer Sudoku to find and collect possible neighbour cells.
+    /// </summary>
     public class PossibleNeighbourCellsFinder
     {
         private List<Cell> possibleNeighbourCells;
         private SudokuExercise se = SudokuExercise.get;
         private Logger log = Logger.Instance;
 
-        /// <summary>A megadott cella elhelyezkedésétől függően megkeresi a cella lehetséges szomszédait</summary>
-        /// <param name="cell">A viszonyítást képző cella</param>
-        /// <param name="cageIndex">A vizsgálandó ketrec száma</param>
-        /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
+        /// <summary>
+        /// Based on the position of the given cell it collects its possible neighbour cells
+        /// which are candidates to be put in the given cage.
+        /// </summary>
+        /// <param name="cell">The cell which it searches for the neighbours of.</param>
+        /// <param name="cageIndex">The cage index to examine.</param>
+        /// <param name="addingNeighbourToCageOfCell">
+        /// Whether we want to add a neighbourcell to the cage of the current cell, or
+        /// we want to add the current cell into the neighbour's cage.
+        /// </param>
         /// <returns>The list of possible neighbour cells.</returns>
-        public List<Cell> FindPossibleNeighbourCells(Cell cell, int cageIndex, bool egyenlo)
+        public List<Cell> FindPossibleNeighbourCells(Cell cell, int cageIndex, bool addingNeighbourToCageOfCell)
         {
             possibleNeighbourCells = new List<Cell>();
 
             if (cell.IsInFirstRow())
             {
                 log.Info("Cell is in first row.");
-                CollectCell(Direction.DOWN, cell, cageIndex, egyenlo);
+                CollectCell(Direction.DOWN, cell, cageIndex, addingNeighbourToCageOfCell);
 
-                sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo);
+                CornerAndThenRowCheck(cell, cageIndex, addingNeighbourToCageOfCell);
 
                 return possibleNeighbourCells;
             }
@@ -33,9 +42,9 @@ namespace Sudoku.Controller.Finder.Killer
             if (cell.IsInLastRow())
             {
                 log.Info("Cell is in last row.");
-                CollectCell(Direction.UP, cell, cageIndex, egyenlo);
+                CollectCell(Direction.UP, cell, cageIndex, addingNeighbourToCageOfCell);
 
-                sarokEsBenneSorVizsgalat(cell, cageIndex, egyenlo);
+                CornerAndThenRowCheck(cell, cageIndex, addingNeighbourToCageOfCell);
 
                 return possibleNeighbourCells;
             }
@@ -43,9 +52,9 @@ namespace Sudoku.Controller.Finder.Killer
             if (cell.IsInFirstColumn())
             {
                 log.Info("Cell is in first column.");
-                CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo);
+                CollectCell(Direction.RIGHT, cell, cageIndex, addingNeighbourToCageOfCell);
 
-                CheckUpAndDown(cell, cageIndex, egyenlo);
+                CheckUpAndDown(cell, cageIndex, addingNeighbourToCageOfCell);
 
                 return possibleNeighbourCells;
             }
@@ -53,90 +62,100 @@ namespace Sudoku.Controller.Finder.Killer
             if (cell.IsInLastColumn())
             {
                 log.Info("Cell is in last column.");
-                CollectCell(Direction.LEFT, cell, cageIndex, egyenlo);
+                CollectCell(Direction.LEFT, cell, cageIndex, addingNeighbourToCageOfCell);
 
-                CheckUpAndDown(cell, cageIndex, egyenlo);
+                CheckUpAndDown(cell, cageIndex, addingNeighbourToCageOfCell);
 
                 return possibleNeighbourCells;
             }
 
-            /* Ha a cella indexei egyik előző esetnek sem felelnek meg, akkor mind a 4 szomszédot megvizsgálhatom*/
-            CheckToLeftAndRight(cell, cageIndex, egyenlo);
+            //If the cell indeces doesn't fit to any previous case, all 4 neighbours of it can be checked.
+            CheckToLeftAndRight(cell, cageIndex, addingNeighbourToCageOfCell);
 
-            CheckUpAndDown(cell, cageIndex, egyenlo);
+            CheckUpAndDown(cell, cageIndex, addingNeighbourToCageOfCell);
 
             return possibleNeighbourCells;
         }
 
-        /// <summary>Megvizsgálja az [i,j] indexű cella 4 szomszéd celláját, 
-        /// hogy melyik szomszéd cella értéke van benne az [i,j] indexű cella ketrecében</summary>
+        /// <summary>
+        /// Checks if the given value is in the given cage (by its cage index).
+        /// </summary>
+        /// <param name="value">The value to find.</param>
+        /// <param name="cageIndex">The cage index to search in.</param>
+        /// <param name="table">The table to examine: either the exercise or the solution.</param>
+        /// <returns>True if value is in the given cage, otherwise false.</returns>
+        /// TODO: should find a proper place for this!!
+        public bool IsCageContainValue(int value, int cageIndex, int[,] table)
+        {
+            List<Cell> cellsOfValueFoundInCage = se.Killer.Cages[cageIndex].Cells
+                .Where(cell => table[cell.Row, cell.Col] == value)
+                .ToList();
+            return cellsOfValueFoundInCage.Count > 0;
+        }
+
+        /// <summary>
+        /// Checks the 4 neighbours of the provided cell
+        /// and adds the neighbour to the list of possible neighbour cells
+        /// </summary>
         /// <param name="direction">The direction to search towards</param>
-        /// <param name="cell">A viszonyítást képező cella</param>
-        /// <param name="cageIndex">Az [i,j] indexű cella ketrecszáma</param>
-        /// <param name="egyenlo">Két fajta vizsgálat megkülönböztetésére szolgál</param>
-        private void CollectCell(Direction direction, Cell cell, int cageIndex, bool egyenlo)
+        /// <param name="cell">The cell to search among the neighbours of.</param>
+        /// <param name="cageIndex">The cage index to search in.</param>
+        /// <param name="addingNeighbourToCageOfCell">
+        /// Whether we want to add a neighbourcell to the cage of the current cell, or
+        /// we want to add the current cell into the neighbour's cage.
+        /// </param>
+        private void CollectCell(Direction direction, Cell cell, int cageIndex, bool addingNeighbourToCageOfCell)
         {
             Cell alteredCell = cell.WithAlteredIndecesByDirection(direction);
             int row = alteredCell.Row;
             int col = alteredCell.Col;
 
-            if (egyenlo
-                /* Ha az [i, j] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
-                 * A szomszéd szerepel-e már valamelyik ketrecben, és a szomszéd cella értéke benne van-e az [i,j] indexű cella ketrecében*/
+            if (addingNeighbourToCageOfCell
+                /* If we want to join one of the neighbour cells to the cage of "cell".
+                 * If the neighbour is in any of the cages, and the neighbour cell is in the cage of "cell".*/
+                /* Ha az [cell.Row, cell.Col] indexű cella ketrecéhez szeretném hozzávenni valamelyik szomszéd cellát.
+                 * A szomszéd szerepel-e már valamelyik ketrecben, és a szomszéd cella értéke benne van-e az [cell.Row,cell.Col] indexű cella ketrecében*/
                 ? !se.Killer.IsCellInAnyCage(row, col) && !IsCageContainValue(se.Solution[row, col], cageIndex, se.Solution)
 
-                /* Ha az [i,j] indexű cellát szeretném valamelyik szomszéd cella ketrecében elhelyezni.
-                * Ez akkor jöhet elő, ha az [i,j] indexű cella üresen marad, és a körülötte levő cellák már mind benne vannak egy ketrecben.
-                * Ha a szomszéd már benne van egy ketrecben, és a szomszéd cella ketrece nem tartalmazza az [i,j] indexű cella értékét*/
+                /* If we want to join "cell" to the cage of one of the neighbour cells.
+                 * This can happen when "cell" is left empty, and the cells around it are already in a cage.
+                 * If the neighbour is in a cage, and the cage of the neighbour cell doesn't contain the value of "cell".*/
+                /* Ha az [cell.Row,cell.Col] indexű cellát szeretném valamelyik szomszéd cella ketrecében elhelyezni.
+                * Ez akkor jöhet elő, ha az [cell.Row,Cell.col] indexű cella üresen marad, és a körülötte levő cellák már mind benne vannak egy ketrecben.
+                * Ha a szomszéd már benne van egy ketrecben, és a szomszéd cella ketrece nem tartalmazza az [cell.Row,cell.Col] indexű cella értékét*/
                 : se.Killer.IsCellInAnyCage(row, col) && !IsCageContainValue(se.Solution[cell.Row, cell.Col], se.Killer.Exercise[row, col].CageIndex, se.Solution))
                 possibleNeighbourCells.Add(new Cell(row, col));
         }
 
-        private void CheckToLeftAndRight(Cell cell, int cageIndex, bool egyenlo)
+        private void CheckToLeftAndRight(Cell cell, int cageIndex, bool addingNeighbourToCageOfCell)
         {
-            CollectCell(Direction.LEFT, cell, cageIndex, egyenlo);
-
-            CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo);
+            CollectCell(Direction.LEFT, cell, cageIndex, addingNeighbourToCageOfCell);
+            CollectCell(Direction.RIGHT, cell, cageIndex, addingNeighbourToCageOfCell);
         }
 
-        private void CheckUpAndDown(Cell cell, int cageIndex, bool egyenlo)
+        private void CheckUpAndDown(Cell cell, int cageIndex, bool addingNeighbourToCageOfCell)
         {
-            CollectCell(Direction.UP, cell, cageIndex, egyenlo);
-
-            CollectCell(Direction.DOWN, cell, cageIndex, egyenlo);
+            CollectCell(Direction.UP, cell, cageIndex, addingNeighbourToCageOfCell);
+            CollectCell(Direction.DOWN, cell, cageIndex, addingNeighbourToCageOfCell);
         }
 
-        private void sarokEsBenneSorVizsgalat(Cell cell, int cageIndex, bool egyenlo)
+        private void CornerAndThenRowCheck(Cell cell, int cageIndex, bool addingNeighbourToCageOfCell)
         {
-            //i=0: Ha a bal felső sarokban van, i=8: Ha a bal alsó sarokban van
+            //i=0: if cell is in the top left corner, i=8: if cell is in the bottom left corner
             if (cell.IsInFirstColumn())
             {
-                CollectCell(Direction.RIGHT, cell, cageIndex, egyenlo);
+                CollectCell(Direction.RIGHT, cell, cageIndex, addingNeighbourToCageOfCell);
             }
-            //i=0: Ha a jobb felső sarokban van, i=8: Ha a jobb alsó sarokban van
+            //i=0: if cell is in the top right corner, i=8: if cell is in the bottom right corner
             else if (cell.IsInLastColumn())
             {
-                CollectCell(Direction.LEFT, cell, cageIndex, egyenlo);
+                CollectCell(Direction.LEFT, cell, cageIndex, addingNeighbourToCageOfCell);
             }
-            //Ha az előző 2 kivételével valahol a sorban
+            //If cell is in somewhere in the row except the corners
             else
             {
-                CheckToLeftAndRight(cell, cageIndex, egyenlo);
+                CheckToLeftAndRight(cell, cageIndex, addingNeighbourToCageOfCell);
             }
-        }
-
-        /// <summary>Megvizsgálja, hogy a megadott érték benne van-e a megadott (cageIndex számú) ketrecben</summary>
-        /// <param name="value">A keresendő érték</param>
-        /// <param name="cageIndex">A vizsgálandó ketrec száma</param>
-        /// <param name="tomb">A vizsgálandó tömb: feladat vagy megoldás tömbje</param>
-        /// <returns>Ha benne van az érték, akkor true, egyébként false</returns>
-        /// TODO: should find a proper place for this!!
-        public bool IsCageContainValue(int value, int cageIndex, int[,] tomb)
-        {
-            List<Cell> cellsOfValueFoundInCage = se.Killer.Cages[cageIndex].Cells
-                .Where(cell => tomb[cell.Row, cell.Col] == value)
-                .ToList();
-            return cellsOfValueFoundInCage.Count > 0;
         }
     }
 }

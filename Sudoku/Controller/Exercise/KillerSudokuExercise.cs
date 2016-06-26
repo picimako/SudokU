@@ -53,6 +53,17 @@ namespace Sudoku.Controller
 
         #region Methods
 
+        /// <summary>
+        /// Returns whether the cell in parameter is placed in any cage.
+        /// </summary>
+        /// <param name="row">The row index of the cell.</param>
+        /// <param name="col">The column index of the cell.</param>
+        /// <returns>True if the cell is placed in any of the cages, otherwise false.</returns>
+        public bool IsCellInAnyCage(int row, int col)
+        {
+            return killerExercise[row, col].CageIndex != 0;
+        }
+
         private void InitExercise()
         {
             killerExercise = new Cell[9, 9];
@@ -63,11 +74,6 @@ namespace Sudoku.Controller
                     killerExercise[i, j] = new Cell();
                 }
             }
-        }
-
-        public bool IsCellInAnyCage(int row, int col)
-        {
-            return killerExercise[row, col].CageIndex != 0;
         }
 
         #endregion

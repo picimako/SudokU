@@ -56,6 +56,10 @@ namespace Sudoku.Configuration
 
         #region Public
 
+        /// <summary>
+        /// Reads the configuration from the predefined configuration file.
+        /// </summary>
+        /// <exception cref="FileNotFoundException">Thrown when the configuration file doesn't exist.</exception>
         public void ReadConfiguration()
         {
             xmlConfig = new XmlDocument();
@@ -76,11 +80,33 @@ namespace Sudoku.Configuration
             }
         }
 
+        /// <summary>
+        /// Returns the value of the given config attribute.
+        /// </summary>
+        /// <param name="config">The config to return the value of.</param>
+        /// <returns>The value of the config attribute specified.</returns>
+        /// <remarks>No handling of non-existent config name for now.</remarks>
         public string Get(ConfigurationKeys config)
         {
             return configuration[config.Name()];
         }
 
+        /// <summary>
+        /// Returns the value of the given config attribute as boolean.
+        /// </summary>
+        /// <param name="config">The config to return the value of.</param>
+        /// <returns>The true or false value of the config attribute specified.</returns>
+        /// <remarks>No handling of error if parsing cannot happen to boolean.</remarks>
+        public bool GetAsBool(ConfigurationKeys config)
+        {
+            return Boolean.Parse(Get(config));
+        }
+
+        /// <summary>
+        /// Sets the given value to the given config attribute.
+        /// </summary>
+        /// <param name="config">The config attribute to change.</param>
+        /// <param name="value">The new value of the config.</param>
         public void SetAttributeValue(ConfigurationKeys config, string value)
         {
             configuration[config.Name()] = value;
@@ -88,6 +114,9 @@ namespace Sudoku.Configuration
             node.Attributes["value"].Value = value;
         }
 
+        /// <summary>
+        /// Writes the current state of the configuration into the config file.
+        /// </summary>
         public void SaveConfiguration()
         {
             xmlConfig.Save(Environment.CurrentDirectory + CONFIG_FILE_RELATIVE_PATH);
