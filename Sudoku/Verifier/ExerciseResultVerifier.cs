@@ -17,7 +17,7 @@ namespace Sudoku.Verifier
 
         private static ConfigHandler conf = ConfigHandler.get;
 
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private LocHandler loc = LocHandler.get;
 
         private KillerExerciseResultVerifier killerVerifier = new KillerExerciseResultVerifier();

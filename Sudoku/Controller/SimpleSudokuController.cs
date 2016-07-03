@@ -8,7 +8,7 @@ namespace Sudoku.Controller
 {
     public class SimpleSudokuController
     {
-        protected SudokuExercise se = SudokuExercise.get;
+        protected SudokuExercise se = SudokuExercise.Instance;
         private EmptyCellFinder finder = new EmptyCellFinder();
 
         #region Constructor

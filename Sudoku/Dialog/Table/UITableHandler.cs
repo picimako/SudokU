@@ -18,7 +18,7 @@ namespace Sudoku.Dialog
     class UITableHandler
     {
         #region Members
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
 

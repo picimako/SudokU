@@ -20,7 +20,7 @@ namespace Sudoku.Dialog
         private ExerciseResultVerifier resultVerifier;
         private MenuHandler menuHandler;
         private UITableHandler tableHandler;
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private LocHandler loc = LocHandler.get;
         private ConfigHandler conf = ConfigHandler.get;
         private Logger log = Logger.Instance;

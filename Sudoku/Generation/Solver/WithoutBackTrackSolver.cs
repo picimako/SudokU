@@ -5,7 +5,7 @@ namespace Sudoku.Generation.Solver
 {
     public class WithoutBackTrackSolver
     {
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
 
         /// <summary>Solves the exercise without using backtrack algorithm (as much as the difficulty of the exercise makes it possible).</summary>
         /// <returns>True if the exercise is solved completely (there is no empty cell), otherwise false</returns>

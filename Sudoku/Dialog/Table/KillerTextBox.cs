@@ -12,7 +12,7 @@ namespace Sudoku.Dialog
         private String sumOfNumbersInCage;
         private bool isBorderNeeded;
         private Font fontForSumOfNumbers;
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
 
         #endregion
 

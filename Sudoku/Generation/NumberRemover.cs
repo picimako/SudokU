@@ -14,7 +14,7 @@ namespace Sudoku.Generate
         #region Members
 
         private const int MAX_NUMBER_OF_REMEMBERED_REMOVED_CELL_INDECES = 6;
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private Random random = new Random();
         private TemporarySolutionContainer container;
         //Key: a removed cell. Value: the value of the cell before the removal.

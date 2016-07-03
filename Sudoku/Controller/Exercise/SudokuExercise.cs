@@ -79,7 +79,7 @@ namespace Sudoku.Controller
 
         #region Constructor
 
-        public static SudokuExercise get
+        public static SudokuExercise Instance
         {
             get
             {

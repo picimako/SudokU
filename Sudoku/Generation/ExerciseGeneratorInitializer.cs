@@ -15,7 +15,7 @@ namespace Sudoku.Generate
         /// <returns>False in case of an error during exercise read from file, otherwise true.</returns>
         public bool GenerateExercise(int difficulty, int killerDifficulty)
         {
-            SudokuExercise se = SudokuExercise.get;
+            SudokuExercise se = SudokuExercise.Instance;
 
             se.Difficulty = difficulty;
             se.KillerDifficulty = killerDifficulty;

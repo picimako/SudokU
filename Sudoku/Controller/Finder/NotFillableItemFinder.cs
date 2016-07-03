@@ -5,7 +5,7 @@ namespace Sudoku.Controller.Finder
 {
     class NotFillableItemFinder
     {
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
 
         //True if all the houses examined so far contain only occupied cells
         //TODO: this may not needed

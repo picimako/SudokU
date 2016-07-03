@@ -8,7 +8,7 @@ namespace Sudoku.Verifier
 {
     public class KillerExerciseResultVerifier
     {
-        private static SudokuExercise se = SudokuExercise.get;
+        private static SudokuExercise se = SudokuExercise.Instance;
 
         /// <summary>A kitöltött feladványt megvizsgálja minden feltétel alapján, hogy jó-e vagy sem</summary>
         // TODO: move this to a new KillerExerciseResultVerifier for it

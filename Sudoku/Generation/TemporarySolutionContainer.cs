@@ -4,7 +4,7 @@ namespace Sudoku.Generate
 {
     sealed class TemporarySolutionContainer
     {
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private int[][,] solution;
 
         public int[][,] Solution

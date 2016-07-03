@@ -8,7 +8,7 @@ namespace Sudoku.Cells
     /// </summary>
     class CellHandler
     {
-        private static SudokuExercise se = SudokuExercise.get;
+        private static SudokuExercise se = SudokuExercise.Instance;
 
         /// <summary>
         /// Checks if the cell is special which it is in two cases:

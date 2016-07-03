@@ -8,7 +8,7 @@ namespace Sudoku
 {
     class ExerciseReader
     {
-        private static SudokuExercise se = SudokuExercise.get;
+        private static SudokuExercise se = SudokuExercise.Instance;
 
         /// <summary>Reads the exercise value from the given file.</summary>
         /// <param name="filePath">The file path to read from.</param>

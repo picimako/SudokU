@@ -8,7 +8,7 @@ namespace Sudoku.Generation.Solver
         #region Members
 
         private int numberOfSolutionsFound = 0;
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
 
         #endregion
 

@@ -11,7 +11,7 @@ namespace Sudoku.Controller.Finder.Killer
     public class PossibleNeighbourCellsFinder
     {
         private List<Cell> possibleNeighbourCells;
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private Logger log = Logger.Instance;
 
         /// <summary>

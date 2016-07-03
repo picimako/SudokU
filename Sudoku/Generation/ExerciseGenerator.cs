@@ -9,7 +9,7 @@ namespace Sudoku.Generate
     class ExerciseGenerator
     {
         private const int maxNumberOfEmptiedCells = 30;
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private TemporarySolutionContainer container;
         private NumberRemover remover;
         private FullTableGenerator tableGenerator;

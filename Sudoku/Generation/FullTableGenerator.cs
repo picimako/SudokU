@@ -16,7 +16,7 @@ namespace Sudoku.Generate
         /// </summary>
         private const int MAX_NUMBER_OF_WRONG_GENERATIONS = 3;
         private List<int> sudokuNumbers;
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private TemporarySolutionContainer container;
         private NotFillableItemFinder itemFinder = new NotFillableItemFinder();
         private EmptyCellFinder emptyCellFinder = new EmptyCellFinder();

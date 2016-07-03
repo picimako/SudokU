@@ -7,7 +7,7 @@ namespace Sudoku.Generation.Solver
     /// </summary>
     public class ReadExerciseSolver
     {
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private WithoutBackTrackSolver solver = new WithoutBackTrackSolver();
 
         /// <summary>

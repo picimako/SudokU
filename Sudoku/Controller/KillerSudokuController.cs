@@ -7,9 +7,12 @@ using static Sudoku.Controller.SudokuExercise;
 
 namespace Sudoku.Controller
 {
+    /// <summary>
+    /// Controller class for Killer Sudoku exercises.
+    /// </summary>
     public class KillerSudokuController
     {
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
         private Logger log = Logger.Instance;
         private PossibleNeighbourCellsFinder finder = new PossibleNeighbourCellsFinder();
 

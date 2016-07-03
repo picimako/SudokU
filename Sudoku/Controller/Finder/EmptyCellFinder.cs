@@ -8,7 +8,7 @@ namespace Sudoku.Controller.Finder
 {
     class EmptyCellFinder
     {
-        private SudokuExercise se = SudokuExercise.get;
+        private SudokuExercise se = SudokuExercise.Instance;
 
         /// <summary>Iterates through the 'i' row or column in the 'num' numbertable and searches for an only empty cell
         /// in the row or column</summary>
