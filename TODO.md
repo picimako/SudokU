@@ -5,6 +5,7 @@
 - refactor and optimize code
 - improve logger to make debugging easier
 - move forms and localization to XAML based implementation
+- add ability for users to verify partial solution correctness
 
 ### Testing
 - add unit test project
