@@ -210,7 +210,7 @@ namespace Sudoku.Dialog
 
                 if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
                 {
-                    int cageIndex = se.Killer.Exercise[row, col].CageIndex;
+                    int cageIndex = se.Killer.CageIndeces[row, col];
                     if (SumOfNumbersIsCorrectInCage(cageIndex, se.Killer.Cages[cageIndex].Cells))
                     {
                         foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
@@ -251,7 +251,7 @@ namespace Sudoku.Dialog
                     }
                     else
                     {
-                        if (se.Ctrl.HousesContainValue(row, col, valueOfChangedCell) || se.Killer.Ctrl.NeighbourCellFinder.IsCageContainValue(se.Killer.Exercise[row, col].CageIndex, valueOfChangedCell, se.Exercise[0]))
+                        if (se.Ctrl.HousesContainValue(row, col, valueOfChangedCell) || se.Killer.Ctrl.NeighbourCellFinder.IsCageContainValue(se.Killer.CageIndeces[row, col], valueOfChangedCell, se.Exercise[0]))
                             SetIncorrectCellBackground(changedCell);
                         else
                             //Killer
@@ -260,7 +260,7 @@ namespace Sudoku.Dialog
 
                 if (se.IsExerciseKiller && ToCheckSumOfNumbersBiggerInCage())
                 {
-                    int cageIndex = se.Killer.Exercise[row, col].CageIndex;
+                    int cageIndex = se.Killer.CageIndeces[row, col];
                     if (SumOfNumbersIsCorrectInCage(cageIndex, se.Killer.Cages[cageIndex].Cells))
                     {
                         foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
@@ -285,7 +285,7 @@ namespace Sudoku.Dialog
             }
             else
             {
-                int currentCellCageIndex = se.Killer.Exercise[aCell.Row, aCell.Col].CageIndex;
+                int currentCellCageIndex = se.Killer.CageIndeces[aCell.Row, aCell.Col];
                 cell.BackColor = Colors.GetOriginalKillerCellColorOf(currentCellCageIndex);
             }
         }

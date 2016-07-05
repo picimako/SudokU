@@ -11,9 +11,7 @@ namespace Sudoku.Controller
     {
         #region Members
 
-        //i: cage index
-        //j: value in the exercise
-        private Cell[,] killerExercise;
+        private int[,] cageIndeces;
 
         //Id of cage, the cage itself
         private Dictionary<int, Cage> cages;
@@ -33,9 +31,9 @@ namespace Sudoku.Controller
             get { return controller; }
         }
 
-        public Cell[,] Exercise
+        public int[,] CageIndeces
         {
-            get { return killerExercise; }
+            get { return cageIndeces; }
         }
 
         #endregion
@@ -44,7 +42,7 @@ namespace Sudoku.Controller
 
         public KillerSudokuExercise()
         {
-            InitExercise();
+            cageIndeces = new int[9, 9];
             cages = new Dictionary<int, Cage>();
             controller = new KillerSudokuController();
         }
@@ -61,19 +59,7 @@ namespace Sudoku.Controller
         /// <returns>True if the cell is placed in any of the cages, otherwise false.</returns>
         public bool IsCellInAnyCage(int row, int col)
         {
-            return killerExercise[row, col].CageIndex != 0;
-        }
-
-        private void InitExercise()
-        {
-            killerExercise = new Cell[9, 9];
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    killerExercise[i, j] = new Cell();
-                }
-            }
+            return cageIndeces[row, col] != 0;
         }
 
         #endregion

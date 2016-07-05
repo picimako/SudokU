@@ -85,7 +85,7 @@ namespace Sudoku.Controller
 
             foreach (Cell neighbourCell in possibleNeighbourCells)
             {
-                int cageIndexOfNeighbourCell = se.Killer.Exercise[neighbourCell.Row, neighbourCell.Col].CageIndex;
+                int cageIndexOfNeighbourCell = se.Killer.CageIndeces[neighbourCell.Row, neighbourCell.Col];
                 //If the cage of the neighbour cell consists of less than 9 cells, this cage is a candidate
                 if (se.Killer.Cages[cageIndexOfNeighbourCell].Cells.Count < 9)
                     possibleCageIndeces.Add(cageIndexOfNeighbourCell);
@@ -103,7 +103,7 @@ namespace Sudoku.Controller
         /// <param name="cageIndex">The cage index to put the given cell in.</param>
         public void PutCellInCage(Cell cell, int cageIndex)
         {
-            se.Killer.Exercise[cell.Row, cell.Col].CageIndex = cageIndex;
+            se.Killer.CageIndeces[cell.Row, cell.Col] = cageIndex;
 
             if (!se.Killer.Cages.ContainsKey(cageIndex))
                 se.Killer.Cages.Add(cageIndex, new Cage());

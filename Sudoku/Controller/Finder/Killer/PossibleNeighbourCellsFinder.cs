@@ -118,7 +118,7 @@ namespace Sudoku.Controller.Finder.Killer
                 /* If we want to join "cell" to the cage of one of the neighbour cells.
                  * This can happen when "cell" is left empty, and the cells around it are already in a cage.
                  * If the neighbour is in a cage, and the cage of the neighbour cell doesn't contain the value of "cell".*/
-                : se.Killer.IsCellInAnyCage(row, col) && !IsCageContainValue(se.Solution[cell.Row, cell.Col], se.Killer.Exercise[row, col].CageIndex, se.Solution))
+                : se.Killer.IsCellInAnyCage(row, col) && !IsCageContainValue(se.Solution[cell.Row, cell.Col], se.Killer.CageIndeces[row, col], se.Solution))
                 possibleNeighbourCells.Add(new Cell(row, col));
         }
 

@@ -4,7 +4,6 @@ namespace Sudoku.Cells
 {
     /// <summary>
     /// Represents a cell with a row and column index.
-    /// Also used for storing the cage index of a cell for Killer Sudoku exercises.
     /// </summary>
     public class Cell
     {
@@ -19,9 +18,6 @@ namespace Sudoku.Cells
 
         public int Row { get { return i; } set { i = value; } }
         public int Col { get { return j; } set { j = value; } }
-
-        public int CageIndex { get { return i; } set { i = value; } }
-        //public int Value { get { return j; } set { j = value; } }
 
         public static Cell OUT_OF_RANGE { get { return new Cell(-1, -1); } }
 

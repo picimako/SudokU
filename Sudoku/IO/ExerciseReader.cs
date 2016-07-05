@@ -80,7 +80,7 @@ namespace Sudoku
                             int currentCageNumber = -1;
                             if (!(Int32.TryParse(numbers[j], out currentCageNumber)) || currentCageNumber == 0)
                                 return false;
-                            se.Killer.Exercise[indexOfRowToRead, j].CageIndex = currentCageNumber;
+                            se.Killer.CageIndeces[indexOfRowToRead, j] = currentCageNumber;
                             se.Killer.Cages[currentCageNumber].Cells.Add(new Cell(indexOfRowToRead, j));
                         }
 
