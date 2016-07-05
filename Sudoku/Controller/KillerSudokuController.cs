@@ -138,19 +138,6 @@ namespace Sudoku.Controller
         }
 
         /// <summary>
-        /// A megadott cageIndex ketrec cellái közül állítja foglaltra azokat, melyek még nem voltak azok
-        /// </summary>
-        /// <param name="cageIndex">A kitöltött cella ketrecszáma.</param>
-        public void FillInCage(int cageIndex)
-        {
-            foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
-            {
-                if (se.Solution[cell.Row, cell.Col] == EMPTY)
-                    se.Solution[cell.Row, cell.Col] = OCCUPIED;
-            }
-        }
-
-        /// <summary>
         /// Calculates the sum of cell values for each cage.
         /// Cage indeces are mapped with the sum of numbers in them.
         /// </summary>

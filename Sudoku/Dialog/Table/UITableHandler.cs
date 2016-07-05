@@ -235,9 +235,6 @@ namespace Sudoku.Dialog
                 se.Exercise[valueOfChangedCell][row, col] = valueOfChangedCell;
                 se.Ctrl.MakeHousesOccupied(valueOfChangedCell, row, col);
 
-                if (se.IsExerciseKiller)
-                    se.Killer.Ctrl.FillInCage(se.Killer.Exercise[row, col].CageIndex);
-
                 if (previousCellValue == EMPTY)
                     se.NumberOfEmptyCells--;
 
