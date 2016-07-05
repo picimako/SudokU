@@ -87,7 +87,7 @@ namespace Sudoku.Dialog
                     {
                         foreach (KeyValuePair<Cell, int> cage in cageCornersAndSums)
                         {
-                            if (se.Killer.Ctrl.IsCellAtTopLeftOfCage(cage, row, col))
+                            if (se.Killer.Ctrl.IsCellAtTopLeftOfCage(cage.Key, row, col))
                             {
                                 guiTable[row, col] = IsCellSpecial(row, col)
                                     ? new KillerTextBox(cage.Value.ToString(), true)
@@ -231,7 +231,8 @@ namespace Sudoku.Dialog
                     return;
                 }
 
-                se.Exercise[0][row, col] = se.Exercise[valueOfChangedCell][row, col] = valueOfChangedCell;
+                se.Exercise[0][row, col] = valueOfChangedCell;
+                se.Exercise[valueOfChangedCell][row, col] = valueOfChangedCell;
                 se.Ctrl.MakeHousesOccupied(valueOfChangedCell, row, col);
 
                 if (se.IsExerciseKiller)

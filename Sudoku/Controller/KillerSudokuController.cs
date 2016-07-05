@@ -18,45 +18,65 @@ namespace Sudoku.Controller
 
         public PossibleNeighbourCellsFinder NeighbourCellFinder { get { return finder; } }
 
+        /// <summary>
+        /// Constuctor.
+        /// </summary>
         public KillerSudokuController()
         {
             se.Solution = new int[9, 9];
         }
 
-        public void CopySolutionToExercise(int[,] solution)
+        /// <summary>
+        /// Copies the given solution array to the solution of the current Sudoku exercise.
+        /// This is needed when the Killer exercise is generated.
+        /// The actual solution is stored where the exercise is stored but that array is needed for the game itself.
+        /// </summary>
+        public void CopySolutionToExercise()
         {
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    //se.Killer.Exercise[i, j].ertek = megoldasTomb[i, j];
-                    se.Solution[i, j] = solution[i, j];
+                    se.Solution[i, j] = se.Exercise[0][i, j];
                 }
             }
         }
 
-        public bool IsCellAtTopLeftOfCage(KeyValuePair<Cell, int> cage, int row, int col)
+        /// <summary>
+        /// Checks whether the cell indicated by [row,col] is the top left cell of the provided cage.
+        /// </summary>
+        /// <param name="topLeftIndicatorCell">The top left (indicator) cell of the current cage.</param>
+        /// <param name="row">The row index of the cell to compare the top left cell to.</param>
+        /// <param name="col">The column index of the cell to compare the top left cell to.</param>
+        /// <returns></returns>
+        public bool IsCellAtTopLeftOfCage(Cell topLeftIndicatorCell, int row, int col)
         {
-            return cage.Key.Row == row && cage.Key.Col == col;
+            return new Cell(row, col).Equals(topLeftIndicatorCell);
         }
 
-        /// <summary>Megkeresi a legelső olyan üres cellát, ami még nem lett egyik ketrecben se elhelyezve</summary>
-        /// <returns>Ha talált cellát, akkor a cella indexeivel tér vissza, egyébként pedig a (-1,-1) számpárral</returns>
+        /// <summary>
+        /// Searches for the first empty cell in the table that hasn't been placed in any cage.
+        /// The search is performed by position from left to right, top to bottom.
+        /// </summary>
+        /// <returns>If it finds an empty cell then returns with it, otherwise with an out of range cell.</returns>
         public Cell FindFirstEmptyCell()
         {
             int p = 0;
 
-            //Amíg nem lépek ki a tábláról és a vizsgált cella nem üres, átlépek a következő cellára
             while (p < LAST_CELL && se.Killer.IsCellInAnyCage(p / 9, p % 9))
                 p++;
 
-            //Ha nem léptem ki a tábláról, akkor van üres cella, visszatérek az indexeivel
+            //If it didn't step of out the table
             return p < LAST_CELL ? new Cell(p / 9, p % 9) : Cell.OUT_OF_RANGE;
         }
 
-        /// <summary>Összegyűjti azokat a ketrecszámokat, amely ketrecek az [i,j] cella szomszédja(i) és az [i,j] cella értéke még nem szerepel
-        /// a szomszéd cella ketrecében, és a szomszéd cella ketrece 9-nél kevesebb értéket tartalmaz</summary>
-        /// <param name="cell">A keresendő érték cellája</param>
+        /// <summary>
+        /// Collects the cage indeces which are
+        ///  - the neighbour(s) of the provided cell and
+        ///  - the cage of the neighbour cell doesn't contain the value of the provided cell and
+        ///  - the cage of the neighbour cell contains less than 9 values
+        /// </summary>
+        /// <param name="cell">The cell to search the neighbour cages of.</param>
         /// <returns>The list of possible neighbour cages.</returns>
         public List<int> FindPossibleNeighbourCages(Cell cell)
         {
@@ -66,7 +86,7 @@ namespace Sudoku.Controller
             foreach (Cell neighbourCell in possibleNeighbourCells)
             {
                 int cageIndexOfNeighbourCell = se.Killer.Exercise[neighbourCell.Row, neighbourCell.Col].CageIndex;
-                //Ha a szomszéd cella ketrece kevesebb, mint 9 cellából áll, akkor ez a ketrec szóba jöhet
+                //If the cage of the neighbour cell consists of less than 9 cells, this cage is a candidate
                 if (se.Killer.Cages[cageIndexOfNeighbourCell].Cells.Count < 9)
                     possibleCageIndeces.Add(cageIndexOfNeighbourCell);
             }
@@ -74,24 +94,27 @@ namespace Sudoku.Controller
             return possibleCageIndeces;
         }
 
-        /// <summary>ketrecTomb-ben és ketrecSzotarban beállítja a megfelelő értékeket</summary>
-        /// <param name="cell">A beállítandó cella</param>
-        /// <param name="cageIndex">Ehhez a ketrechez adom hozzá az [row,col] indexű cellát</param>
+        /// <summary>
+        /// Places cell in the given cage.
+        /// Creates the cage if it hasn't exist.
+        /// Adds the cell to the new cage.
+        /// </summary>
+        /// <param name="cell">The cell to put in the given cage.</param>
+        /// <param name="cageIndex">The cage index to put the given cell in.</param>
         public void PutCellInCage(Cell cell, int cageIndex)
         {
-            //A [row,col] cellát elhelyezem a cageIndex számú ketrecben
             se.Killer.Exercise[cell.Row, cell.Col].CageIndex = cageIndex;
 
-            //Ha létre kell hozni egy új ketrecet, akkor megteszem
             if (!se.Killer.Cages.ContainsKey(cageIndex))
                 se.Killer.Cages.Add(cageIndex, new Cage());
 
-            //Hozzáadom a ketrechez a cellát
             se.Killer.Cages[cageIndex].Cells.Add(new Cell(cell.Row, cell.Col));
         }
 
-        /// <summary>Összegyűjti a ketrecekben levő számok összegét, és minden ketrecnek azt a celláját,
-        /// amelybe a megjelenítéskor a ketrecben levő értékek összegét kell írni</summary>
+        /// <summary>
+        /// Collects the sum of numbers in the cages and the cells
+        /// that will contain these sums when displaying the exercise on the GUI.
+        /// </summary>
         public Dictionary<Cell, int> GetSumOfNumbersAndIndicatorCages()
         {
             if (se.IsExerciseGenerated)
@@ -114,6 +137,33 @@ namespace Sudoku.Controller
             return cornerCellsWithSums;
         }
 
+        /// <summary>
+        /// A megadott cageIndex ketrec cellái közül állítja foglaltra azokat, melyek még nem voltak azok
+        /// </summary>
+        /// <param name="cageIndex">A kitöltött cella ketrecszáma.</param>
+        public void FillInCage(int cageIndex)
+        {
+            foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
+            {
+                if (se.Solution[cell.Row, cell.Col] == EMPTY)
+                    se.Solution[cell.Row, cell.Col] = OCCUPIED;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the sum of cell values for each cage.
+        /// Cage indeces are mapped with the sum of numbers in them.
+        /// </summary>
+        private void CalculateSumOfNumbersInAllCages()
+        {
+            foreach (KeyValuePair<int, Cage> cage in se.Killer.Cages)
+            {
+                int sumOfNumbersInCage = cage.Value.Cells.Sum(cell => se.Solution[cell.Row, cell.Col]);
+
+                se.Killer.Cages[cage.Key].SumOfNumbers = sumOfNumbersInCage;
+            }
+        }
+
         private Cell GetMostUpperCellInCage(KeyValuePair<int, Cage> cage, Cell upperLeftCornerCellOfCage)
         {
             Cell mostUpperCell = upperLeftCornerCellOfCage;
@@ -132,35 +182,13 @@ namespace Sudoku.Controller
             Cell mostLeftCell = upperLeftCornerCellOfCage;
             foreach (Cell cell in cage.Value.Cells)
             {
-                //Ha a cella a legfelül levők között van
+                //If the cell is amongst the top ones
                 if (cell.IsInSameRowAs(mostLeftCell) && cell.IsAtLeftOf(mostLeftCell))
                 {
                     mostLeftCell.CopyIndecesOf(cell);
                 }
             }
             return mostLeftCell;
-        }
-
-        /// <summary>A megadott cageIndex ketrec cellái közül állítja foglaltra azokat, melyek még nem voltak azok</summary>
-        /// <param name="cageIndex">A kitöltött cella ketrecszáma.</param>
-        public void FillInCage(int cageIndex)
-        {
-            foreach (Cell cell in se.Killer.Cages[cageIndex].Cells)
-            {
-                if (se.Solution[cell.Row, cell.Col] == EMPTY)
-                    se.Solution[cell.Row, cell.Col] = OCCUPIED;
-            }
-        }
-
-        /// <summary>Kiszámolja, hogy melyik ketrechez milyen ketrecösszeg tartozik</summary>
-        private void CalculateSumOfNumbersInAllCages()
-        {
-            foreach (KeyValuePair<int, Cage> cage in se.Killer.Cages)
-            {
-                int sumOfNumbersInCage = cage.Value.Cells.Sum(cell => se.Solution[cell.Row, cell.Col]);
-
-                se.Killer.Cages[cage.Key].SumOfNumbers = sumOfNumbersInCage;
-            }
         }
     }
 }

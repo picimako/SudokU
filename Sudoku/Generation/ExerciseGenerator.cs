@@ -55,7 +55,7 @@ namespace Sudoku.Generate
                 do
                 {
                     se.InitKillerExercise();
-                    se.Killer.Ctrl.CopySolutionToExercise(se.Exercise[0]);
+                    se.Killer.Ctrl.CopySolutionToExercise();
                 } while (!GenerateKiller());
 
                 //Kitörlök minden értéket a feladatból, mert üres táblát kell megadni a feladatban
