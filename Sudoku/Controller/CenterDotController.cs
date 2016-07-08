@@ -2,6 +2,9 @@
 
 namespace Sudoku.Controller
 {
+    /// <summary>
+    /// Controller for Center Dot Sudoku type exercises.
+    /// </summary>
     public class CenterDotController : SimpleSudokuController
     {
         #region Constructor
@@ -16,8 +19,12 @@ namespace Sudoku.Controller
         #region Methods
         #region Public
 
-        /// <summary>Marks all the not empty cells as occupied in the all the houses of the current cell.</summary>
+        /// <summary>
+        /// Marks all the not empty cells as occupied in the all the houses of the current cell.
+        /// </summary>
         /// <param name="num">The number table.</param>
+        /// <param name="row">The row index of the cell to make the houses occupied of.</param>
+        /// <param name="col">The column index of the cell to make the houses occupied of.</param>
         public override void MakeHousesOccupied(int num, int row, int col)
         {
             base.MakeHousesOccupied(num, row, col);
@@ -26,7 +33,12 @@ namespace Sudoku.Controller
                 MakeCenterCellsOccupied(num);
         }
 
-        /// <summary>Inspects whether value is present in any houses of the current cell of the exercise.</summary>
+        /// <summary>
+        /// Inspects whether value is present in any houses of the current cell of the exercise.
+        /// </summary>
+        /// <param name="rowOfCurrentCell">The row index of the cell that needs to be excluded from the contains search.</param>
+        /// <param name="colOfCurrentCell">The column index of the cell that needs to be excluded from the contains search.</param>
+        /// <param name="value">The value that it searches for in the houses of the given cell.</param>
         /// <returns>True in case of inclusion, otherwise false.</returns>
         public override bool HousesContainValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
@@ -52,7 +64,9 @@ namespace Sudoku.Controller
             }
         }
 
-        /// <summary>Inspects whether value is present in any center-cell of blocks of the exercise.</summary>
+        /// <summary>
+        /// Inspects whether value is present in any center-cell of blocks of the exercise.
+        /// </summary>
         /// <returns>True in case of inclusion, otherwise false.</returns>
         private bool CenterContainsValue(int rowOfCurrentCell, int colOfCurrentCell, int value)
         {
